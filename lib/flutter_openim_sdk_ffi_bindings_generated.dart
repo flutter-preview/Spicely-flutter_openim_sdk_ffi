@@ -11,6 +11,8 @@ import 'dart:ffi' as ffi;
 ///
 /// Regenerate bindings with `flutter pub run ffigen --config ffigen.yaml`.
 ///
+///
+
 class FlutterOpenimSdkFfiBindings {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) _lookup;
@@ -26,16 +28,17 @@ class FlutterOpenimSdkFfiBindings {
   /// For very short-lived functions, it is fine to call them on the main isolate.
   /// They will block the Dart execution while running the native function, so
   /// only do this for native functions which are guaranteed to be short-lived.
-  int sum(
-    int a,
-    int b,
+  bool sum(
+    String a,
+    String b,
   ) {
     return _sum(
+      1,
       a,
       b,
     );
   }
 
-  late final _initSDK = _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>('Open_im_sdkInitSDK');
-  late final _sum = _initSDK.asFunction<int Function(int, int)>();
+  late final _sum = _lookup<ffi.NativeFunction<ffi.Bool Function(ffi.Int, ffi.Intp, ffi.NativeType)>>('Open_im_sdkInitSDK')
+      .asFunction<bool Function(int, String, String)>();
 }
