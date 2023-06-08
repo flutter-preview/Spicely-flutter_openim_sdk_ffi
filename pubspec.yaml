@@ -1,7 +1,7 @@
 name: flutter_openim_sdk_ffi
 description: A new Flutter FFI plugin project.
 version: 0.0.1
-homepage:
+
 
 environment:
   sdk: '>=3.0.3 <4.0.0'
@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
+  ffi: ^2.0.1
 
 dev_dependencies:
-  ffi: ^2.0.1
   ffigen: ^6.1.2
   flutter_test:
     sdk: flutter

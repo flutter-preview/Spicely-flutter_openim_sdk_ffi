@@ -394,7 +394,7 @@ class IMManager {
   }) {
     // this._connectListener = listener;
     // this._objectStorage = objectStorage;
-    // _bindings.
+    // _bindings.initSDK();
     return _channel.invokeMethod(
         'initSDK',
         _buildParam(
