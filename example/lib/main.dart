@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_openim_sdk_ffi/flutter_openim_sdk_ffi.dart' as flutter_openim_sdk_ffi;
+import 'package:flutter_openim_sdk_ffi/flutter_openim_sdk_ffi.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,6 +24,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     sumResult = 1;
     sumAsyncResult = Future.value(2);
+    OpenIM.iMManager.initSDK(platform: 1, apiAddr: 'apiAddr', wsAddr: 'wsAddr', dataDir: '');
   }
 
   @override

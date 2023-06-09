@@ -378,12 +378,12 @@ class IMManager {
   /// [enabledEncryption] true：加密
   ///
   /// [enabledCompression] true：压缩
-  Future<dynamic> initSDK({
+  void initSDK({
     required int platform,
     required String apiAddr,
     required String wsAddr,
     required String dataDir,
-    required OnConnectListener listener,
+    // required OnConnectListener listener,
     int logLevel = 6,
     String objectStorage = 'cos',
     String? encryptionKey,
@@ -394,24 +394,37 @@ class IMManager {
   }) {
     // this._connectListener = listener;
     // this._objectStorage = objectStorage;
-    // _bindings.initSDK();
-    return _channel.invokeMethod(
-        'initSDK',
-        _buildParam(
-          {
-            "platform": platform,
-            "api_addr": apiAddr,
-            "ws_addr": wsAddr,
-            "data_dir": dataDir,
-            "log_level": logLevel,
-            "object_storage": objectStorage,
-            "encryption_key": encryptionKey,
-            "is_need_encryption": enabledEncryption,
-            "is_compression ": enabledCompression,
-            "is_external_extensions": isExternalExtensions,
-            "operationID": Utils.checkOperationID(operationID),
-          },
-        ));
+    String config = json.encode({
+      "platform": platform,
+      "api_addr": apiAddr,
+      "ws_addr": wsAddr,
+      "data_dir": dataDir,
+      "log_level": logLevel,
+      "object_storage": objectStorage,
+      "encryption_key": encryptionKey,
+      "is_need_encryption": enabledEncryption,
+      "is_compression ": enabledCompression,
+      "is_external_extensions": isExternalExtensions,
+      "operationID": Utils.checkOperationID(operationID),
+    });
+    _bindings.initSDK(Pointer<_OnConnListener>.fromAddress(1), Utils.checkOperationID(operationID).toNativeUtf8(), config.toNativeUtf8());
+    // return _channel.invokeMethod(
+    //     'initSDK',
+    //     _buildParam(
+    //       {
+    //         "platform": platform,
+    //         "api_addr": apiAddr,
+    //         "ws_addr": wsAddr,
+    //         "data_dir": dataDir,
+    //         "log_level": logLevel,
+    //         "object_storage": objectStorage,
+    //         "encryption_key": encryptionKey,
+    //         "is_need_encryption": enabledEncryption,
+    //         "is_compression ": enabledCompression,
+    //         "is_external_extensions": isExternalExtensions,
+    //         "operationID": Utils.checkOperationID(operationID),
+    //       },
+    //     ));
   }
 
   /// 反初始化SDK
