@@ -5,9 +5,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project(flutter_openim_sdk_ffi_library VERSION 0.0.1 LANGUAGES C)
 
-add_library(flutter_openim_sdk_ffi SHARED
-  "flutter_openim_sdk_ffi.c"
-)
 
 set_target_properties(flutter_openim_sdk_ffi PROPERTIES
   PUBLIC_HEADER flutter_openim_sdk_ffi.h

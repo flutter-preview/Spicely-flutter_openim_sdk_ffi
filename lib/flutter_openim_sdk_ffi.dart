@@ -2,16 +2,15 @@ library flutter_openim_sdk_ffi;
 
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:ffi';
+import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 
 import 'package:ffi/ffi.dart';
 
+import 'flutter_openim_sdk_ffi_bindings_generated.dart';
 import 'src/utils.dart';
-
-part 'flutter_openim_sdk_ffi_bindings_generated.dart';
 
 part './src/openim.dart';
 part './src/models/workmoments_info.dart';
@@ -61,3 +60,6 @@ part './src/listener/organization_listener.dart';
 part './src/listener/signaling_listener.dart';
 part './src/listener/user_listener.dart';
 part './src/listener/workmoments_listener.dart';
+
+part './src/struct/struct.dart';
+part './src/extension/extension.dart';

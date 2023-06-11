@@ -2,22 +2,26 @@ part of flutter_openim_sdk_ffi;
 
 const String _libName = 'flutter_openim_sdk_ffi';
 
-final DynamicLibrary _dylib = () {
+final ffi.DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
-    return DynamicLibrary.open('OpenIMSDKCore.framework');
+    return ffi.DynamicLibrary.open('OpenIMSDKCore.framework');
   }
   if (Platform.isAndroid || Platform.isLinux) {
-    return DynamicLibrary.open('$_libName.so');
+    return ffi.DynamicLibrary.open('$_libName.so');
   }
   if (Platform.isWindows) {
-    return DynamicLibrary.open('$_libName.dll');
+    return ffi.DynamicLibrary.open('$_libName.dll');
   }
   throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
 final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
 
 class OpenIM {
-  static const version = '2.3.5+3';
+  static String get version {
+    final ptr = _bindings.GetSdkVersion();
+    calloc.free(ptr);
+    return _bindings.GetSdkVersion().cast<Utf8>().toDartString();
+  }
 
   static const _channel = const MethodChannel('flutter_openim_sdk');
 

@@ -2,16 +2,10 @@ PODS:
   - Flutter (1.0.0)
   - flutter_openim_sdk_ffi (0.0.1):
     - Flutter
-    - OpenIMSDKCore (= 2.3.6)
-  - OpenIMSDKCore (2.3.6)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_openim_sdk_ffi (from `.symlinks/plugins/flutter_openim_sdk_ffi/ios`)
-
-SPEC REPOS:
-  trunk:
-    - OpenIMSDKCore
 
 EXTERNAL SOURCES:
   Flutter:
@@ -21,9 +15,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_openim_sdk_ffi: c058e06032edc3e59b01558699ff230afdb21493
-  OpenIMSDKCore: b68a0f6b98bf5543f213d2b33a7eade9739914cf
+  flutter_openim_sdk_ffi: ca62d3bca51d62676ddcd4efbfce6af8e47993f2
 
 PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.11.3
