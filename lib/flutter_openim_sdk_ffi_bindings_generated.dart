@@ -19,116 +19,75 @@ class FlutterOpenimSdkFfiBindings {
           lookup)
       : _lookup = lookup;
 
-  void OnConnecting(
+  void SetUserListener(
     ffi.Pointer<ffi.Void> listener,
   ) {
-    return _OnConnecting(
+    return _SetUserListener(
       listener,
     );
   }
 
-  late final _OnConnectingPtr =
+  late final _SetUserListenerPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-          'OnConnecting');
-  late final _OnConnecting =
-      _OnConnectingPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+          'SetUserListener');
+  late final _SetUserListener =
+      _SetUserListenerPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void OnConnectSuccess(
+  void SetAdvancedMsgListener(
     ffi.Pointer<ffi.Void> listener,
   ) {
-    return _OnConnectSuccess(
+    return _SetAdvancedMsgListener(
       listener,
     );
   }
 
-  late final _OnConnectSuccessPtr =
+  late final _SetAdvancedMsgListenerPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-          'OnConnectSuccess');
-  late final _OnConnectSuccess =
-      _OnConnectSuccessPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+          'SetAdvancedMsgListener');
+  late final _SetAdvancedMsgListener = _SetAdvancedMsgListenerPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Void>)>();
 
-  void OnConnectFailed(
-    ffi.Pointer<ffi.Void> listener,
-    int errCode,
-    ffi.Pointer<ffi.Char> errMsg,
-  ) {
-    return _OnConnectFailed(
-      listener,
-      errCode,
-      errMsg,
-    );
-  }
-
-  late final _OnConnectFailedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Void>, GoInt32,
-              ffi.Pointer<ffi.Char>)>>('OnConnectFailed');
-  late final _OnConnectFailed = _OnConnectFailedPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Char>)>();
-
-  void OnKickedOffline(
+  void SetFriendListener(
     ffi.Pointer<ffi.Void> listener,
   ) {
-    return _OnKickedOffline(
+    return _SetFriendListener(
       listener,
     );
   }
 
-  late final _OnKickedOfflinePtr =
+  late final _SetFriendListenerPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-          'OnKickedOffline');
-  late final _OnKickedOffline =
-      _OnKickedOfflinePtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+          'SetFriendListener');
+  late final _SetFriendListener =
+      _SetFriendListenerPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  void OnUserTokenExpired(
+  void SetConversationListener(
     ffi.Pointer<ffi.Void> listener,
   ) {
-    return _OnUserTokenExpired(
+    return _SetConversationListener(
       listener,
     );
   }
 
-  late final _OnUserTokenExpiredPtr =
+  late final _SetConversationListenerPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-          'OnUserTokenExpired');
-  late final _OnUserTokenExpired =
-      _OnUserTokenExpiredPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+          'SetConversationListener');
+  late final _SetConversationListener = _SetConversationListenerPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Void>)>();
 
-  void OnError(
+  void SetSignalingListener(
     ffi.Pointer<ffi.Void> listener,
-    int errCode,
-    ffi.Pointer<ffi.Char> errMsg,
   ) {
-    return _OnError(
+    return _SetSignalingListener(
       listener,
-      errCode,
-      errMsg,
     );
   }
 
-  late final _OnErrorPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Void>, GoInt32,
-              ffi.Pointer<ffi.Char>)>>('OnError');
-  late final _OnError = _OnErrorPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Char>)>();
-
-  void OnSuccess(
-    ffi.Pointer<ffi.Void> listener,
-    ffi.Pointer<ffi.Char> data,
-  ) {
-    return _OnSuccess(
-      listener,
-      data,
-    );
-  }
-
-  late final _OnSuccessPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Char>)>>('OnSuccess');
-  late final _OnSuccess = _OnSuccessPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Char>)>();
+  late final _SetSignalingListenerPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+          'SetSignalingListener');
+  late final _SetSignalingListener = _SetSignalingListenerPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Void>)>();
 
   ffi.Pointer<ffi.Char> GetSdkVersion() {
     return _GetSdkVersion();
@@ -303,13 +262,12 @@ final class GoSlice extends ffi.Struct {
 
 typedef GoInt = GoInt64;
 typedef GoInt64 = ffi.LongLong;
-typedef GoInt32 = ffi.Int;
 
-const int __DARWIN_ONLY_64_BIT_INO_T = 0;
+const int __DARWIN_ONLY_64_BIT_INO_T = 1;
 
 const int __DARWIN_ONLY_UNIX_CONFORMANCE = 1;
 
-const int __DARWIN_ONLY_VERS_1050 = 0;
+const int __DARWIN_ONLY_VERS_1050 = 1;
 
 const int __DARWIN_UNIX03 = 1;
 
@@ -318,10 +276,6 @@ const int __DARWIN_64_BIT_INO_T = 1;
 const int __DARWIN_VERS_1050 = 1;
 
 const int __DARWIN_NON_CANCELABLE = 0;
-
-const String __DARWIN_SUF_64_BIT_INO_T = '\$INODE64';
-
-const String __DARWIN_SUF_1050 = '\$1050';
 
 const String __DARWIN_SUF_EXTSN = '\$DARWIN_EXTSN';
 
@@ -336,6 +290,10 @@ const int __STDC_WANT_LIB_EXT1__ = 1;
 const int __DARWIN_NO_LONG_LONG = 0;
 
 const int _DARWIN_FEATURE_64_BIT_INODE = 1;
+
+const int _DARWIN_FEATURE_ONLY_64_BIT_INODE = 1;
+
+const int _DARWIN_FEATURE_ONLY_VERS_1050 = 1;
 
 const int _DARWIN_FEATURE_ONLY_UNIX_CONFORMANCE = 1;
 

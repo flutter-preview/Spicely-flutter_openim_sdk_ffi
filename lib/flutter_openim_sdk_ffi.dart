@@ -5,9 +5,11 @@ import 'dart:developer';
 import 'dart:ffi' as ffi;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'package:ffi/ffi.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'flutter_openim_sdk_ffi_bindings_generated.dart';
 import 'src/utils.dart';
@@ -34,6 +36,9 @@ part './src/enum/im_platform.dart';
 part './src/enum/listener_type.dart';
 part './src/enum/message_type.dart';
 part './src/enum/sdk_error_code.dart';
+
+part './src/openim_manager.dart';
+part './src/openim_listener.dart';
 
 part './src/logger.dart';
 

@@ -1,5 +1,11 @@
 part of flutter_openim_sdk_ffi;
 
+void _onSelfInfoUpdated(ffi.Pointer<Utf8> data) {
+  print('_onSelfInfoUpdated');
+  // UserInfo uInfo = Utils.toObj(data.toDartString(), (map) => UserInfo.fromJson(map));
+  // listener.onSelfInfoUpdated?.call(uInfo);
+}
+
 class UserManager {
   MethodChannel _channel;
   late OnUserListener listener;
@@ -7,9 +13,11 @@ class UserManager {
   UserManager(this._channel);
 
   /// 用户资料改变监听
-  Future setUserListener(OnUserListener listener) {
+  void setUserListener(OnUserListener listener) {
     this.listener = listener;
-    return _channel.invokeMethod('setUserListener', _buildParam({}));
+    final listenerPtr = calloc<UserListener>();
+    listenerPtr.ref.onSelfInfoUpdated = ffi.Pointer.fromFunction<_OnSelfInfoUpdated>(_onSelfInfoUpdated);
+    _bindings.SetUserListener(listenerPtr as ffi.Pointer<ffi.Void>);
   }
 
   /// 获取用户资料

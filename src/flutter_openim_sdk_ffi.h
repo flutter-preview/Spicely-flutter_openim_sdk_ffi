@@ -74,13 +74,11 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern void OnConnecting(void* listener);
-extern void OnConnectSuccess(void* listener);
-extern void OnConnectFailed(void* listener, GoInt32 errCode, char* errMsg);
-extern void OnKickedOffline(void* listener);
-extern void OnUserTokenExpired(void* listener);
-extern void OnError(void* listener, GoInt32 errCode, char* errMsg);
-extern void OnSuccess(void* listener, char* data);
+extern void SetUserListener(void* listener);
+extern void SetAdvancedMsgListener(void* listener);
+extern void SetFriendListener(void* listener);
+extern void SetConversationListener(void* listener);
+extern void SetSignalingListener(void* listener);
 extern char* GetSdkVersion();
 extern _Bool InitSDK(void* listener, char* operationID, char* config);
 extern void Login(void* callback, char* operationID, char* userID, char* token);

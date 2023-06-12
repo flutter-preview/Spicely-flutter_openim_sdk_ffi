@@ -24,8 +24,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     sumResult = 1;
     sumAsyncResult = Future.value(2);
-
-    OpenIM.iMManager.initSDK(apiAddr: '', wsAddr: '', dataDir: '');
   }
 
   @override

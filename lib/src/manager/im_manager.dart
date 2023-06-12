@@ -380,6 +380,7 @@ class IMManager {
     required String apiAddr,
     required String wsAddr,
     required String dataDir,
+    required int platform,
     int logLevel = 6,
     String objectStorage = 'cos',
     String? encryptionKey,
@@ -393,12 +394,14 @@ class IMManager {
 
     /// 将listener 变为指针
 
-    final listenerPtr = calloc<OnConnListener>();
-    listenerPtr.ref.onConnecting = ffi.Pointer.fromFunction<ffi.Void Function()>(_connecting) as ffi.Pointer<ffi.Void>;
-    listenerPtr.ref.onConnectSuccess = ffi.Pointer.fromFunction<ffi.Void Function()>(_connectSuccess) as ffi.Pointer<ffi.Void>;
-
+    final listenerPtr = calloc<ConnListener>();
+    listenerPtr.ref.onConnecting = ffi.Pointer.fromFunction<_Func>(_connecting);
+    listenerPtr.ref.onConnectSuccess = ffi.Pointer.fromFunction<_Func>(_connectSuccess);
+    listenerPtr.ref.onConnectFailed = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_connectFailed);
+    listenerPtr.ref.onKickedOffline = ffi.Pointer.fromFunction<_Func>(_kickedOffline);
+    listenerPtr.ref.onUserTokenExpired = ffi.Pointer.fromFunction<_Func>(_userTokenExpired);
     String config = jsonEncode({
-      "platform": 1,
+      "platform": platform,
       "api_addr": apiAddr,
       "ws_addr": wsAddr,
       "data_dir": dataDir,
@@ -407,7 +410,7 @@ class IMManager {
       "encryption_key": encryptionKey,
       "is_need_encryption": enabledEncryption,
       "is_compression ": enabledCompression,
-      "is_external_extensions": isExternalExtensions,
+      "is_external_extensions": isExternalExtensions
     });
 
     final status = _bindings.InitSDK(
@@ -415,7 +418,6 @@ class IMManager {
       Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );
-    calloc.free(listenerPtr);
     return status;
   }
 
@@ -434,16 +436,19 @@ class IMManager {
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
-    // final listenerPtr = calloc<OpenIMBase>();
-    // listenerPtr.ref.onSuccess = ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<Utf8> data)>(_onSuccess);
-    // listenerPtr.ref.onError = ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<Utf8> data)>(_onError);
+    ffi.Pointer<Utf8> id = uid.toNativeUtf8();
+    ffi.Pointer<Utf8> t = token.toNativeUtf8();
+    ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
 
-    // _bindings.Login(
-    //   listenerPtr as ffi.Pointer<ffi.Void>,
-    //   Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    //   uid.toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    //   token.toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    // );
+    final listenerPtr = calloc<OpenIMBase>();
+    listenerPtr.ref.onSuccess = ffi.Pointer.fromFunction<_OnSuccessFunc>(_onSuccess);
+    listenerPtr.ref.onError = ffi.Pointer.fromFunction<_OnErrorFunc>(_onError);
+
+    _bindings.Login(
+        listenerPtr as ffi.Pointer<ffi.Void>, id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+    // calloc.free(id);
+    // calloc.free(t);
+    // calloc.free(i);
     // await _channel.invokeMethod(
     //   'login',
     //   _buildParam({

@@ -1,9 +1,49 @@
 part of flutter_openim_sdk_ffi;
 
+void _onRecvNewMessage(ffi.Pointer<Utf8> data) {
+  print('_onRecvNewMessage');
+  // Message msg = Utils.toObj(data.toDartString(), (map) => Message.fromJson(map));
+}
+
+void _onMsgDeleted(ffi.Pointer<Utf8> data) {
+  print('_onMsgDeleted');
+  // Message msg = Utils.toObj(data.toDartString(), (map) => Message.fromJson(map));
+  // msgListener.?.call(msg);
+}
+
+void _onNewRecvMessageRevoked(ffi.Pointer<Utf8> data) {
+  print('_onNewRecvMessageRevoked');
+  // Message msg = Utils.toObj(data.toDartString(), (map) => Message.fromJson(map));
+  // msgListener.?.call(msg);
+}
+
+void _onRecvC2CReadReceipt(ffi.Pointer<Utf8> data) {
+  print('_onRecvC2CReadReceipt');
+}
+
+void _onRecvMessageExtensionsAdded(ffi.Pointer<Utf8> id, ffi.Pointer<Utf8> data) {
+  print('_onRecvMessageExtensionsAdded');
+}
+
+void _onRecvMessageExtensionsChanged(ffi.Pointer<Utf8> id, ffi.Pointer<Utf8> data) {
+  print('onRecvMessageExtensionsChanged');
+}
+
+void _onRecvMessageExtensionsDeleted(ffi.Pointer<Utf8> id, ffi.Pointer<Utf8> data) {
+  print('_onRecvMessageExtensionsDeleted');
+}
+
+void _onRecvGroupReadReceipt(ffi.Pointer<Utf8> data) {
+  print('_onRecvC2CReadReceipt');
+}
+
+void _onRecvOfflineNewMessages(ffi.Pointer<Utf8> data) {
+  print('_onRecvC2CReadReceipt');
+}
+
 class MessageManager {
   MethodChannel _channel;
 
-  // List<AdvancedMsgListener> advancedMsgListeners = List.empty(growable: true);
   OnMsgSendProgressListener? msgSendProgressListener;
   late OnAdvancedMsgListener msgListener;
   OnCustomBusinessListener? customBusinessListener;
@@ -12,14 +52,20 @@ class MessageManager {
   MessageManager(this._channel);
 
   /// 消息监听
-  Future setAdvancedMsgListener(OnAdvancedMsgListener listener) {
-    this.msgListener = listener;
-    // advancedMsgListeners.add(listener);
-    return _channel.invokeMethod(
-        'setAdvancedMsgListener',
-        _buildParam({
-          'id': listener.id,
-        }));
+  void setAdvancedMsgListener(OnAdvancedMsgListener listener) {
+    msgListener = listener;
+    final listenerPtr = calloc<AdvancedMsgListener>();
+    listenerPtr.ref.onRecvNewMessage = ffi.Pointer.fromFunction<_OnMessage>(_onRecvNewMessage);
+    listenerPtr.ref.onMsgDeleted = ffi.Pointer.fromFunction<_OnMessage>(_onMsgDeleted);
+    listenerPtr.ref.onNewRecvMessageRevoked = ffi.Pointer.fromFunction<_OnMessage>(_onNewRecvMessageRevoked);
+    listenerPtr.ref.onRecvC2CReadReceipt = ffi.Pointer.fromFunction<_OnMessage>(_onRecvC2CReadReceipt);
+    listenerPtr.ref.onRecvMessageExtensionsAdded = ffi.Pointer.fromFunction<_On2Message>(_onRecvMessageExtensionsAdded);
+    listenerPtr.ref.onRecvMessageExtensionsChanged = ffi.Pointer.fromFunction<_On2Message>(_onRecvMessageExtensionsChanged);
+    listenerPtr.ref.onRecvMessageExtensionsDeleted = ffi.Pointer.fromFunction<_On2Message>(_onRecvMessageExtensionsDeleted);
+    listenerPtr.ref.onRecvGroupReadReceipt = ffi.Pointer.fromFunction<_OnMessage>(_onRecvGroupReadReceipt);
+    listenerPtr.ref.onRecvOfflineNewMessages = ffi.Pointer.fromFunction<_OnMessage>(_onRecvOfflineNewMessages);
+
+    _bindings.SetAdvancedMsgListener(listenerPtr as ffi.Pointer<ffi.Void>);
   }
 
   /// 消息发送进度监听

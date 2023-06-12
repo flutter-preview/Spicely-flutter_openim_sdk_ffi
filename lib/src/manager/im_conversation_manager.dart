@@ -1,5 +1,29 @@
 part of flutter_openim_sdk_ffi;
 
+void _onConversationChanged(ffi.Pointer<Utf8> data) {
+  print('_onConversationChanged');
+}
+
+void _onNewConversation(ffi.Pointer<Utf8> data) {
+  print('_onNewConversation');
+}
+
+void _onSyncServerFailed() {
+  print('_onSyncServerFailed');
+}
+
+void _onSyncServerFinish() {
+  print('_onSyncServerFinish');
+}
+
+void _onSyncServerStart() {
+  print('_onSyncServerStart');
+}
+
+void _onTotalUnreadMessageCountChanged(ffi.Pointer<ffi.Int32> count) {
+  print('_onTotalUnreadMessageCountChanged');
+}
+
 class ConversationManager {
   MethodChannel _channel;
   late OnConversationListener listener;
@@ -7,9 +31,16 @@ class ConversationManager {
   ConversationManager(this._channel);
 
   /// 会话监听
-  Future setConversationListener(OnConversationListener listener) {
+  void setConversationListener(OnConversationListener listener) {
     this.listener = listener;
-    return _channel.invokeMethod('setConversationListener', _buildParam({}));
+    final listenerPtr = calloc<ConversationListener>();
+    listenerPtr.ref.onConversationChanged = ffi.Pointer.fromFunction<_OnMessage>(_onConversationChanged);
+    listenerPtr.ref.onNewConversation = ffi.Pointer.fromFunction<_OnMessage>(_onNewConversation);
+    listenerPtr.ref.onSyncServerFailed = ffi.Pointer.fromFunction<_Func>(_onSyncServerFailed);
+    listenerPtr.ref.onSyncServerFinish = ffi.Pointer.fromFunction<_Func>(_onSyncServerFinish);
+    listenerPtr.ref.onSyncServerStart = ffi.Pointer.fromFunction<_Func>(_onSyncServerStart);
+    listenerPtr.ref.onTotalUnreadMessageCountChanged = ffi.Pointer.fromFunction<_FuncInt32>(_onTotalUnreadMessageCountChanged);
+    _bindings.SetConversationListener(listenerPtr as ffi.Pointer<ffi.Void>);
   }
 
   /// 获取所有会话
