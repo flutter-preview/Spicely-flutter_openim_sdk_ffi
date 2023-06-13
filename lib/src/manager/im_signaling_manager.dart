@@ -1,5 +1,16 @@
 part of flutter_openim_sdk_ffi;
 
+void _onReceiveNewInvitation(ffi.Pointer<ffi.Char> data) {}
+void _onInviteeAccepted(ffi.Pointer<ffi.Char> data) {}
+void _onInviteeAcceptedByOtherDevice(ffi.Pointer<ffi.Char> data) {}
+void _onInviteeRejected(ffi.Pointer<ffi.Char> data) {}
+void _onInviteeRejectedByOtherDevice(ffi.Pointer<ffi.Char> data) {}
+void _onInvitationCancelled(ffi.Pointer<ffi.Char> data) {}
+void _onInvitationTimeout(ffi.Pointer<ffi.Char> data) {}
+void _onHangUp(ffi.Pointer<ffi.Char> data) {}
+void _onRoomParticipantConnected(ffi.Pointer<ffi.Char> data) {}
+void _onRoomParticipantDisconnected(ffi.Pointer<ffi.Char> data) {}
+
 class SignalingManager {
   MethodChannel _channel;
   late OnSignalingListener listener;
@@ -7,9 +18,21 @@ class SignalingManager {
   SignalingManager(this._channel);
 
   /// 信令监听
-  Future setSignalingListener(OnSignalingListener listener) {
+  void setSignalingListener(OnSignalingListener listener) {
     this.listener = listener;
-    return _channel.invokeMethod('setSignalingListener', _buildParam({}));
+    final listenerPtr = calloc<SignalingListener>();
+    listenerPtr.ref
+      ..onReceiveNewInvitation = ffi.Pointer.fromFunction<_FuncChar>(_onReceiveNewInvitation)
+      ..onInviteeAccepted = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeAccepted)
+      ..onInviteeAcceptedByOtherDevice = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeAcceptedByOtherDevice)
+      ..onInviteeRejected = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeRejected)
+      ..onInviteeRejectedByOtherDevice = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeRejectedByOtherDevice)
+      ..onInvitationCancelled = ffi.Pointer.fromFunction<_FuncChar>(_onInvitationCancelled)
+      ..onInvitationTimeout = ffi.Pointer.fromFunction<_FuncChar>(_onInvitationTimeout)
+      ..onHangUp = ffi.Pointer.fromFunction<_FuncChar>(_onHangUp)
+      ..onRoomParticipantConnected = ffi.Pointer.fromFunction<_FuncChar>(_onRoomParticipantConnected)
+      ..onRoomParticipantDisconnected = ffi.Pointer.fromFunction<_FuncChar>(_onRoomParticipantDisconnected);
+    _bindings.SetSignalingListener(listenerPtr);
   }
 
   /// 邀请个人加入音视频

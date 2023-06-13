@@ -1,10 +1,10 @@
 part of flutter_openim_sdk_ffi;
 
 /// SDK连接服务器失败
-void _connectFailed(ffi.Pointer<ffi.Int32> code, ffi.Pointer<Utf8> errMsg) {
+void _connectFailed(ffi.Pointer<ffi.Int32> code, ffi.Pointer<ffi.Char> errMsg) {
   print('===================');
   print(code.value);
-  print(errMsg.toDartString());
+  print(errMsg);
 }
 
 /// SDK连接服务器成功

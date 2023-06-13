@@ -1,5 +1,15 @@
 part of flutter_openim_sdk_ffi;
 
+void _onBlackAdded(ffi.Pointer<ffi.Char> data) {}
+void _onBlackDeleted(ffi.Pointer<ffi.Char> data) {}
+void _onFriendAdded(ffi.Pointer<ffi.Char> data) {}
+void _onFriendApplicationAccepted(ffi.Pointer<ffi.Char> data) {}
+void _onFriendApplicationAdded(ffi.Pointer<ffi.Char> data) {}
+void _onFriendApplicationDeleted(ffi.Pointer<ffi.Char> data) {}
+void _onFriendApplicationRejected(ffi.Pointer<ffi.Char> data) {}
+void _onFriendDeleted(ffi.Pointer<ffi.Char> data) {}
+void _onFriendInfoChanged(ffi.Pointer<ffi.Char> data) {}
+
 class FriendshipManager {
   MethodChannel _channel;
   late OnFriendshipListener listener;
@@ -7,9 +17,20 @@ class FriendshipManager {
   FriendshipManager(this._channel);
 
   /// 好友关系监听
-  Future setFriendshipListener(OnFriendshipListener listener) {
+  void setFriendshipListener(OnFriendshipListener listener) {
     this.listener = listener;
-    return _channel.invokeMethod('setFriendListener', _buildParam({}));
+    final listenerPtr = calloc<FriendshipListener>();
+    listenerPtr.ref
+      ..onBlackAdded = ffi.Pointer.fromFunction<_FuncChar>(_onBlackAdded)
+      ..onBlackDeleted = ffi.Pointer.fromFunction<_FuncChar>(_onBlackDeleted)
+      ..onFriendAdded = ffi.Pointer.fromFunction<_FuncChar>(_onFriendAdded)
+      ..onFriendApplicationAccepted = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationAccepted)
+      ..onFriendApplicationAdded = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationAdded)
+      ..onFriendApplicationDeleted = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationDeleted)
+      ..onFriendApplicationRejected = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationRejected)
+      ..onFriendDeleted = ffi.Pointer.fromFunction<_FuncChar>(_onFriendDeleted)
+      ..onFriendInfoChanged = ffi.Pointer.fromFunction<_FuncChar>(_onFriendInfoChanged);
+    _bindings.SetFriendListener(listenerPtr);
   }
 
   /// 查询好友信息

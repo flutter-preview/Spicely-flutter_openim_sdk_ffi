@@ -395,11 +395,12 @@ class IMManager {
     /// 将listener 变为指针
 
     final listenerPtr = calloc<ConnListener>();
-    listenerPtr.ref.onConnecting = ffi.Pointer.fromFunction<_Func>(_connecting);
-    listenerPtr.ref.onConnectSuccess = ffi.Pointer.fromFunction<_Func>(_connectSuccess);
-    listenerPtr.ref.onConnectFailed = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_connectFailed);
-    listenerPtr.ref.onKickedOffline = ffi.Pointer.fromFunction<_Func>(_kickedOffline);
-    listenerPtr.ref.onUserTokenExpired = ffi.Pointer.fromFunction<_Func>(_userTokenExpired);
+    listenerPtr.ref
+      ..onConnecting = ffi.Pointer.fromFunction<_Func>(_connecting)
+      ..onConnectSuccess = ffi.Pointer.fromFunction<_Func>(_connectSuccess)
+      ..onConnectFailed = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_connectFailed)
+      ..onKickedOffline = ffi.Pointer.fromFunction<_Func>(_kickedOffline)
+      ..onUserTokenExpired = ffi.Pointer.fromFunction<_Func>(_userTokenExpired);
     String config = jsonEncode({
       "platform": platform,
       "api_addr": apiAddr,
@@ -414,7 +415,7 @@ class IMManager {
     });
 
     final status = _bindings.InitSDK(
-      listenerPtr as ffi.Pointer<ffi.Void>,
+      listenerPtr,
       Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );
@@ -440,12 +441,12 @@ class IMManager {
     ffi.Pointer<Utf8> t = token.toNativeUtf8();
     ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
 
-    final listenerPtr = calloc<OpenIMBase>();
-    listenerPtr.ref.onSuccess = ffi.Pointer.fromFunction<_OnSuccessFunc>(_onSuccess);
-    listenerPtr.ref.onError = ffi.Pointer.fromFunction<_OnErrorFunc>(_onError);
+    final listenerPtr = calloc<BaseListener>();
+    listenerPtr.ref
+      ..onSuccess = ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_onSuccess)
+      ..onError = ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Char>)>(_onError);
 
-    _bindings.Login(
-        listenerPtr as ffi.Pointer<ffi.Void>, id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+    _bindings.Login(listenerPtr, id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
     // calloc.free(id);
     // calloc.free(t);
     // calloc.free(i);

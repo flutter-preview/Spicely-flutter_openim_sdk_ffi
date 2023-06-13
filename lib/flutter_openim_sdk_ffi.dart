@@ -67,4 +67,4 @@ part './src/listener/user_listener.dart';
 part './src/listener/workmoments_listener.dart';
 
 part './src/struct/struct.dart';
-part './src/extension/extension.dart';
+part 'src/callback/callback.dart';
