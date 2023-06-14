@@ -25,20 +25,20 @@ class OpenIMManager {
   }
 
   /// 初始化
-  static Future<void> init({required String apiAddr, required String wsAddr, String? dataDir}) async {
-    if (_isInit) return;
+  static Future<bool> init({required String apiAddr, required String wsAddr, String? dataDir}) async {
+    if (_isInit) return false;
     _isInit = true;
     if (dataDir == null) {
       Directory document = await getApplicationDocumentsDirectory();
       dataDir = document.path;
     }
-    OpenIM.iMManager.initSDK(
+    _initIMListener();
+    return OpenIM.iMManager.initSDK(
       platform: getIMPlatform(),
       apiAddr: apiAddr,
       wsAddr: wsAddr,
       dataDir: dataDir,
       logLevel: 3,
-      objectStorage: 'oss',
       // listener: OnConnectListener(
       //   onConnectSuccess: () => _onEvent((listener) => listener.onConnectSuccess()),
       //   onConnecting: () => _onEvent((listener) => listener.onConnecting()),
@@ -47,7 +47,6 @@ class OpenIMManager {
       //   onKickedOffline: () => _onEvent((listener) => listener.onKickedOffline()),
       // ),
     );
-    _initIMListener();
   }
 
   /// 事件监听

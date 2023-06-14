@@ -369,23 +369,21 @@ class IMManager {
   ///
   /// [dataDir]   SDK数据库存储目录
   ///
-  /// [objectStorage] 存储对象 cos/minio
-  ///
   /// [logLevel] 日志 1不打印
   ///
-  /// [enabledEncryption] true：加密
+  /// [isLogStandardOutput] false：日志标准输出
   ///
-  /// [enabledCompression] true：压缩
+  /// [logFilePath] 日志文件地址
+  ///
+  /// [isExternalExtensions] 外部扩展
   bool initSDK({
     required String apiAddr,
     required String wsAddr,
     required String dataDir,
     required int platform,
     int logLevel = 6,
-    String objectStorage = 'cos',
-    String? encryptionKey,
-    bool enabledEncryption = false,
-    bool enabledCompression = false,
+    bool isLogStandardOutput = false,
+    String? logFilePath,
     bool isExternalExtensions = false,
     String? operationID,
   }) {
@@ -402,18 +400,15 @@ class IMManager {
       ..onKickedOffline = ffi.Pointer.fromFunction<_Func>(_kickedOffline)
       ..onUserTokenExpired = ffi.Pointer.fromFunction<_Func>(_userTokenExpired);
     String config = jsonEncode({
-      "platform": platform,
-      "api_addr": apiAddr,
-      "ws_addr": wsAddr,
-      "data_dir": dataDir,
-      "log_level": logLevel,
-      "object_storage": objectStorage,
-      "encryption_key": encryptionKey,
-      "is_need_encryption": enabledEncryption,
-      "is_compression ": enabledCompression,
-      "is_external_extensions": isExternalExtensions
+      "platformID": platform,
+      "apiAddr": apiAddr,
+      "wsAddr": wsAddr,
+      "dataDir": dataDir,
+      "logLevel": logLevel,
+      "isLogStandardOutput": isLogStandardOutput,
+      "logFilePath": logFilePath,
+      "isExternalExtensions": isExternalExtensions,
     });
-
     final status = _bindings.InitSDK(
       listenerPtr,
       Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
