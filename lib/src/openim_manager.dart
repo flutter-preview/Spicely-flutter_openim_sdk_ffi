@@ -1,7 +1,32 @@
 part of flutter_openim_sdk_ffi;
 
+class _IsolateTaskData<T> {
+  final SendPort sendPort;
+
+  RootIsolateToken? rootIsolateToken;
+
+  final T data;
+
+  _IsolateTaskData(this.sendPort, this.data, this.rootIsolateToken);
+}
+
+class InitSdkParams {
+  final String apiAddr;
+  final String wsAddr;
+  final String? dataDir;
+
+  InitSdkParams({required this.apiAddr, required this.wsAddr, this.dataDir});
+}
+
 class OpenIMManager {
   static bool _isInit = false;
+
+  /// 主进程通信端口
+  static final ReceivePort _receivePort = ReceivePort();
+
+  /// openIm 通信端口
+  static late final SendPort _openIMSendPort;
+
   static int getIMPlatform() {
     if (kIsWeb) {
       return IMPlatform.web;
@@ -24,19 +49,23 @@ class OpenIMManager {
     return IMPlatform.ipad;
   }
 
-  /// 初始化
-  static Future<bool> init({required String apiAddr, required String wsAddr, String? dataDir}) async {
-    if (_isInit) return false;
-    _isInit = true;
+  static Future<void> _isolateEntry(_IsolateTaskData<InitSdkParams> task) async {
+    if (task.rootIsolateToken != null) {
+      BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
+    }
+    final receivePort = ReceivePort();
+    task.sendPort.send({'method': 'openIMPort', 'data': receivePort.sendPort});
+    InitSdkParams data = task.data;
+    String? dataDir = data.dataDir;
     if (dataDir == null) {
       Directory document = await getApplicationDocumentsDirectory();
       dataDir = document.path;
     }
-    _initIMListener();
-    return OpenIM.iMManager.initSDK(
+
+    bool status = OpenIM.iMManager.initSDK(
       platform: getIMPlatform(),
-      apiAddr: apiAddr,
-      wsAddr: wsAddr,
+      apiAddr: data.apiAddr,
+      wsAddr: data.wsAddr,
       dataDir: dataDir,
       logLevel: 3,
       // listener: OnConnectListener(
@@ -47,6 +76,48 @@ class OpenIMManager {
       //   onKickedOffline: () => _onEvent((listener) => listener.onKickedOffline()),
       // ),
     );
+    task.sendPort.send({'method': 'initSDK', 'data': status});
+
+    receivePort.listen((msg) {
+      switch (msg['type']) {
+        case 'login':
+          ffi.Pointer<Utf8> id = (msg['uid'] as String).toNativeUtf8();
+          ffi.Pointer<Utf8> t = (msg['token'] as String).toNativeUtf8();
+          ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
+          _bindings.Login(id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+          break;
+        default:
+      }
+    });
+  }
+
+  /// 初始化
+  static Future<bool> init({required String apiAddr, required String wsAddr, String? dataDir}) async {
+    if (_isInit) return false;
+    _isInit = true;
+    RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
+    final isolate = await Isolate.spawn(
+        _isolateEntry,
+        _IsolateTaskData<InitSdkParams>(
+          _receivePort.sendPort,
+          InitSdkParams(apiAddr: apiAddr, wsAddr: wsAddr, dataDir: dataDir),
+          rootIsolateToken,
+        ));
+    _bindings.SetDartSendPort(_receivePort.sendPort.nativePort as ffi.Pointer<ffi.Void>);
+    final completer = Completer();
+    _receivePort.listen((msg) {
+      switch (msg['method']) {
+        case 'initSDK':
+          return completer.complete(msg['data']);
+        case 'openIMPort':
+          _openIMSendPort = msg['data'];
+          break;
+        default:
+      }
+    });
+
+    _initIMListener();
+    return await completer.future;
   }
 
   /// 事件监听

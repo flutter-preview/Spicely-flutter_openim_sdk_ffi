@@ -19,14 +19,24 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 /* Start of preamble from import "C" comments.  */
 
 
-#line 5 "flutter_openim_sdk_ffi.go"
+#line 3 "flutter_openim_sdk_ffi.go"
 
-#include <stdint.h>
+
+
 #include <string.h>
+#include <stdlib.h>
+#include "./include/dart_api.h"
+#include "./include/dart_api_dl.h"
+//#include "./include/dart_native_api.h"
+//#include "./include/dart_tools_api.h"
+//#include "./include/dart_version.h"
+//#include "./include/internal/dart_api_dl_impl.h"
 
-typedef void (*CMethodChannel)(const char* method, const char* code, const char* msg);
-extern void callCMethodChannel(const char* method, const char* code, const char* msg);
-extern void setCMethodChannel(CMethodChannel channel);
+//
+//static void OnConnectingCallback(void* methodChannel, const char* method, const char* code, const char* msg) {
+//    CMethodChannel cCallback = (CMethodChannel)methodChannel;
+//    cCallback(method, code, msg);
+//}
 
 #line 1 "cgo-generated-wrapper"
 
@@ -84,6 +94,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
+extern void SetDartSendPort(void* sendPort);
 extern _Bool InitSDK(char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
 extern void SetUserListener();

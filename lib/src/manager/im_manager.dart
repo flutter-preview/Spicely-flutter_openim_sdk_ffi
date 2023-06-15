@@ -401,7 +401,6 @@ class IMManager {
       "logFilePath": logFilePath,
       "isExternalExtensions": isExternalExtensions,
     });
-    _bindings.setCMethodChannel(ffi.Pointer.fromFunction<_ChannelFunc>(_onMethodChannel));
     final status = _bindings.InitSDK(
       Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
@@ -424,10 +423,13 @@ class IMManager {
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
-    ffi.Pointer<Utf8> id = uid.toNativeUtf8();
-    ffi.Pointer<Utf8> t = token.toNativeUtf8();
-    ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
-    _bindings.Login(id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+    OpenIMManager._openIMSendPort.send({
+      'type': 'login',
+      'uid': uid,
+      'token': token,
+      'operationID': Utils.checkOperationID(operationID),
+      'defaultValue': defaultValue,
+    });
     // calloc.free(id);
     // calloc.free(t);
     // calloc.free(i);

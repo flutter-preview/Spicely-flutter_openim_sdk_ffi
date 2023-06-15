@@ -1,9 +1,11 @@
 library flutter_openim_sdk_ffi;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:ffi' as ffi;
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
