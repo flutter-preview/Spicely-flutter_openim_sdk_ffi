@@ -20,19 +20,7 @@ class SignalingManager {
   /// 信令监听
   void setSignalingListener(OnSignalingListener listener) {
     this.listener = listener;
-    final listenerPtr = calloc<SignalingListener>();
-    listenerPtr.ref
-      ..onReceiveNewInvitation = ffi.Pointer.fromFunction<_FuncChar>(_onReceiveNewInvitation)
-      ..onInviteeAccepted = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeAccepted)
-      ..onInviteeAcceptedByOtherDevice = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeAcceptedByOtherDevice)
-      ..onInviteeRejected = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeRejected)
-      ..onInviteeRejectedByOtherDevice = ffi.Pointer.fromFunction<_FuncChar>(_onInviteeRejectedByOtherDevice)
-      ..onInvitationCancelled = ffi.Pointer.fromFunction<_FuncChar>(_onInvitationCancelled)
-      ..onInvitationTimeout = ffi.Pointer.fromFunction<_FuncChar>(_onInvitationTimeout)
-      ..onHangUp = ffi.Pointer.fromFunction<_FuncChar>(_onHangUp)
-      ..onRoomParticipantConnected = ffi.Pointer.fromFunction<_FuncChar>(_onRoomParticipantConnected)
-      ..onRoomParticipantDisconnected = ffi.Pointer.fromFunction<_FuncChar>(_onRoomParticipantDisconnected);
-    _bindings.SetSignalingListener(listenerPtr);
+    _bindings.SetSignalingListener();
   }
 
   /// 邀请个人加入音视频

@@ -391,14 +391,6 @@ class IMManager {
     // this._objectStorage = objectStorage;
 
     /// 将listener 变为指针
-
-    final listenerPtr = calloc<ConnListener>();
-    listenerPtr.ref
-      ..onConnecting = ffi.Pointer.fromFunction<_Func>(_connecting)
-      ..onConnectSuccess = ffi.Pointer.fromFunction<_Func>(_connectSuccess)
-      ..onConnectFailed = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_connectFailed)
-      ..onKickedOffline = ffi.Pointer.fromFunction<_Func>(_kickedOffline)
-      ..onUserTokenExpired = ffi.Pointer.fromFunction<_Func>(_userTokenExpired);
     String config = jsonEncode({
       "platformID": platform,
       "apiAddr": apiAddr,
@@ -409,8 +401,8 @@ class IMManager {
       "logFilePath": logFilePath,
       "isExternalExtensions": isExternalExtensions,
     });
+    _bindings.setCMethodChannel(ffi.Pointer.fromFunction<_ChannelFunc>(_onMethodChannel));
     final status = _bindings.InitSDK(
-      listenerPtr,
       Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );
@@ -435,13 +427,7 @@ class IMManager {
     ffi.Pointer<Utf8> id = uid.toNativeUtf8();
     ffi.Pointer<Utf8> t = token.toNativeUtf8();
     ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
-
-    final listenerPtr = calloc<BaseListener>();
-    listenerPtr.ref
-      ..onSuccess = ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_onSuccess)
-      ..onError = ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Int32>, ffi.Pointer<ffi.Char>)>(_onError);
-
-    _bindings.Login(listenerPtr, id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+    _bindings.Login(id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
     // calloc.free(id);
     // calloc.free(t);
     // calloc.free(i);

@@ -19,18 +19,7 @@ class FriendshipManager {
   /// 好友关系监听
   void setFriendshipListener(OnFriendshipListener listener) {
     this.listener = listener;
-    final listenerPtr = calloc<FriendshipListener>();
-    listenerPtr.ref
-      ..onBlackAdded = ffi.Pointer.fromFunction<_FuncChar>(_onBlackAdded)
-      ..onBlackDeleted = ffi.Pointer.fromFunction<_FuncChar>(_onBlackDeleted)
-      ..onFriendAdded = ffi.Pointer.fromFunction<_FuncChar>(_onFriendAdded)
-      ..onFriendApplicationAccepted = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationAccepted)
-      ..onFriendApplicationAdded = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationAdded)
-      ..onFriendApplicationDeleted = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationDeleted)
-      ..onFriendApplicationRejected = ffi.Pointer.fromFunction<_FuncChar>(_onFriendApplicationRejected)
-      ..onFriendDeleted = ffi.Pointer.fromFunction<_FuncChar>(_onFriendDeleted)
-      ..onFriendInfoChanged = ffi.Pointer.fromFunction<_FuncChar>(_onFriendInfoChanged);
-    _bindings.SetFriendListener(listenerPtr);
+    _bindings.SetFriendListener();
   }
 
   /// 查询好友信息

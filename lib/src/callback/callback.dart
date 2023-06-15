@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-13 11:58:54
+ * Last Modified: 2023-06-15 18:04:37
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -16,21 +16,9 @@ part of flutter_openim_sdk_ffi;
  * Date      	By	Comments
  */
 
-void _onSuccess(ffi.Pointer<ffi.Char> data) {
+typedef _ChannelFunc = ffi.Void Function(ffi.Pointer<ffi.Char> method, ffi.Pointer<ffi.Char> code, ffi.Pointer<ffi.Char> msg);
+
+void _onMethodChannel(ffi.Pointer<ffi.Char> method, ffi.Pointer<ffi.Char> code, ffi.Pointer<ffi.Char> msg) {
   print('--------------');
-  print(data);
+  print(msg);
 }
-
-void _onError(ffi.Pointer<ffi.Int32> code, ffi.Pointer<ffi.Char> errMsg) {
-  print("BaseResult: " + errMsg.toString());
-}
-
-// extension ExtensionGoString on String {
-//   GoString get toGoString {
-//     final goString = calloc<GoString>();
-//     final operationIDString = toNativeUtf8();
-//     goString.ref.p = operationIDString.cast<ffi.Char>();
-//     goString.ref.n = operationIDString.length - 1;
-//     return goString.ref;
-//   }
-// }

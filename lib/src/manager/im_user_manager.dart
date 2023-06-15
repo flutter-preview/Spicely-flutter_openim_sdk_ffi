@@ -15,9 +15,7 @@ class UserManager {
   /// 用户资料改变监听
   void setUserListener(OnUserListener listener) {
     this.listener = listener;
-    final listenerPtr = calloc<UserListener>();
-    listenerPtr.ref.onSelfInfoUpdated = ffi.Pointer.fromFunction<_FuncChar>(_onSelfInfoUpdated);
-    _bindings.SetUserListener(listenerPtr);
+    _bindings.SetUserListener();
   }
 
   /// 获取用户资料

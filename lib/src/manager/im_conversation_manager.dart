@@ -33,15 +33,7 @@ class ConversationManager {
   /// 会话监听
   void setConversationListener(OnConversationListener listener) {
     this.listener = listener;
-    final listenerPtr = calloc<ConversationListener>();
-    listenerPtr.ref
-      ..onConversationChanged = ffi.Pointer.fromFunction<_FuncChar>(_onConversationChanged)
-      ..onNewConversation = ffi.Pointer.fromFunction<_FuncChar>(_onNewConversation)
-      ..onSyncServerFailed = ffi.Pointer.fromFunction<_Func>(_onSyncServerFailed)
-      ..onSyncServerFinish = ffi.Pointer.fromFunction<_Func>(_onSyncServerFinish)
-      ..onSyncServerStart = ffi.Pointer.fromFunction<_Func>(_onSyncServerStart)
-      ..onTotalUnreadMessageCountChanged = ffi.Pointer.fromFunction<_FuncInt32>(_onTotalUnreadMessageCountChanged);
-    _bindings.SetConversationListener(listenerPtr);
+    _bindings.SetConversationListener();
   }
 
   /// 获取所有会话

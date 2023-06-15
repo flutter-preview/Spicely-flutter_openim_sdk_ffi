@@ -54,19 +54,7 @@ class MessageManager {
   /// 消息监听
   void setAdvancedMsgListener(OnAdvancedMsgListener listener) {
     msgListener = listener;
-    final listenerPtr = calloc<AdvancedMsgListener>();
-    listenerPtr.ref
-      ..onRecvNewMessage = ffi.Pointer.fromFunction<_FuncChar>(_onRecvNewMessage)
-      ..onMsgDeleted = ffi.Pointer.fromFunction<_FuncChar>(_onMsgDeleted)
-      ..onNewRecvMessageRevoked = ffi.Pointer.fromFunction<_FuncChar>(_onNewRecvMessageRevoked)
-      ..onRecvC2CReadReceipt = ffi.Pointer.fromFunction<_FuncChar>(_onRecvC2CReadReceipt)
-      ..onRecvMessageExtensionsAdded = ffi.Pointer.fromFunction<_FuncIdChar>(_onRecvMessageExtensionsAdded)
-      ..onRecvMessageExtensionsChanged = ffi.Pointer.fromFunction<_FuncIdChar>(_onRecvMessageExtensionsChanged)
-      ..onRecvMessageExtensionsDeleted = ffi.Pointer.fromFunction<_FuncIdChar>(_onRecvMessageExtensionsDeleted)
-      ..onRecvGroupReadReceipt = ffi.Pointer.fromFunction<_FuncChar>(_onRecvGroupReadReceipt)
-      ..onRecvOfflineNewMessages = ffi.Pointer.fromFunction<_FuncChar>(_onRecvOfflineNewMessages);
-
-    _bindings.SetAdvancedMsgListener(listenerPtr);
+    _bindings.SetAdvancedMsgListener();
   }
 
   /// 消息发送进度监听
