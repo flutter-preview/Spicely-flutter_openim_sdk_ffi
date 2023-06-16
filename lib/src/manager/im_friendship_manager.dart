@@ -19,7 +19,7 @@ class FriendshipManager {
   /// 好友关系监听
   void setFriendshipListener(OnFriendshipListener listener) {
     this.listener = listener;
-    _bindings.SetFriendListener();
+    // _bindings.SetFriendListener();
   }
 
   /// 查询好友信息

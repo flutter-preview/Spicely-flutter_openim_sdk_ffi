@@ -81,12 +81,13 @@ class OpenIMManager {
     receivePort.listen((msg) {
       switch (msg['type']) {
         case 'login':
-          ffi.Pointer<Utf8> id = (msg['uid'] as String).toNativeUtf8();
-          ffi.Pointer<Utf8> t = (msg['token'] as String).toNativeUtf8();
-          ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
-          _bindings.Login(id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+          // ffi.Pointer<Utf8> id = (msg['uid'] as String).toNativeUtf8();
+          // ffi.Pointer<Utf8> t = (msg['token'] as String).toNativeUtf8();
+          // ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
+          // _bindings.Login(id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
           break;
         default:
+          print(msg);
       }
     });
   }
@@ -103,9 +104,13 @@ class OpenIMManager {
           InitSdkParams(apiAddr: apiAddr, wsAddr: wsAddr, dataDir: dataDir),
           rootIsolateToken,
         ));
-    _bindings.SetDartSendPort(_receivePort.sendPort.nativePort as ffi.Pointer<ffi.Void>);
+    // _bindings.SetDartSendPort(_receivePort.sendPort.nativePort as ffi.Pointer<ffi.Void>);
+    _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
     final completer = Completer();
     _receivePort.listen((msg) {
+      if (msg is String) {
+        msg = jsonDecode(msg);
+      }
       switch (msg['method']) {
         case 'initSDK':
           return completer.complete(msg['data']);
@@ -113,6 +118,7 @@ class OpenIMManager {
           _openIMSendPort = msg['data'];
           break;
         default:
+          print(msg);
       }
     });
 

@@ -20,7 +20,7 @@ class SignalingManager {
   /// 信令监听
   void setSignalingListener(OnSignalingListener listener) {
     this.listener = listener;
-    _bindings.SetSignalingListener();
+    // _bindings.SetSignalingListener();
   }
 
   /// 邀请个人加入音视频

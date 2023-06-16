@@ -33,7 +33,7 @@ class ConversationManager {
   /// 会话监听
   void setConversationListener(OnConversationListener listener) {
     this.listener = listener;
-    _bindings.SetConversationListener();
+    // _bindings.SetConversationListener();
   }
 
   /// 获取所有会话

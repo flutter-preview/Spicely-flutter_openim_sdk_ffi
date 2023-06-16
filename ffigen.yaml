@@ -8,8 +8,10 @@ output: 'lib/flutter_openim_sdk_ffi_bindings_generated.dart'
 headers:
   entry-points:
     - 'src/flutter_openim_sdk_ffi.h'
+    # - 'src/openim_sdk_ffi.h'
   include-directives:
     - 'src/flutter_openim_sdk_ffi.h'
+    # - 'src/openim_sdk_ffi.h'
 preamble: |
   // ignore_for_file: always_specify_types
   // ignore_for_file: camel_case_types

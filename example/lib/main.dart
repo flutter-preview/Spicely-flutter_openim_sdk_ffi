@@ -24,6 +24,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     sumResult = 1;
     sumAsyncResult = Future.value(2);
+    OpenIMManager.init(apiAddr: '', wsAddr: '');
   }
 
   @override
@@ -66,7 +67,8 @@ class _MyAppState extends State<MyApp> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    print(OpenIM.version);
+                    // print(OpenIM.version);
+                    OpenIM.iMManager.login(uid: '', token: '1');
                   },
                   child: Text('version'),
                 )

@@ -54,7 +54,7 @@ class MessageManager {
   /// 消息监听
   void setAdvancedMsgListener(OnAdvancedMsgListener listener) {
     msgListener = listener;
-    _bindings.SetAdvancedMsgListener();
+    // _bindings.SetAdvancedMsgListener();
   }
 
   /// 消息发送进度监听

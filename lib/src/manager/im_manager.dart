@@ -401,11 +401,12 @@ class IMManager {
       "logFilePath": logFilePath,
       "isExternalExtensions": isExternalExtensions,
     });
-    final status = _bindings.InitSDK(
-      Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
-      config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    );
-    return status;
+    // final status = _bindings.InitSDK(
+    //   Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
+    //   config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
+    // );
+    // return status;
+    return true;
   }
 
   /// 反初始化SDK
@@ -423,13 +424,15 @@ class IMManager {
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
-    OpenIMManager._openIMSendPort.send({
-      'type': 'login',
-      'uid': uid,
-      'token': token,
-      'operationID': Utils.checkOperationID(operationID),
-      'defaultValue': defaultValue,
-    });
+    _bindings.ping(OpenIMManager._receivePort.sendPort.nativePort);
+
+    // OpenIMManager._openIMSendPort.send({
+    //   'type': 'login',
+    //   'uid': uid,
+    //   'token': token,
+    //   'operationID': Utils.checkOperationID(operationID),
+    //   'defaultValue': defaultValue,
+    // });
     // calloc.free(id);
     // calloc.free(t);
     // calloc.free(i);

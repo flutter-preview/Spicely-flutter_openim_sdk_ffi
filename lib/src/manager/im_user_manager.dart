@@ -15,7 +15,7 @@ class UserManager {
   /// 用户资料改变监听
   void setUserListener(OnUserListener listener) {
     this.listener = listener;
-    _bindings.SetUserListener();
+    // _bindings.SetUserListener();
   }
 
   /// 获取用户资料

@@ -86,4 +86,5 @@ ffigen:
   output: './lib/flutter_openim_sdk_ffi_bindings_generated.dart'
   headers:
     entry-points:
+      - 'src/openim_sdk_ffi.h'
       - 'src/flutter_openim_sdk_ffi.h'
