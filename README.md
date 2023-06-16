@@ -12,6 +12,8 @@ a specialized package that includes native code directly invoked with Dart FFI.
 
 flutter pub run ffigen --config ffigen.yaml
 
+nm -D openim_sdk_ffi.so
+
 This template uses the following structure:
 
 * `src`: Contains the native source code, and a CmakeFile.txt file for building

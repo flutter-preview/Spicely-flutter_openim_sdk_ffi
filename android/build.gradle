@@ -57,9 +57,9 @@ android {
         minSdkVersion 16
     }
 
-    // sourceSets {
-    //     main {
-    //         jniLibs.srcDirs = ['libs']
-    //     }
-    // }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }

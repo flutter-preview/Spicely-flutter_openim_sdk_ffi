@@ -27,17 +27,42 @@ class FlutterOpenimSdkFfiBindings {
           lookup)
       : _lookup = lookup;
 
-  void ping(
-    int main_isolate_send_port,
+  void setPrintCallback(
+    PrintCallback callback,
   ) {
-    return _ping(
-      main_isolate_send_port,
+    return _setPrintCallback(
+      callback,
     );
   }
 
-  late final _pingPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(Dart_Port_DL)>>('ping');
-  late final _ping = _pingPtr.asFunction<void Function(int)>();
+  late final _setPrintCallbackPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(PrintCallback)>>(
+          'setPrintCallback');
+  late final _setPrintCallback =
+      _setPrintCallbackPtr.asFunction<void Function(PrintCallback)>();
+
+  bool ffi_Dart_Dlopen() {
+    return _ffi_Dart_Dlopen();
+  }
+
+  late final _ffi_Dart_DlopenPtr =
+      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('ffi_Dart_Dlopen');
+  late final _ffi_Dart_Dlopen =
+      _ffi_Dart_DlopenPtr.asFunction<bool Function()>();
+
+  void ffi_Dart_Port(
+    int isolate_send_port,
+  ) {
+    return _ffi_Dart_Port(
+      isolate_send_port,
+    );
+  }
+
+  late final _ffi_Dart_PortPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(Dart_Port_DL)>>(
+          'ffi_Dart_Port');
+  late final _ffi_Dart_Port =
+      _ffi_Dart_PortPtr.asFunction<void Function(int)>();
 
   int ffi_Dart_InitializeApiDL(
     ffi.Pointer<ffi.Void> data,
@@ -52,7 +77,20 @@ class FlutterOpenimSdkFfiBindings {
           'ffi_Dart_InitializeApiDL');
   late final _ffi_Dart_InitializeApiDL = _ffi_Dart_InitializeApiDLPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+
+  ffi.Pointer<ffi.Char> ffi_Dart_GetSdkVersion() {
+    return _ffi_Dart_GetSdkVersion();
+  }
+
+  late final _ffi_Dart_GetSdkVersionPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+          'ffi_Dart_GetSdkVersion');
+  late final _ffi_Dart_GetSdkVersion =
+      _ffi_Dart_GetSdkVersionPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
 }
+
+typedef PrintCallback
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>;
 
 /// ============================================================================
 /// IMPORTANT! Never update these signatures without properly updating

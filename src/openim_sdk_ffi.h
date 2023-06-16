@@ -79,7 +79,7 @@ extern void OnConnectSuccess();
 extern void OnConnectFailed(GoInt32 errCode, char* errMsg);
 extern void OnKickedOffline();
 extern void OnUserTokenExpired();
-extern _Bool InitSDK(void* listener, char* operationID, char* config);
+// extern _Bool InitSDK(void* listener, char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
 extern void SetUserListener();
 extern void SetAdvancedMsgListener();

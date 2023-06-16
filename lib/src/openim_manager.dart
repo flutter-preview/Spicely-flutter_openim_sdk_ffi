@@ -1,5 +1,19 @@
 part of flutter_openim_sdk_ffi;
 
+class _PortModel {
+  final String method;
+
+  dynamic data;
+
+  final Completer? completer;
+
+  _PortModel({
+    required this.method,
+    this.data,
+    this.completer,
+  });
+}
+
 class _IsolateTaskData<T> {
   final SendPort sendPort;
 
@@ -54,7 +68,7 @@ class OpenIMManager {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
     }
     final receivePort = ReceivePort();
-    task.sendPort.send({'method': 'openIMPort', 'data': receivePort.sendPort});
+    task.sendPort.send(_PortModel(method: _PortMethod.openIMPort, data: receivePort.sendPort));
     InitSdkParams data = task.data;
     String? dataDir = data.dataDir;
     if (dataDir == null) {
@@ -76,15 +90,20 @@ class OpenIMManager {
       //   onKickedOffline: () => _onEvent((listener) => listener.onKickedOffline()),
       // ),
     );
-    task.sendPort.send({'method': 'initSDK', 'data': status});
+    task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
     receivePort.listen((msg) {
-      switch (msg['type']) {
+      switch ((msg as _PortModel).method) {
         case 'login':
           // ffi.Pointer<Utf8> id = (msg['uid'] as String).toNativeUtf8();
           // ffi.Pointer<Utf8> t = (msg['token'] as String).toNativeUtf8();
           // ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
           // _bindings.Login(id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+          break;
+        case _PortMethod.version:
+          String version = _bindings.ffi_Dart_GetSdkVersion().cast<Utf8>().toDartString();
+          msg.data = version;
+          task.sendPort.send(msg);
           break;
         default:
           print(msg);
@@ -108,22 +127,37 @@ class OpenIMManager {
     _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
     final completer = Completer();
     _receivePort.listen((msg) {
-      if (msg is String) {
-        msg = jsonDecode(msg);
-      }
-      switch (msg['method']) {
-        case 'initSDK':
-          return completer.complete(msg['data']);
-        case 'openIMPort':
-          _openIMSendPort = msg['data'];
+      // if (msg is String) {
+      //   msg = jsonDecode(msg);
+      // }
+      switch (msg.runtimeType) {
+        case String:
+          break;
+        case _PortModel:
+          _methodChannel(msg, completer);
           break;
         default:
-          print(msg);
       }
     });
 
     _initIMListener();
     return await completer.future;
+  }
+
+  static void _methodChannel(_PortModel port, Completer completer) {
+    switch (port.method) {
+      case _PortMethod.initSDK:
+        completer.complete(port.data);
+        break;
+      case _PortMethod.openIMPort:
+        _openIMSendPort = port.data;
+        break;
+      case _PortMethod.version:
+        // port.completer?.complete(port.data);
+        break;
+      default:
+        print(port);
+    }
   }
 
   /// 事件监听

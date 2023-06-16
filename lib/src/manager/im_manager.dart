@@ -389,6 +389,10 @@ class IMManager {
   }) {
     // this._connectListener = listener;
     // this._objectStorage = objectStorage;
+    if (logLevel != 1) {
+      _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
+    }
+    _bindings.ffi_Dart_Dlopen();
 
     /// 将listener 变为指针
     String config = jsonEncode({
@@ -424,7 +428,7 @@ class IMManager {
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
-    _bindings.ping(OpenIMManager._receivePort.sendPort.nativePort);
+    // _bindings.ping(OpenIMManager._receivePort.sendPort.nativePort);
 
     // OpenIMManager._openIMSendPort.send({
     //   'type': 'login',

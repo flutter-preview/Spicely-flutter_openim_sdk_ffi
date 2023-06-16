@@ -80,11 +80,3 @@ flutter:
   #
   # For details regarding fonts in packages, see
   # https://flutter.dev/custom-fonts/#from-packages
-
-ffigen:
-  name: FlutterOpenimSdkFfiBindings
-  output: './lib/flutter_openim_sdk_ffi_bindings_generated.dart'
-  headers:
-    entry-points:
-      - 'src/openim_sdk_ffi.h'
-      - 'src/flutter_openim_sdk_ffi.h'

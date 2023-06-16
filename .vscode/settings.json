@@ -1,6 +1,17 @@
 {
     "files.associations": {
         "*.wpy": "vue",
-        "cjson.h": "c"
-    }
+        "cjson.h": "c",
+        "types.h": "c",
+        "__locale": "c",
+        "chrono": "c",
+        "functional": "c",
+        "flutter_openim_sdk_ffi.h": "c",
+        "dlfcn.h": "c",
+        "stdio.h": "c",
+        "dart_api_dl.h": "c",
+        "stdlib.h": "c",
+        "stdint.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
