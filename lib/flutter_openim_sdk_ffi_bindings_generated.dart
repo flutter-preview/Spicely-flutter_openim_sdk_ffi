@@ -87,6 +87,76 @@ class FlutterOpenimSdkFfiBindings {
           'ffi_Dart_GetSdkVersion');
   late final _ffi_Dart_GetSdkVersion =
       _ffi_Dart_GetSdkVersionPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  bool ffi_Dart_InitSDK(
+    ffi.Pointer<ConnListener> listener,
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> config,
+  ) {
+    return _ffi_Dart_InitSDK(
+      listener,
+      operationID,
+      config,
+    );
+  }
+
+  late final _ffi_Dart_InitSDKPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(ffi.Pointer<ConnListener>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('ffi_Dart_InitSDK');
+  late final _ffi_Dart_InitSDK = _ffi_Dart_InitSDKPtr.asFunction<
+      bool Function(ffi.Pointer<ConnListener>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
+
+  bool ffi_Dart_Login(
+    ffi.Pointer<Base> callback,
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> uid,
+    ffi.Pointer<ffi.Char> token,
+  ) {
+    return _ffi_Dart_Login(
+      callback,
+      operationID,
+      uid,
+      token,
+    );
+  }
+
+  late final _ffi_Dart_LoginPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(ffi.Pointer<Base>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('ffi_Dart_Login');
+  late final _ffi_Dart_Login = _ffi_Dart_LoginPtr.asFunction<
+      bool Function(ffi.Pointer<Base>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+}
+
+final class ConnListener extends ffi.Struct {
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>> OnConnecting;
+
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>
+      OnConnectSuccess;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Int32> errCode,
+              ffi.Pointer<ffi.Char> errMsg)>> OnConnectFailed;
+
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>> OnKickedOffline;
+
+  external ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>
+      OnUserTokenExpired;
+}
+
+final class Base extends ffi.Struct {
+  external ffi.Pointer<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char> errMsg)>>
+      OnSuccess;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Int32> errCode,
+              ffi.Pointer<ffi.Char> errMsg)>> OnError;
 }
 
 typedef PrintCallback

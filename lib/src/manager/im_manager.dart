@@ -405,12 +405,19 @@ class IMManager {
       "logFilePath": logFilePath,
       "isExternalExtensions": isExternalExtensions,
     });
-    // final status = _bindings.InitSDK(
-    //   Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    //   config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    // );
-    // return status;
-    return true;
+    final listenerPtr = calloc<ConnListener>();
+    listenerPtr.ref
+      ..OnConnecting = ffi.Pointer.fromFunction<_Func>(_connecting)
+      ..OnConnectSuccess = ffi.Pointer.fromFunction<_Func>(_connectSuccess)
+      ..OnConnectFailed = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_connectFailed)
+      ..OnKickedOffline = ffi.Pointer.fromFunction<_Func>(_kickedOffline)
+      ..OnUserTokenExpired = ffi.Pointer.fromFunction<_Func>(_userTokenExpired);
+    final status = _bindings.ffi_Dart_InitSDK(
+      listenerPtr,
+      Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
+      config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
+    );
+    return status;
   }
 
   /// 反初始化SDK
@@ -428,7 +435,18 @@ class IMManager {
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
-    // _bindings.ping(OpenIMManager._receivePort.sendPort.nativePort);
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.login,
+      data: {
+        'operationID': Utils.checkOperationID(operationID),
+        'uid': uid,
+        'token': token,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    // return await receivePort.first;
 
     // OpenIMManager._openIMSendPort.send({
     //   'type': 'login',

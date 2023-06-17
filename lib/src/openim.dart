@@ -18,10 +18,10 @@ final ffi.DynamicLibrary _dylib = () {
 final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
 
 class OpenIM {
-  static Future<String> get version {
-    Completer<String> completer = Completer<String>();
-    OpenIMManager._openIMSendPort.send(_PortModel(method: _PortMethod.version, completer: completer));
-    return completer.future;
+  static Future<String> get version async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(method: _PortMethod.version, sendPort: receivePort.sendPort));
+    return await receivePort.first;
   }
 
   static const _channel = const MethodChannel('flutter_openim_sdk');

@@ -3,14 +3,14 @@ part of flutter_openim_sdk_ffi;
 class _PortModel {
   final String method;
 
-  dynamic data;
+  final dynamic data;
 
-  final Completer? completer;
+  final SendPort? sendPort;
 
   _PortModel({
     required this.method,
     this.data,
-    this.completer,
+    this.sendPort,
   });
 }
 
@@ -68,7 +68,7 @@ class OpenIMManager {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
     }
     final receivePort = ReceivePort();
-    task.sendPort.send(_PortModel(method: _PortMethod.openIMPort, data: receivePort.sendPort));
+    task.sendPort.send(receivePort.sendPort);
     InitSdkParams data = task.data;
     String? dataDir = data.dataDir;
     if (dataDir == null) {
@@ -82,28 +82,26 @@ class OpenIMManager {
       wsAddr: data.wsAddr,
       dataDir: dataDir,
       logLevel: 3,
-      // listener: OnConnectListener(
-      //   onConnectSuccess: () => _onEvent((listener) => listener.onConnectSuccess()),
-      //   onConnecting: () => _onEvent((listener) => listener.onConnecting()),
-      //   onConnectFailed: (code, errorMsg) => _onEvent((listener) => listener.onConnectFailed(code, errorMsg)),
-      //   onUserTokenExpired: () => _onEvent((listener) => listener.onUserTokenExpired()),
-      //   onKickedOffline: () => _onEvent((listener) => listener.onKickedOffline()),
-      // ),
     );
     task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
     receivePort.listen((msg) {
       switch ((msg as _PortModel).method) {
         case 'login':
-          // ffi.Pointer<Utf8> id = (msg['uid'] as String).toNativeUtf8();
-          // ffi.Pointer<Utf8> t = (msg['token'] as String).toNativeUtf8();
-          // ffi.Pointer<Utf8> i = Utils.checkOperationID(operationID).toNativeUtf8();
-          // _bindings.Login(id as ffi.Pointer<ffi.Char>, i as ffi.Pointer<ffi.Char>, t as ffi.Pointer<ffi.Char>);
+          final listenerPtr = calloc<Base>();
+          listenerPtr.ref
+            ..OnError = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_onError)
+            ..OnSuccess = ffi.Pointer.fromFunction<_FuncChar>(_onSuccess);
+
+          final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
+          final uid = (msg.data['uid'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
+          final token = (msg.data['token'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
+
+          _bindings.ffi_Dart_Login(listenerPtr, operationID, uid, token);
           break;
         case _PortMethod.version:
           String version = _bindings.ffi_Dart_GetSdkVersion().cast<Utf8>().toDartString();
-          msg.data = version;
-          task.sendPort.send(msg);
+          msg.sendPort?.send(version);
           break;
         default:
           print(msg);
@@ -116,7 +114,7 @@ class OpenIMManager {
     if (_isInit) return false;
     _isInit = true;
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
-    final isolate = await Isolate.spawn(
+    await Isolate.spawn(
         _isolateEntry,
         _IsolateTaskData<InitSdkParams>(
           _receivePort.sendPort,
@@ -130,13 +128,13 @@ class OpenIMManager {
       // if (msg is String) {
       //   msg = jsonDecode(msg);
       // }
-      switch (msg.runtimeType) {
-        case String:
-          break;
-        case _PortModel:
-          _methodChannel(msg, completer);
-          break;
-        default:
+      if (msg is _PortModel) {
+        _methodChannel(msg, completer);
+        return;
+      }
+      if (msg is SendPort) {
+        _openIMSendPort = msg;
+        return;
       }
     });
 
@@ -148,9 +146,6 @@ class OpenIMManager {
     switch (port.method) {
       case _PortMethod.initSDK:
         completer.complete(port.data);
-        break;
-      case _PortMethod.openIMPort:
-        _openIMSendPort = port.data;
         break;
       case _PortMethod.version:
         // port.completer?.complete(port.data);

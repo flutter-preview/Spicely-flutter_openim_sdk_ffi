@@ -11,7 +11,8 @@
         "stdio.h": "c",
         "dart_api_dl.h": "c",
         "stdlib.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "format": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

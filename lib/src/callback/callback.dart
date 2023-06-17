@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-17 00:57:39
+ * Last Modified: 2023-06-18 00:56:04
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -18,11 +18,9 @@ part of flutter_openim_sdk_ffi;
 
 class _PortMethod {
   static const String initSDK = 'initSDK';
-  static const String openIMPort = 'openIMPort';
   static const String version = 'version';
+  static const String login = 'login';
 }
-
-typedef _ChannelFunc = ffi.Void Function(ffi.Pointer<ffi.Char> method, ffi.Pointer<ffi.Char> code, ffi.Pointer<ffi.Char> msg);
 
 void _onMethodChannel(ffi.Pointer<ffi.Char> method, ffi.Pointer<ffi.Char> code, ffi.Pointer<ffi.Char> msg) {
   // print('--------------');
@@ -36,4 +34,13 @@ void _printMessage(ffi.Pointer<ffi.Char> message) {
   }
   final msg = message.cast<Utf8>().toDartString();
   Logger.print(msg);
+}
+
+void _onSuccess(ffi.Pointer<ffi.Char> data) {
+  Logger.print('--------------');
+  Logger.print(data.cast<Utf8>().toDartString());
+}
+
+void _onError(ffi.Pointer<ffi.Int32> code, ffi.Pointer<ffi.Char> errMsg) {
+  Logger.print("BaseResult: ${errMsg.cast<Utf8>().toDartString()}");
 }

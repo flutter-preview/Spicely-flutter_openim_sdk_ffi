@@ -85,16 +85,21 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
 
 FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
 {
-    typedef char* (*openIMSdkVersion)();
-    printMessage("12312231");
-    openIMSdkVersion func = (openIMSdkVersion)dlsym(handle, "GetSdkVersion");
-
-    if (func == NULL)
-    {
-        const char *dlsym_error = dlerror();
-        printMessage("func error");
-        return NULL;
-    }
-    printMessage(func());
+    typedef char* (*openIMVersion)();
+    openIMVersion func = (openIMVersion)dlsym(handle, "GetSdkVersion");
     return func();
+}
+
+FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(ConnListener *listener, char* operationID, char* config)
+{
+    typedef bool (*openIMInitSDK)(*ConnListener, const char*, const char*);
+    openIMInitSDK func = (openIMInitSDK)dlsym(handle, "InitSDK");
+    return func(listener, operationID, config);
+}
+
+FFI_PLUGIN_EXPORT bool ffi_Dart_Login(Base *callback, char* operationID, char* uid, char* token)
+{
+    typedef bool (*openIMLogin)(*Base, const char*, const char*, const char*);
+    openIMLogin func = (openIMLogin)dlsym(handle, "Login");
+    return func(callback, operationID, uid, token);
 }

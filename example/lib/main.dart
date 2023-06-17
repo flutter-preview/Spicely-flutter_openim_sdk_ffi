@@ -24,7 +24,14 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     sumResult = 1;
     sumAsyncResult = Future.value(2);
-    OpenIMManager.init(apiAddr: '', wsAddr: '');
+    init();
+  }
+
+  Future<void> init() async {
+    print(await OpenIMManager.init(
+      apiAddr: 'https://web.muka.site/api',
+      wsAddr: 'wss://web.muka.site/msg_gateway',
+    ));
   }
 
   @override
@@ -68,6 +75,7 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                   onPressed: () async {
                     print(await OpenIM.version);
+                    OpenIM.iMManager.login(uid: '2131', token: '1231');
                   },
                   child: Text('version'),
                 )
