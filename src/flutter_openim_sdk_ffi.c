@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <dlfcn.h>
 #include "flutter_openim_sdk_ffi.h"
-// #include "openim_sdk_ffi.h"
+#include "openim_sdk_ffi.h"
 #include "cJSON/cJSON.h"
 
 // 定义回调函数
@@ -25,7 +25,6 @@ void printMessage(const char *message)
         printCallback(message);
     }
 }
-
 
 // 全局变量保存.so文件句柄
 void *handle = NULL;
@@ -74,13 +73,25 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
 {
     // 加载.so文件
     handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
-    if (!handle)
-    {
-        printMessage("openim_sdk_ffi.so 加载出错");
+
+    const char *error = dlerror();
+    if (error != NULL)
+    { // 转换错误信息为字符串
+        char errorString[256];
+        sprintf(errorString, "Error loading openim_sdk_ffi.so: %s\n", error);
+
+        printMessage(errorString);
         return false;
     }
     printMessage("openim_sdk_ffi.so 加载完成");
     return true;
+}
+
+
+/// 重写回调函数
+void OnConnectingFun()
+{
+    printMessage('12312313131');
 }
 
 FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
@@ -90,16 +101,19 @@ FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
     return func();
 }
 
-FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(ConnListener *listener, char* operationID, char* config)
+FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char *config)
 {
-    typedef bool (*openIMInitSDK)(*ConnListener, const char*, const char*);
+    typedef void (*RegisterCallbackFunc)(OnConnectingFunc);
+    RegisterCallbackFunc callback = (RegisterCallbackFunc)dlsym(handle, "RegisterCallback");
+    callback(OnConnectingFun);
+    typedef bool (*openIMInitSDK)(const char *, const char *);
     openIMInitSDK func = (openIMInitSDK)dlsym(handle, "InitSDK");
-    return func(listener, operationID, config);
+    return func(operationID, config);
 }
 
-FFI_PLUGIN_EXPORT bool ffi_Dart_Login(Base *callback, char* operationID, char* uid, char* token)
+FFI_PLUGIN_EXPORT bool ffi_Dart_Login(char *operationID, char *uid, char *token)
 {
-    typedef bool (*openIMLogin)(*Base, const char*, const char*, const char*);
+    typedef bool (*openIMLogin)(const char *, const char *, const char *);
     openIMLogin func = (openIMLogin)dlsym(handle, "Login");
-    return func(callback, operationID, uid, token);
+    return func(operationID, uid, token);
 }

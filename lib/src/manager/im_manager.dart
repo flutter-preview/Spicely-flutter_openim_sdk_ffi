@@ -405,15 +405,8 @@ class IMManager {
       "logFilePath": logFilePath,
       "isExternalExtensions": isExternalExtensions,
     });
-    final listenerPtr = calloc<ConnListener>();
-    listenerPtr.ref
-      ..OnConnecting = ffi.Pointer.fromFunction<_Func>(_connecting)
-      ..OnConnectSuccess = ffi.Pointer.fromFunction<_Func>(_connectSuccess)
-      ..OnConnectFailed = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_connectFailed)
-      ..OnKickedOffline = ffi.Pointer.fromFunction<_Func>(_kickedOffline)
-      ..OnUserTokenExpired = ffi.Pointer.fromFunction<_Func>(_userTokenExpired);
+
     final status = _bindings.ffi_Dart_InitSDK(
-      listenerPtr,
       Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );

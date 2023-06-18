@@ -19,6 +19,27 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 /* Start of preamble from import "C" comments.  */
 
 
+#line 3 "openim_sdk_ffi.go"
+
+#include <stdio.h>
+typedef void (*OnConnectingFunc)();
+
+// 存储回调函数的变量
+static OnConnectingFunc g_OnConnecting = NULL;
+// 回调函数的类型定义
+
+static void OnConnecting() {
+    if (g_OnConnecting != NULL) {
+        g_OnConnecting();
+    }
+}
+
+// 方法用于接收回调函数并存储
+static void RegisterCallback(OnConnectingFunc onConnecting) {
+    g_OnConnecting = onConnecting;
+}
+
+#line 1 "cgo-generated-wrapper"
 
 
 /* End of preamble from import "C" comments.  */
@@ -52,11 +73,6 @@ typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
 #endif
 
-/*
-  static assertion to make sure the file is being used on architecture
-  at least with matching size of GoInt.
-*/
-typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
@@ -74,12 +90,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern void OnConnecting();
-extern void OnConnectSuccess();
-extern void OnConnectFailed(GoInt32 errCode, char* errMsg);
-extern void OnKickedOffline();
-extern void OnUserTokenExpired();
-// extern _Bool InitSDK(void* listener, char* operationID, char* config);
+extern _Bool InitSDK(char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
 extern void SetUserListener();
 extern void SetAdvancedMsgListener();

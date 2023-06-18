@@ -12,7 +12,8 @@
         "dart_api_dl.h": "c",
         "stdlib.h": "c",
         "stdint.h": "c",
-        "format": "c"
+        "format": "c",
+        "pthread.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

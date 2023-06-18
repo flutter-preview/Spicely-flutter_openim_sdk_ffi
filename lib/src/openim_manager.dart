@@ -88,16 +88,11 @@ class OpenIMManager {
     receivePort.listen((msg) {
       switch ((msg as _PortModel).method) {
         case 'login':
-          final listenerPtr = calloc<Base>();
-          listenerPtr.ref
-            ..OnError = ffi.Pointer.fromFunction<_OnConnectFailedFunc>(_onError)
-            ..OnSuccess = ffi.Pointer.fromFunction<_FuncChar>(_onSuccess);
-
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           final uid = (msg.data['uid'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           final token = (msg.data['token'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
 
-          _bindings.ffi_Dart_Login(listenerPtr, operationID, uid, token);
+          _bindings.ffi_Dart_Login(operationID, uid, token);
           break;
         case _PortMethod.version:
           String version = _bindings.ffi_Dart_GetSdkVersion().cast<Utf8>().toDartString();
