@@ -89,7 +89,7 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
 
 
 /// 重写回调函数
-void OnConnectingFun()
+void OnConnectingFunc()
 {
     printMessage('12312313131');
 }
@@ -105,7 +105,7 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char *config)
 {
     typedef void (*RegisterCallbackFunc)(OnConnectingFunc);
     RegisterCallbackFunc callback = (RegisterCallbackFunc)dlsym(handle, "RegisterCallback");
-    callback(OnConnectingFun);
+    callback(OnConnectingFunc);
     typedef bool (*openIMInitSDK)(const char *, const char *);
     openIMInitSDK func = (openIMInitSDK)dlsym(handle, "InitSDK");
     return func(operationID, config);

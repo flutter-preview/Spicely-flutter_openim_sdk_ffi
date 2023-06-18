@@ -26,8 +26,8 @@ typedef void (*OnConnectingFunc)();
 
 // 存储回调函数的变量
 static OnConnectingFunc g_OnConnecting = NULL;
-// 回调函数的类型定义
 
+// 回调函数的类型定义
 static void OnConnecting() {
     if (g_OnConnecting != NULL) {
         g_OnConnecting();
