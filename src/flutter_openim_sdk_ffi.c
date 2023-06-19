@@ -89,9 +89,9 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
 
 
 /// 重写回调函数
-void OnConnectingFunc()
+void onConnecting()
 {
-    printMessage('12312313131');
+    printMessage("12312313131");
 }
 
 FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
@@ -103,9 +103,16 @@ FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
 
 FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char *config)
 {
-    typedef void (*RegisterCallbackFunc)(OnConnectingFunc);
+    typedef void (*RegisterCallbackFunc)(OpenIMListener);
     RegisterCallbackFunc callback = (RegisterCallbackFunc)dlsym(handle, "RegisterCallback");
-    callback(OnConnectingFunc);
+    if (callback == NULL) {
+        printMessage("RegisterCallbackFunc is NULL");
+    } else {
+        OpenIMListener listener;
+        listener.onConnecting = onConnecting,
+        callback(listener);
+    }
+    
     typedef bool (*openIMInitSDK)(const char *, const char *);
     openIMInitSDK func = (openIMInitSDK)dlsym(handle, "InitSDK");
     return func(operationID, config);

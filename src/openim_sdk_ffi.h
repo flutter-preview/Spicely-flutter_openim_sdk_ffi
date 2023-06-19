@@ -22,21 +22,24 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #line 3 "openim_sdk_ffi.go"
 
 #include <stdio.h>
-typedef void (*OnConnectingFunc)();
+
+typedef struct {
+    void (*onConnecting)();
+} OpenIMListener;
 
 // 存储回调函数的变量
-static OnConnectingFunc g_OnConnecting = NULL;
+static OpenIMListener g_listener;
 
 // 回调函数的类型定义
-static void OnConnecting() {
-    if (g_OnConnecting != NULL) {
-        g_OnConnecting();
+static void methodChannel() {
+    if (g_listener.onConnecting != NULL) {
+        g_listener.onConnecting();
     }
 }
 
 // 方法用于接收回调函数并存储
-static void RegisterCallback(OnConnectingFunc onConnecting) {
-    g_OnConnecting = onConnecting;
+static void RegisterCallback(OpenIMListener listener) {
+    g_listener = listener;
 }
 
 #line 1 "cgo-generated-wrapper"
