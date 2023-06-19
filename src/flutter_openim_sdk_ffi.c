@@ -87,8 +87,6 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
     return true;
 }
 
-
-/// 重写回调函数
 void onConnecting()
 {
     printMessage("12312313131");
@@ -101,26 +99,23 @@ FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
     return func();
 }
 
-FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char *config)
+FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char* config)
 {
-    typedef void (*RegisterCallbackFunc)(OpenIMListener);
-    RegisterCallbackFunc callback = (RegisterCallbackFunc)dlsym(handle, "RegisterCallback");
-    if (callback == NULL) {
-        printMessage("RegisterCallbackFunc is NULL");
-    } else {
-        OpenIMListener listener;
-        listener.onConnecting = onConnecting,
-        callback(listener);
-    }
+    typedef bool (*openIMLoginRegisterCallback)(OpenIMListener*);
+    openIMLoginRegisterCallback rfunc = (openIMLoginRegisterCallback)dlsym(handle, "RegisterCallback");
+    OpenIMListener listener;
+    listener.onConnecting = onConnecting,
+    rfunc(&listener);
     
-    typedef bool (*openIMInitSDK)(const char *, const char *);
+    typedef bool (*openIMInitSDK)(const char*, const char*);
     openIMInitSDK func = (openIMInitSDK)dlsym(handle, "InitSDK");
+    printMessage("openIM初始化成功");
     return func(operationID, config);
 }
 
-FFI_PLUGIN_EXPORT bool ffi_Dart_Login(char *operationID, char *uid, char *token)
+FFI_PLUGIN_EXPORT bool ffi_Dart_Login(char* operationID, char* uid, char* token)
 {
-    typedef bool (*openIMLogin)(const char *, const char *, const char *);
+    typedef bool (*openIMLogin)(const char* , const char*, const char*);
     openIMLogin func = (openIMLogin)dlsym(handle, "Login");
     return func(operationID, uid, token);
 }

@@ -27,19 +27,8 @@ typedef struct {
     void (*onConnecting)();
 } OpenIMListener;
 
-// 存储回调函数的变量
-static OpenIMListener g_listener;
-
-// 回调函数的类型定义
-static void methodChannel() {
-    if (g_listener.onConnecting != NULL) {
-        g_listener.onConnecting();
-    }
-}
-
-// 方法用于接收回调函数并存储
-static void RegisterCallback(OpenIMListener listener) {
-    g_listener = listener;
+static void callOnConnecting(OpenIMListener *listener) {
+    listener->onConnecting();
 }
 
 #line 1 "cgo-generated-wrapper"
@@ -93,6 +82,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
+extern void RegisterCallback(OpenIMListener* callback);
 extern _Bool InitSDK(char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
 extern void SetUserListener();
