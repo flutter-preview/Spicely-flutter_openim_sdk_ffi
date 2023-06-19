@@ -360,59 +360,6 @@ class IMManager {
   //   });
   // }
 
-  /// 初始化SDK
-  /// [platform]  平台编号[IMPlatform]
-  ///
-  /// [apiAddr]   SDK api地址
-  ///
-  /// [wsAddr]    SDK websocket地址
-  ///
-  /// [dataDir]   SDK数据库存储目录
-  ///
-  /// [logLevel] 日志 1不打印
-  ///
-  /// [isLogStandardOutput] false：日志标准输出
-  ///
-  /// [logFilePath] 日志文件地址
-  ///
-  /// [isExternalExtensions] 外部扩展
-  bool initSDK({
-    required String apiAddr,
-    required String wsAddr,
-    required String dataDir,
-    required int platform,
-    int logLevel = 6,
-    bool isLogStandardOutput = false,
-    String? logFilePath,
-    bool isExternalExtensions = false,
-    String? operationID,
-  }) {
-    // this._connectListener = listener;
-    // this._objectStorage = objectStorage;
-    if (logLevel != 1) {
-      _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
-    }
-    _bindings.ffi_Dart_Dlopen();
-
-    /// 将listener 变为指针
-    String config = jsonEncode({
-      "platformID": platform,
-      "apiAddr": apiAddr,
-      "wsAddr": wsAddr,
-      "dataDir": dataDir,
-      "logLevel": logLevel,
-      "isLogStandardOutput": isLogStandardOutput,
-      "logFilePath": logFilePath,
-      "isExternalExtensions": isExternalExtensions,
-    });
-
-    final status = _bindings.ffi_Dart_InitSDK(
-      Utils.checkOperationID(operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
-      config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    );
-    return status;
-  }
-
   /// 反初始化SDK
   Future<dynamic> unInitSDK() {
     return _channel.invokeMethod('unInitSDK', _buildParam({}));

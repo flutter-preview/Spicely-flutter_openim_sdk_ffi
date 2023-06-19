@@ -29,7 +29,14 @@ class InitSdkParams {
   final String wsAddr;
   final String? dataDir;
 
-  InitSdkParams({required this.apiAddr, required this.wsAddr, this.dataDir});
+  final String? operationID;
+
+  InitSdkParams({
+    required this.apiAddr,
+    required this.wsAddr,
+    this.dataDir,
+    this.operationID,
+  });
 }
 
 class OpenIMManager {
@@ -69,6 +76,10 @@ class OpenIMManager {
     }
     final receivePort = ReceivePort();
     task.sendPort.send(receivePort.sendPort);
+
+    _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
+    _bindings.ffi_Dart_Dlopen();
+
     InitSdkParams data = task.data;
     String? dataDir = data.dataDir;
     if (dataDir == null) {
@@ -76,14 +87,20 @@ class OpenIMManager {
       dataDir = document.path;
     }
 
-    bool status = OpenIM.iMManager.initSDK(
-      platform: getIMPlatform(),
-      apiAddr: data.apiAddr,
-      wsAddr: data.wsAddr,
-      dataDir: dataDir,
-      logLevel: 3,
+    /// 将listener 变为指针
+    String config = jsonEncode({
+      "platformID": getIMPlatform(),
+      "apiAddr": data.apiAddr,
+      "wsAddr": data.wsAddr,
+      "dataDir": dataDir,
+      "logLevel": 3,
+    });
+
+    bool status = _bindings.ffi_Dart_InitSDK(
+      Utils.checkOperationID(data.operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
+      config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );
-    task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
+    task.sendPort.send(status);
 
     receivePort.listen((msg) {
       switch ((msg as _PortModel).method) {

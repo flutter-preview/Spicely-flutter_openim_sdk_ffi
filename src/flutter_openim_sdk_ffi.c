@@ -87,35 +87,29 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
     return true;
 }
 
-void onConnecting()
+FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
+{
+    char* (*openIMVersion)() = dlsym(handle, "GetSdkVersion");
+    return openIMVersion();
+}
+void onConnectingCallback()
 {
     printMessage("12312313131");
 }
-
-FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
-{
-    typedef char* (*openIMVersion)();
-    openIMVersion func = (openIMVersion)dlsym(handle, "GetSdkVersion");
-    return func();
-}
-
 FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char* config)
 {
-    typedef bool (*openIMLoginRegisterCallback)(OpenIMListener*);
-    openIMLoginRegisterCallback rfunc = (openIMLoginRegisterCallback)dlsym(handle, "RegisterCallback");
+    void (*RegisterCallback)(OpenIMListener*) = dlsym(handle, "RegisterCallback");
     OpenIMListener listener;
-    listener.onConnecting = onConnecting,
-    rfunc(&listener);
+    listener.onConnecting = onConnectingCallback;
+    RegisterCallback(&listener);
     
-    typedef bool (*openIMInitSDK)(const char*, const char*);
-    openIMInitSDK func = (openIMInitSDK)dlsym(handle, "InitSDK");
+    bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "InitSDK");
     printMessage("openIM初始化成功");
-    return func(operationID, config);
+    return openIMInitSDK(operationID, config);
 }
 
-FFI_PLUGIN_EXPORT bool ffi_Dart_Login(char* operationID, char* uid, char* token)
+FFI_PLUGIN_EXPORT void ffi_Dart_Login(char* operationID, char* uid, char* token)
 {
-    typedef bool (*openIMLogin)(const char* , const char*, const char*);
-    openIMLogin func = (openIMLogin)dlsym(handle, "Login");
-    return func(operationID, uid, token);
+    void (*openIMLogin)(const char* , const char*, const char*) = dlsym(handle, "Login");
+    openIMLogin(operationID, uid, token);
 }

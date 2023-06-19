@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-18 00:56:04
+ * Last Modified: 2023-06-19 23:42:35
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -33,7 +33,7 @@ void _printMessage(ffi.Pointer<ffi.Char> message) {
     return;
   }
   final msg = message.cast<Utf8>().toDartString();
-  Logger.print(msg);
+  print(msg);
 }
 
 void _onSuccess(ffi.Pointer<ffi.Char> data) {
