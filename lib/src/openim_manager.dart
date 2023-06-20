@@ -95,12 +95,14 @@ class OpenIMManager {
       "dataDir": dataDir,
       "logLevel": 3,
     });
+    ffi.Pointer<CGO_OpenIM_Listener> listener = calloc.allocate(CGO_OpenIM_Listener);
+    _bindings.ffi_Dart_RegisterCallback(listener);
 
     bool status = _bindings.ffi_Dart_InitSDK(
       Utils.checkOperationID(data.operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );
-    task.sendPort.send(status);
+    task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
     receivePort.listen((msg) {
       switch ((msg as _PortModel).method) {

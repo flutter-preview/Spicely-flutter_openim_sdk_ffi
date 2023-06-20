@@ -105,7 +105,7 @@ class FlutterOpenimSdkFfiBindings {
   late final _ffi_Dart_InitSDK = _ffi_Dart_InitSDKPtr.asFunction<
       bool Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  bool ffi_Dart_Login(
+  void ffi_Dart_Login(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> uid,
     ffi.Pointer<ffi.Char> token,
@@ -119,11 +119,25 @@ class FlutterOpenimSdkFfiBindings {
 
   late final _ffi_Dart_LoginPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Bool Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>)>>('ffi_Dart_Login');
   late final _ffi_Dart_Login = _ffi_Dart_LoginPtr.asFunction<
-      bool Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
+
+  void ffi_Dart_RegisterCallback(
+    ffi.Pointer<ffi.Int> listener,
+  ) {
+    return _ffi_Dart_RegisterCallback(
+      listener,
+    );
+  }
+
+  late final _ffi_Dart_RegisterCallbackPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Int>)>>(
+          'ffi_Dart_RegisterCallback');
+  late final _ffi_Dart_RegisterCallback = _ffi_Dart_RegisterCallbackPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Int>)>();
 }
 
 typedef PrintCallback

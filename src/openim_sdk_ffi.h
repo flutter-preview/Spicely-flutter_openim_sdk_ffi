@@ -25,9 +25,9 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 typedef struct {
     void (*onConnecting)();
-} OpenIMListener;
+} CGO_OpenIM_Listener;
 
-static void callOnConnecting(OpenIMListener *listener) {
+static void callOnConnecting(CGO_OpenIM_Listener *listener) {
     listener->onConnecting();
 }
 
@@ -65,6 +65,11 @@ typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
 #endif
 
+/*
+  static assertion to make sure the file is being used on architecture
+  at least with matching size of GoInt.
+*/
+typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
@@ -82,7 +87,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern void RegisterCallback(OpenIMListener* callback);
+extern void RegisterCallback(CGO_OpenIM_Listener* callback);
 extern _Bool InitSDK(char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
 extern void SetUserListener();

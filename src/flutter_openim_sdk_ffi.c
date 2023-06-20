@@ -96,15 +96,33 @@ void onConnectingCallback()
 {
     printMessage("12312313131");
 }
+
+// 导出函数，用于在Dart中注册回调函数
+FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(OpenIMListener *listener) {
+    Dart_CObject dart_object;
+    dart_object.type = Dart_CObject_kInt64;
+    dart_object.value.as_int64 = (int64_t)listener;
+
+    // 创建Dart_CObject的包裹
+    Dart_CObject wrapper;
+    wrapper.type = Dart_CObject_kExternalTypedData;
+    wrapper.value.as_external_typed_data.type = Dart_TypedData_kUint8;
+    wrapper.value.as_external_typed_data.length = sizeof(*listener);
+    wrapper.value.as_external_typed_data.data = &dart_object;
+
+    // 调用Dart端的注册函数
+    Dart_PostCObject_DL(main_isolate_send_port, &wrapper);
+}
+
 FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char* config)
 {
-    void (*RegisterCallback)(OpenIMListener*) = dlsym(handle, "RegisterCallback");
     OpenIMListener listener;
     listener.onConnecting = onConnectingCallback;
+    void (*RegisterCallback)(OpenIMListener*) = dlsym(handle, "RegisterCallback");
     RegisterCallback(&listener);
     
     bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "InitSDK");
-    printMessage("openIM初始化成功");
+    printMessage("openIM初始化成功\n");
     return openIMInitSDK(operationID, config);
 }
 
