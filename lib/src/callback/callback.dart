@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-19 23:42:35
+ * Last Modified: 2023-06-20 21:10:54
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -22,9 +22,9 @@ class _PortMethod {
   static const String login = 'login';
 }
 
-void _onMethodChannel(ffi.Pointer<ffi.Char> method, ffi.Pointer<ffi.Char> code, ffi.Pointer<ffi.Char> msg) {
-  // print('--------------');
-  // print(msg);
+void _onMethodChannel(ffi.Pointer<ffi.Char> methodChannel) {
+  final method = methodChannel.cast<Utf8>().toDartString();
+  Logger.print(method);
 }
 
 void _printMessage(ffi.Pointer<ffi.Char> message) {
@@ -33,7 +33,7 @@ void _printMessage(ffi.Pointer<ffi.Char> message) {
     return;
   }
   final msg = message.cast<Utf8>().toDartString();
-  print(msg);
+  Logger.print(msg);
 }
 
 void _onSuccess(ffi.Pointer<ffi.Char> data) {

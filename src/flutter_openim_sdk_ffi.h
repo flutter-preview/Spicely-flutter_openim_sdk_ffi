@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "./include/dart_api_dl.h"
+#include "openim_sdk_ffi.h"
 
 #if _WIN32
 #include <windows.h>
@@ -25,4 +26,4 @@ FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data);
 FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion();
 FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char* operationID, char* config);
 FFI_PLUGIN_EXPORT void ffi_Dart_Login(char* operationID, char* uid, char* token);
-FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(OpenIMListener *listener);
+FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback();

@@ -125,19 +125,15 @@ class FlutterOpenimSdkFfiBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
 
-  void ffi_Dart_RegisterCallback(
-    ffi.Pointer<ffi.Int> listener,
-  ) {
-    return _ffi_Dart_RegisterCallback(
-      listener,
-    );
+  void ffi_Dart_RegisterCallback() {
+    return _ffi_Dart_RegisterCallback();
   }
 
   late final _ffi_Dart_RegisterCallbackPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Int>)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
           'ffi_Dart_RegisterCallback');
-  late final _ffi_Dart_RegisterCallback = _ffi_Dart_RegisterCallbackPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Int>)>();
+  late final _ffi_Dart_RegisterCallback =
+      _ffi_Dart_RegisterCallbackPtr.asFunction<void Function()>();
 }
 
 typedef PrintCallback

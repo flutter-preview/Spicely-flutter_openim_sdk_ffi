@@ -2,13 +2,14 @@
 #include <pthread.h>
 #include <dlfcn.h>
 #include "flutter_openim_sdk_ffi.h"
-#include "openim_sdk_ffi.h"
 #include "cJSON/cJSON.h"
 
 // 定义回调函数
 PrintCallback printCallback;
 
 Dart_Port_DL main_isolate_send_port = NULL;
+
+static CGO_OpenIM_Listener g_listener;
 
 // 设置回调函数
 void setPrintCallback(PrintCallback callback)
@@ -56,12 +57,7 @@ void *entry_point(void *main_isolate_send_port)
 
 FFI_PLUGIN_EXPORT void ffi_Dart_Port(Dart_Port_DL isolate_send_port)
 {
-    main_isolate_send_port = isolate_send_port;
-    // printf("ping\n");
-
-    // pthread_t thread;
-    // pthread_create(&thread, NULL, entry_point, (void *)main_isolate_send_port);
-    // pthread_detach(thread);
+    main_isolate_send_port = isolate_send_port; 
 }
 
 FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
@@ -86,41 +82,47 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
     printMessage("openim_sdk_ffi.so 加载完成");
     return true;
 }
+void onMethodChannelFunc(const char *)
+{   
+    
+    // pthread_t thread;
+    // pthread_create(&thread, NULL, entry_point, (void *)main_isolate_send_port);
+    // pthread_detach(thread);
+}
+
+
+// 在Dart中注册回调函数
+FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback() {
+    g_listener.onMethodChannel = onMethodChannelFunc;
+    void (*RegisterCallback)(CGO_OpenIM_Listener*) = dlsym(handle, "RegisterCallback");
+    RegisterCallback(&g_listener);
+
+    // Dart_CObject dart_object;
+    // dart_object.type = Dart_CObject_kInt64;
+    // dart_object.value.as_int64 = (int64_t)listener;
+
+    // // 创建Dart_CObject的包裹
+    // Dart_CObject wrapper;
+    // wrapper.type = Dart_CObject_kExternalTypedData;
+    // wrapper.value.as_external_typed_data.type = Dart_TypedData_kUint8;
+    // wrapper.value.as_external_typed_data.length = sizeof(*listener);
+    // wrapper.value.as_external_typed_data.data = &dart_object;
+
+    // // 调用Dart端的注册函数
+    // Dart_PostCObject_DL(main_isolate_send_port, &wrapper);
+    printMessage("注册dart回调成功");
+}
+
 
 FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
 {
     char* (*openIMVersion)() = dlsym(handle, "GetSdkVersion");
     return openIMVersion();
 }
-void onConnectingCallback()
-{
-    printMessage("12312313131");
-}
 
-// 导出函数，用于在Dart中注册回调函数
-FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(OpenIMListener *listener) {
-    Dart_CObject dart_object;
-    dart_object.type = Dart_CObject_kInt64;
-    dart_object.value.as_int64 = (int64_t)listener;
-
-    // 创建Dart_CObject的包裹
-    Dart_CObject wrapper;
-    wrapper.type = Dart_CObject_kExternalTypedData;
-    wrapper.value.as_external_typed_data.type = Dart_TypedData_kUint8;
-    wrapper.value.as_external_typed_data.length = sizeof(*listener);
-    wrapper.value.as_external_typed_data.data = &dart_object;
-
-    // 调用Dart端的注册函数
-    Dart_PostCObject_DL(main_isolate_send_port, &wrapper);
-}
 
 FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char* config)
-{
-    OpenIMListener listener;
-    listener.onConnecting = onConnectingCallback;
-    void (*RegisterCallback)(OpenIMListener*) = dlsym(handle, "RegisterCallback");
-    RegisterCallback(&listener);
-    
+{   
     bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "InitSDK");
     printMessage("openIM初始化成功\n");
     return openIMInitSDK(operationID, config);
