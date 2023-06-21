@@ -13,7 +13,8 @@
         "stdlib.h": "c",
         "stdint.h": "c",
         "format": "c",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "complex": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

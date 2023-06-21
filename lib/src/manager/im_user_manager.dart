@@ -8,15 +8,8 @@ void _onSelfInfoUpdated(ffi.Pointer<ffi.Char> data) {
 
 class UserManager {
   MethodChannel _channel;
-  late OnUserListener listener;
 
   UserManager(this._channel);
-
-  /// 用户资料改变监听
-  void setUserListener(OnUserListener listener) {
-    this.listener = listener;
-    // _bindings.SetUserListener();
-  }
 
   /// 获取用户资料
   /// [uidList] 用户ID列表

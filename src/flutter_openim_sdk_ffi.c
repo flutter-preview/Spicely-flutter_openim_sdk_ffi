@@ -9,6 +9,15 @@ PrintCallback printCallback;
 
 static CGO_OpenIM_Listener g_listener;
 
+// 定义参数结构体
+typedef struct {
+    Dart_Port_DL port;
+    char* methodName;
+    char* errCode;
+    char* message;
+} ThreadArgs;
+
+
 // 设置回调函数
 void setPrintCallback(PrintCallback callback)
 {
@@ -28,20 +37,29 @@ void printMessage(const char *message)
 // 全局变量保存.so文件句柄
 void *handle = NULL;
 
-void *entry_point(void *main_isolate_send_port)
+void *entry_point(void* arg)
 {
+
+    // 将void指针转换回ThreadArgs结构体指针
+    ThreadArgs* args = (ThreadArgs*)arg;
+
+    // 从结构体中获取参数
+    Dart_Port_DL port = args->port;
+    char* methodName = args->methodName;
+    char* errCode = args->errCode;
+    char* message = args->message;
 
     Dart_CObject dart_object;
     dart_object.type = Dart_CObject_kString;
     cJSON *json = cJSON_CreateObject();
 
-    cJSON_AddStringToObject(json, "method", "pong");
+    cJSON_AddStringToObject(json, "method", methodName);
     cJSON_AddStringToObject(json, "data", "111");
 
     char *json_string = cJSON_PrintUnformatted(json);
     dart_object.value.as_string = json_string;
 
-    const bool result = Dart_PostCObject_DL((Dart_Port_DL)main_isolate_send_port, &dart_object);
+    const bool result = Dart_PostCObject_DL(port, &dart_object);
     if (!result)
     {
         printf("C   :  Posting message to port failed.\n");
@@ -50,6 +68,22 @@ void *entry_point(void *main_isolate_send_port)
     cJSON_Delete(json);
     free(json_string);
     pthread_exit(NULL);
+}
+
+void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* errCode, char* message)
+{   
+    // 创建参数结构体并分配内存
+    ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
+
+    // 设置参数值
+    args->port = port;
+    args->methodName = methodName;
+    args->errCode = errCode;
+    args->message = message;
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, entry_point, (void *)args);
+    pthread_detach(thread);
 }
 
 FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
@@ -74,14 +108,6 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
     printMessage("openim_sdk_ffi.so 加载完成");
     return true;
 }
-
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* errCode, char* message)
-{   
-    pthread_t thread;
-    pthread_create(&thread, NULL, entry_point, (void *)port);
-    pthread_detach(thread);
-}
-
 
 // 在Dart中注册回调函数
 FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(Dart_Port_DL isolate_send_port) {

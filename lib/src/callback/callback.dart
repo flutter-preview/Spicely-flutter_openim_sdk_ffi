@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-20 21:10:54
+ * Last Modified: 2023-06-21 11:57:23
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -20,11 +20,6 @@ class _PortMethod {
   static const String initSDK = 'initSDK';
   static const String version = 'version';
   static const String login = 'login';
-}
-
-void _onMethodChannel(ffi.Pointer<ffi.Char> methodChannel) {
-  final method = methodChannel.cast<Utf8>().toDartString();
-  Logger.print(method);
 }
 
 void _printMessage(ffi.Pointer<ffi.Char> message) {
