@@ -50,20 +50,6 @@ class FlutterOpenimSdkFfiBindings {
   late final _ffi_Dart_Dlopen =
       _ffi_Dart_DlopenPtr.asFunction<bool Function()>();
 
-  void ffi_Dart_Port(
-    int isolate_send_port,
-  ) {
-    return _ffi_Dart_Port(
-      isolate_send_port,
-    );
-  }
-
-  late final _ffi_Dart_PortPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(Dart_Port_DL)>>(
-          'ffi_Dart_Port');
-  late final _ffi_Dart_Port =
-      _ffi_Dart_PortPtr.asFunction<void Function(int)>();
-
   int ffi_Dart_InitializeApiDL(
     ffi.Pointer<ffi.Void> data,
   ) {
@@ -125,15 +111,19 @@ class FlutterOpenimSdkFfiBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
 
-  void ffi_Dart_RegisterCallback() {
-    return _ffi_Dart_RegisterCallback();
+  void ffi_Dart_RegisterCallback(
+    int isolate_send_port,
+  ) {
+    return _ffi_Dart_RegisterCallback(
+      isolate_send_port,
+    );
   }
 
   late final _ffi_Dart_RegisterCallbackPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(Dart_Port_DL)>>(
           'ffi_Dart_RegisterCallback');
   late final _ffi_Dart_RegisterCallback =
-      _ffi_Dart_RegisterCallbackPtr.asFunction<void Function()>();
+      _ffi_Dart_RegisterCallbackPtr.asFunction<void Function(int)>();
 }
 
 typedef PrintCallback

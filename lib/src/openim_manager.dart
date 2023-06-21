@@ -79,7 +79,6 @@ class OpenIMManager {
     task.sendPort.send(receivePort.sendPort);
 
     _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
-    _bindings.ffi_Dart_Port(_receivePort.sendPort.nativePort);
     _bindings.ffi_Dart_Dlopen();
 
     InitSdkParams data = task.data;
@@ -89,7 +88,7 @@ class OpenIMManager {
       dataDir = document.path;
     }
 
-    _bindings.ffi_Dart_RegisterCallback();
+    _bindings.ffi_Dart_RegisterCallback(receivePort.sendPort.nativePort);
 
     String config = jsonEncode({
       "platformID": getIMPlatform(),
@@ -106,6 +105,9 @@ class OpenIMManager {
     task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
     receivePort.listen((msg) {
+      if (msg is String) {
+        print(msg);
+      }
       switch ((msg as _PortModel).method) {
         case _PortMethod.login:
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
@@ -141,6 +143,7 @@ class OpenIMManager {
 
     final completer = Completer();
     _receivePort.listen((msg) {
+      print(msg);
       // if (msg is String) {
       //   msg = jsonDecode(msg);
       // }

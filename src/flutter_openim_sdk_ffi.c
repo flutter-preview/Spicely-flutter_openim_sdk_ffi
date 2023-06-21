@@ -7,8 +7,6 @@
 // 定义回调函数
 PrintCallback printCallback;
 
-Dart_Port_DL main_isolate_send_port = NULL;
-
 static CGO_OpenIM_Listener g_listener;
 
 // 设置回调函数
@@ -32,7 +30,6 @@ void *handle = NULL;
 
 void *entry_point(void *main_isolate_send_port)
 {
-    printMessage("entry_point\n");
 
     Dart_CObject dart_object;
     dart_object.type = Dart_CObject_kString;
@@ -47,17 +44,12 @@ void *entry_point(void *main_isolate_send_port)
     const bool result = Dart_PostCObject_DL((Dart_Port_DL)main_isolate_send_port, &dart_object);
     if (!result)
     {
-        printMessage("C   :  Posting message to port failed.\n");
+        printf("C   :  Posting message to port failed.\n");
     }
 
     cJSON_Delete(json);
     free(json_string);
     pthread_exit(NULL);
-}
-
-FFI_PLUGIN_EXPORT void ffi_Dart_Port(Dart_Port_DL isolate_send_port)
-{
-    main_isolate_send_port = isolate_send_port; 
 }
 
 FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
@@ -82,20 +74,20 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
     printMessage("openim_sdk_ffi.so 加载完成");
     return true;
 }
-void onMethodChannelFunc(const char *)
+
+void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* errCode, char* message)
 {   
-    
-    // pthread_t thread;
-    // pthread_create(&thread, NULL, entry_point, (void *)main_isolate_send_port);
-    // pthread_detach(thread);
+    pthread_t thread;
+    pthread_create(&thread, NULL, entry_point, (void *)port);
+    pthread_detach(thread);
 }
 
 
 // 在Dart中注册回调函数
-FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback() {
+FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(Dart_Port_DL isolate_send_port) {
     g_listener.onMethodChannel = onMethodChannelFunc;
-    void (*RegisterCallback)(CGO_OpenIM_Listener*) = dlsym(handle, "RegisterCallback");
-    RegisterCallback(&g_listener);
+    void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "RegisterCallback");
+    RegisterCallback(&g_listener, isolate_send_port);
 
     // Dart_CObject dart_object;
     // dart_object.type = Dart_CObject_kInt64;

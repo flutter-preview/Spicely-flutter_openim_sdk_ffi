@@ -23,13 +23,14 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "include/dart_api_dl.h"
 
 typedef struct {
-    void (*onMethodChannel)(const char*);
+    void (*onMethodChannel)(Dart_Port_DL port, const char*, const char*, const char*);
 } CGO_OpenIM_Listener;
 
-static void callOnMethodChannel(CGO_OpenIM_Listener *listener, const char* message) {
-    listener->onMethodChannel(message);
+static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, const char* methodName, const char* errCode, const char* message) {
+    listener->onMethodChannel(port, methodName, errCode, message);
 }
 
 #line 1 "cgo-generated-wrapper"
@@ -66,6 +67,7 @@ typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
 #endif
 
+
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
 #endif
@@ -82,7 +84,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern void RegisterCallback(CGO_OpenIM_Listener* callback);
+extern void RegisterCallback(CGO_OpenIM_Listener* callback, Dart_Port_DL port);
 extern _Bool InitSDK(char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
 extern void SetUserListener();
