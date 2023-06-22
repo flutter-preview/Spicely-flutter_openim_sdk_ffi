@@ -48,6 +48,27 @@ class IMManager {
       case 'onUserTokenExpired':
         OpenIMManager._onEvent((listener) => listener.onUserTokenExpired());
         break;
+      case 'onSyncServerStart':
+        OpenIMManager._onEvent((listener) => listener.onSyncServerStart());
+        break;
+      case 'onSyncServerFinish':
+        OpenIMManager._onEvent((listener) => listener.onSyncServerFinish());
+        break;
+
+      case 'onSyncServerFailed':
+        OpenIMManager._onEvent((listener) => listener.onSyncServerFailed());
+        break;
+      case 'onNewConversation':
+        var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        OpenIMManager._onEvent((listener) => listener.onNewConversation(list));
+        break;
+      case 'onConversationChanged':
+        var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        OpenIMManager._onEvent((listener) => listener.onConversationChanged(list));
+        break;
+      case 'onTotalUnreadMessageCountChanged':
+        OpenIMManager._onEvent((listener) => listener.onTotalUnreadMessageCountChanged(channel.errCode ?? 0));
+        break;
     }
     // _channel.setMethodCallHandler((call) {
     // try {
@@ -173,28 +194,7 @@ class IMManager {
     //     String type = call.arguments['type'];
     //     dynamic data = call.arguments['data'];
     //     switch (type) {
-    //       case 'onSyncServerStart':
-    //         conversationManager.listener.syncServerStart();
-    //         break;
-    //       case 'onSyncServerFinish':
-    //         conversationManager.listener.syncServerFinish();
-    //         break;
 
-    //       case 'onSyncServerFailed':
-    //         conversationManager.listener.syncServerFailed();
-    //         break;
-    //       case 'onNewConversation':
-    //         var list = Utils.toList(data, (map) => ConversationInfo.fromJson(map));
-    //         conversationManager.listener.newConversation(list);
-    //         break;
-    //       case 'onConversationChanged':
-    //         var list = Utils.toList(data, (map) => ConversationInfo.fromJson(map));
-    //         conversationManager.listener.conversationChanged(list);
-    //         break;
-    //       case 'onTotalUnreadMessageCountChanged':
-    //         conversationManager.listener.totalUnreadMessageCountChanged(data ?? 0);
-    //         break;
-    //     }
     //   } else if (call.method == ListenerType.friendListener) {
     //     String type = call.arguments['type'];
     //     dynamic data = call.arguments['data'];
@@ -367,56 +367,34 @@ class IMManager {
   /// [uid] 用户id
   /// [token] 登录token，从业务服务器上获取
   /// [defaultValue] 获取失败后使用的默认值
-  void login({
+  Future<UserInfo> login({
     required String uid,
     required String token,
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
+    isLogined = true;
+    uid = uid;
+    token = token;
     ReceivePort receivePort = ReceivePort();
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.login,
-      data: {
-        'operationID': Utils.checkOperationID(operationID),
-        'uid': uid,
-        'token': token,
-      },
+      data: {'operationID': Utils.checkOperationID(operationID), 'uid': uid, 'token': token},
       sendPort: receivePort.sendPort,
     ));
-    // return await receivePort.first;
+    await receivePort.first;
+    receivePort.close();
 
-    // OpenIMManager._openIMSendPort.send({
-    //   'type': 'login',
-    //   'uid': uid,
-    //   'token': token,
-    //   'operationID': Utils.checkOperationID(operationID),
-    //   'defaultValue': defaultValue,
-    // });
-    // calloc.free(id);
-    // calloc.free(t);
-    // calloc.free(i);
-    // await _channel.invokeMethod(
-    //   'login',
-    //   _buildParam({
-    //     'uid': uid,
-    //     'token': token,
-    //     'operationID': Utils.checkOperationID(operationID),
-    //   }),
-    // );
-    // this.isLogined = true;
-    // this.uid = uid;
-    // this.token = token;
-    // try {
-    //   return this.uInfo = await userManager.getSelfUserInfo();
-    // } catch (error, stackTrace) {
-    //   log('login e: $error  s: $stackTrace');
-    //   if (null != defaultValue) {
-    //     return this.uInfo = await (defaultValue.call());
-    //   }
-    //   return Future.error(error, stackTrace);
-    // }
-    // return uInfo;
+    try {
+      return uInfo = await userManager.getSelfUserInfo();
+    } catch (error, stackTrace) {
+      log('login e: $error  s: $stackTrace');
+      if (null != defaultValue) {
+        return uInfo = await (defaultValue.call());
+      }
+      return Future.error(error, stackTrace);
+    }
   }
 
   /// 登出

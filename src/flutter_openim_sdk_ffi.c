@@ -13,7 +13,8 @@ static CGO_OpenIM_Listener g_listener;
 typedef struct {
     Dart_Port_DL port;
     char* methodName;
-    char* errCode;
+    char* operationID;
+    int32_t* errCode;
     char* message;
 } ThreadArgs;
 
@@ -46,7 +47,8 @@ void *entry_point(void* arg)
     // 从结构体中获取参数
     Dart_Port_DL port = args->port;
     char* methodName = args->methodName;
-    char* errCode = args->errCode;
+    char* operationID = args->operationID;
+    int32_t* errCode = args->errCode;
     char* message = args->message;
 
     Dart_CObject dart_object;
@@ -54,7 +56,15 @@ void *entry_point(void* arg)
     cJSON *json = cJSON_CreateObject();
 
     cJSON_AddStringToObject(json, "method", methodName);
-    cJSON_AddStringToObject(json, "data", "111");
+     if (operationID != NULL) {
+        cJSON_AddStringToObject(json, "operationID", operationID);
+    }
+    if (errCode != NULL) {
+        cJSON_AddItemToObject(json, "errCode", cJSON_CreateNumber(*errCode));
+    } 
+    if (message != NULL) {
+        cJSON_AddStringToObject(json, "data", message);
+    }
 
     char *json_string = cJSON_PrintUnformatted(json);
     dart_object.value.as_string = json_string;
@@ -70,7 +80,7 @@ void *entry_point(void* arg)
     pthread_exit(NULL);
 }
 
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* errCode, char* message)
+void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, int32_t* errCode, char* message)
 {   
     // 创建参数结构体并分配内存
     ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
@@ -80,6 +90,7 @@ void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* errCode, cha
     args->methodName = methodName;
     args->errCode = errCode;
     args->message = message;
+    args->operationID = operationID;
 
     pthread_t thread;
     pthread_create(&thread, NULL, entry_point, (void *)args);
@@ -115,19 +126,6 @@ FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(Dart_Port_DL isolate_send_port)
     void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "RegisterCallback");
     RegisterCallback(&g_listener, isolate_send_port);
 
-    // Dart_CObject dart_object;
-    // dart_object.type = Dart_CObject_kInt64;
-    // dart_object.value.as_int64 = (int64_t)listener;
-
-    // // 创建Dart_CObject的包裹
-    // Dart_CObject wrapper;
-    // wrapper.type = Dart_CObject_kExternalTypedData;
-    // wrapper.value.as_external_typed_data.type = Dart_TypedData_kUint8;
-    // wrapper.value.as_external_typed_data.length = sizeof(*listener);
-    // wrapper.value.as_external_typed_data.data = &dart_object;
-
-    // // 调用Dart端的注册函数
-    // Dart_PostCObject_DL(main_isolate_send_port, &wrapper);
     printMessage("注册dart回调成功");
 }
 
@@ -150,4 +148,28 @@ FFI_PLUGIN_EXPORT void ffi_Dart_Login(char* operationID, char* uid, char* token)
 {
     void (*openIMLogin)(const char* , const char*, const char*) = dlsym(handle, "Login");
     openIMLogin(operationID, uid, token);
+}
+
+FFI_PLUGIN_EXPORT void ffi_Dart_GetUsersInfo(char* operationID, char* userIDList)
+{
+    void (*openGetUsersInfo)(const char* , const char*) = dlsym(handle, "GetUsersInfo");
+    openGetUsersInfo(operationID, userIDList);
+}
+
+FFI_PLUGIN_EXPORT void ffi_Dart_GetSelfUserInfo(char* operationID)
+{
+    void (*openGetSelfUserInfo)(const char*) = dlsym(handle, "GetSelfUserInfo");
+    openGetSelfUserInfo(operationID);
+}
+
+FFI_PLUGIN_EXPORT void ffi_Dart_GetAllConversationList(char* operationID) 
+{
+    void (*openGetAllConversationList)(const char*) = dlsym(handle, "GetAllConversationList");
+    openGetAllConversationList(operationID);
+}
+
+FFI_PLUGIN_EXPORT void ffi_Dart_GetConversationListSplit(char* operationID, int32_t offset, int32_t count) 
+{
+    void (*openGetConversationListSplit)(const char*, int32_t, int32_t) = dlsym(handle, "GetConversationListSplit");
+    openGetConversationListSplit(operationID, offset, count);
 }

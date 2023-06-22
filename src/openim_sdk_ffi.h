@@ -26,11 +26,11 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #include "include/dart_api_dl.h"
 
 typedef struct {
-    void (*onMethodChannel)(Dart_Port_DL port, const char*, const char*, const char*);
+    void (*onMethodChannel)(Dart_Port_DL port, const char*, const char*, int32_t*, const char*);
 } CGO_OpenIM_Listener;
 
-static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, const char* methodName, const char* errCode, const char* message) {
-    listener->onMethodChannel(port, methodName, errCode, message);
+static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, const char* methodName, const char* operationID, int32_t* errCode, const char* message) {
+    listener->onMethodChannel(port, methodName, operationID, errCode, message);
 }
 
 #line 1 "cgo-generated-wrapper"
@@ -67,7 +67,6 @@ typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
 #endif
 
-
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
 #endif
@@ -85,14 +84,15 @@ extern "C" {
 #endif
 
 extern void RegisterCallback(CGO_OpenIM_Listener* callback, Dart_Port_DL port);
-extern _Bool InitSDK(char* operationID, char* config);
-extern void Login(char* operationID, char* userID, char* token);
 extern void SetUserListener();
 extern void SetAdvancedMsgListener();
 extern void SetFriendListener();
 extern void SetConversationListener();
 extern void SetSignalingListener();
 extern char* GetSdkVersion();
+extern _Bool InitSDK(char* operationID, char* config);
+extern void Login(char* operationID, char* userID, char* token);
+extern void GetUsersInfo(char* operationID, char* userIDList);
 
 #ifdef __cplusplus
 }

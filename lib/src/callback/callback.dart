@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-21 11:57:23
+ * Last Modified: 2023-06-22 18:48:48
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -19,7 +19,30 @@ part of flutter_openim_sdk_ffi;
 class _PortMethod {
   static const String initSDK = 'initSDK';
   static const String version = 'version';
+
+  /// 登陆
   static const String login = 'login';
+
+  /// 获取用户资料
+  static const String getUsersInfo = 'getUsersInfo';
+
+  /// 获取当前登录用户资料
+  static const String getSelfUserInfo = 'getSelfUserInfo';
+
+  /// 获取所有会话
+  static const String getAllConversationList = 'getAllConversationList';
+
+  /// 分页获取会话
+  static const String getConversationListSplit = 'getConversationListSplit';
+
+  /// 查询会话，如果会话不存在会自动生成一个
+  static const String getOneConversation = 'getOneConversation';
+
+  /// 根据会话id获取多个会话
+  static const String getMultipleConversation = 'getMultipleConversation';
+
+  /// 通过会话id删除指定会话
+  static const String deleteConversation = 'deleteConversation';
 }
 
 void _printMessage(ffi.Pointer<ffi.Char> message) {
@@ -29,13 +52,4 @@ void _printMessage(ffi.Pointer<ffi.Char> message) {
   }
   final msg = message.cast<Utf8>().toDartString();
   Logger.print(msg);
-}
-
-void _onSuccess(ffi.Pointer<ffi.Char> data) {
-  Logger.print('--------------');
-  Logger.print(data.cast<Utf8>().toDartString());
-}
-
-void _onError(ffi.Pointer<ffi.Int32> code, ffi.Pointer<ffi.Char> errMsg) {
-  Logger.print("BaseResult: ${errMsg.cast<Utf8>().toDartString()}");
 }

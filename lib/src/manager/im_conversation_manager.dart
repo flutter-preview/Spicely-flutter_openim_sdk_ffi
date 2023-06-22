@@ -1,29 +1,5 @@
 part of flutter_openim_sdk_ffi;
 
-void _onConversationChanged(ffi.Pointer<ffi.Char> data) {
-  print('_onConversationChanged');
-}
-
-void _onNewConversation(ffi.Pointer<ffi.Char> data) {
-  print('_onNewConversation');
-}
-
-void _onSyncServerFailed() {
-  print('_onSyncServerFailed');
-}
-
-void _onSyncServerFinish() {
-  print('_onSyncServerFinish');
-}
-
-void _onSyncServerStart() {
-  print('_onSyncServerStart');
-}
-
-void _onTotalUnreadMessageCountChanged(ffi.Pointer<ffi.Int32> count) {
-  print('_onTotalUnreadMessageCountChanged');
-}
-
 class ConversationManager {
   MethodChannel _channel;
   late OnConversationListener listener;
@@ -37,13 +13,20 @@ class ConversationManager {
   }
 
   /// 获取所有会话
-  Future<List<ConversationInfo>> getAllConversationList({String? operationID}) => _channel
-      .invokeMethod(
-          'getAllConversationList',
-          _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
-          }))
-      .then((value) => Utils.toList(value, (map) => ConversationInfo.fromJson(map)));
+  Future<List<ConversationInfo>> getAllConversationList({
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getAllConversationList,
+      data: {'operationID': Utils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    final value = await receivePort.first;
+    receivePort.close();
+    return Utils.toList(value, (v) => ConversationInfo.fromJson(v));
+  }
 
   /// 分页获取会话
   /// [offset] 开始下标
@@ -52,16 +35,18 @@ class ConversationManager {
     int offset = 0,
     int count = 20,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getConversationListSplit',
-              _buildParam({
-                'offset': offset,
-                'count': count,
-                "operationID": Utils.checkOperationID(operationID),
-              }))
-          .then((value) => Utils.toList(value, (map) => ConversationInfo.fromJson(map)));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getConversationListSplit,
+      data: {'operationID': Utils.checkOperationID(operationID), 'offset': offset, 'count': count},
+      sendPort: receivePort.sendPort,
+    ));
+    final value = await receivePort.first;
+    receivePort.close();
+    return Utils.toList(value, (v) => ConversationInfo.fromJson(v));
+  }
 
   /// 查询会话，如果会话不存在会自动生成一个
   /// [sourceID] 如果是单聊会话传userID，如果是群聊会话传GroupID
@@ -70,44 +55,54 @@ class ConversationManager {
     required String sourceID,
     required int sessionType,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getOneConversation',
-              _buildParam({
-                "sourceID": sourceID,
-                "sessionType": sessionType,
-                "operationID": Utils.checkOperationID(operationID),
-              }))
-          .then((value) => Utils.toObj(value, (map) => ConversationInfo.fromJson(map)));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getOneConversation,
+      data: {'operationID': Utils.checkOperationID(operationID), 'sessionType': sessionType, 'sourceID': sourceID},
+      sendPort: receivePort.sendPort,
+    ));
+    final value = await receivePort.first;
+    receivePort.close();
+    return Utils.toObj(value, (v) => ConversationInfo.fromJson(v));
+  }
 
   /// 根据会话id获取多个会话
   /// [conversationIDList] 会话id列表
   Future<List<ConversationInfo>> getMultipleConversation({
     required List<String> conversationIDList,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getMultipleConversation',
-              _buildParam({
-                "conversationIDList": conversationIDList,
-                "operationID": Utils.checkOperationID(operationID),
-              }))
-          .then((value) => Utils.toList(value, (map) => ConversationInfo.fromJson(map)));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getMultipleConversation,
+      data: {'operationID': Utils.checkOperationID(operationID), 'conversationIDList': conversationIDList},
+      sendPort: receivePort.sendPort,
+    ));
+    final value = await receivePort.first;
+    receivePort.close();
+    return Utils.toList(value, (v) => ConversationInfo.fromJson(v));
+  }
 
   /// 通过会话id删除指定会话
   /// [conversationID] 被删除的会话的id
   Future deleteConversation({
     required String conversationID,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'deleteConversation',
-          _buildParam({
-            "conversationID": conversationID,
-            "operationID": Utils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.deleteConversation,
+      data: {'operationID': Utils.checkOperationID(operationID), 'conversationID': conversationID},
+      sendPort: receivePort.sendPort,
+    ));
+    final value = await receivePort.first;
+    receivePort.close();
+    return value;
+  }
 
   /// 设置会话草稿
   /// [conversationID] 会话id

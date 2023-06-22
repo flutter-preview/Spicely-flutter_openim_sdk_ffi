@@ -26,3 +26,7 @@ FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion();
 FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char* operationID, char* config);
 FFI_PLUGIN_EXPORT void ffi_Dart_Login(char* operationID, char* uid, char* token);
 FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(Dart_Port_DL isolate_send_port);
+FFI_PLUGIN_EXPORT void ffi_Dart_GetUsersInfo(char* operationID, char* userIDList);
+FFI_PLUGIN_EXPORT void ffi_Dart_GetSelfUserInfo(char* operationID);
+FFI_PLUGIN_EXPORT void ffi_Dart_GetAllConversationList(char* operationID);
+FFI_PLUGIN_EXPORT void ffi_Dart_GetConversationListSplit(char* operationID, int32_t offset, int32_t count);

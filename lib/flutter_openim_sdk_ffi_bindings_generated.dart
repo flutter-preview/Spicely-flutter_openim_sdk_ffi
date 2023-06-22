@@ -124,6 +124,72 @@ class FlutterOpenimSdkFfiBindings {
           'ffi_Dart_RegisterCallback');
   late final _ffi_Dart_RegisterCallback =
       _ffi_Dart_RegisterCallbackPtr.asFunction<void Function(int)>();
+
+  void ffi_Dart_GetUsersInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDList,
+  ) {
+    return _ffi_Dart_GetUsersInfo(
+      operationID,
+      userIDList,
+    );
+  }
+
+  late final _ffi_Dart_GetUsersInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('ffi_Dart_GetUsersInfo');
+  late final _ffi_Dart_GetUsersInfo = _ffi_Dart_GetUsersInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void ffi_Dart_GetSelfUserInfo(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _ffi_Dart_GetSelfUserInfo(
+      operationID,
+    );
+  }
+
+  late final _ffi_Dart_GetSelfUserInfoPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'ffi_Dart_GetSelfUserInfo');
+  late final _ffi_Dart_GetSelfUserInfo = _ffi_Dart_GetSelfUserInfoPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void ffi_Dart_GetAllConversationList(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _ffi_Dart_GetAllConversationList(
+      operationID,
+    );
+  }
+
+  late final _ffi_Dart_GetAllConversationListPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'ffi_Dart_GetAllConversationList');
+  late final _ffi_Dart_GetAllConversationList =
+      _ffi_Dart_GetAllConversationListPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void ffi_Dart_GetConversationListSplit(
+    ffi.Pointer<ffi.Char> operationID,
+    int offset,
+    int count,
+  ) {
+    return _ffi_Dart_GetConversationListSplit(
+      operationID,
+      offset,
+      count,
+    );
+  }
+
+  late final _ffi_Dart_GetConversationListSplitPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32,
+              ffi.Int32)>>('ffi_Dart_GetConversationListSplit');
+  late final _ffi_Dart_GetConversationListSplit =
+      _ffi_Dart_GetConversationListSplitPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Char>, int, int)>();
 }
 
 typedef PrintCallback

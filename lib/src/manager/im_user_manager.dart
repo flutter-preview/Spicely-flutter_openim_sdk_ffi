@@ -1,11 +1,5 @@
 part of flutter_openim_sdk_ffi;
 
-void _onSelfInfoUpdated(ffi.Pointer<ffi.Char> data) {
-  print('_onSelfInfoUpdated');
-  // UserInfo uInfo = Utils.toObj(data.toDartString(), (map) => UserInfo.fromJson(map));
-  // listener.onSelfInfoUpdated?.call(uInfo);
-}
-
 class UserManager {
   MethodChannel _channel;
 
@@ -16,27 +10,37 @@ class UserManager {
   Future<List<UserInfo>> getUsersInfo({
     required List<String> uidList,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getUsersInfo',
-              _buildParam({
-                'uidList': uidList,
-                'operationID': Utils.checkOperationID(operationID),
-              }))
-          .then((value) => Utils.toList(value, (v) => UserInfo.fromJson(v)));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getUsersInfo,
+      data: {
+        'operationID': Utils.checkOperationID(operationID),
+        'uidList': uidList,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    final value = await receivePort.first;
+    receivePort.close();
+    return Utils.toList(value, (v) => UserInfo.fromJson(v));
+  }
 
   /// 获取当前登录用户的信息
   Future<UserInfo> getSelfUserInfo({
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getSelfUserInfo',
-              _buildParam({
-                'operationID': Utils.checkOperationID(operationID),
-              }))
-          .then((value) => Utils.toObj(value, (map) => UserInfo.fromJson(map)));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getSelfUserInfo,
+      data: {'operationID': Utils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    final value = await receivePort.first;
+    receivePort.close();
+    return Utils.toObj(value, (v) => UserInfo.fromJson(v));
+  }
 
   /// 修改当前登录用户资料
   /// [nickname] 昵称
