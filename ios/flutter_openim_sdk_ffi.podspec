@@ -20,12 +20,9 @@ A new Flutter FFI plugin project.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '11.0'
+  s.vendored_libraries = 'Dylib/libopenim_sdk_ffi.dylib'
   
-  # s.dependency 'OpenIMSDKCore','2.3.6'
-  s.static_framework = true
-  s.vendored_frameworks = 'Framework/*.xcframework'
-  # Flutter.framework does not contain a i386 slice.
+  s.platform = :ios, '11.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 end

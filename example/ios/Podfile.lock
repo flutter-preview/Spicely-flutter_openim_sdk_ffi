@@ -2,20 +2,27 @@ PODS:
   - Flutter (1.0.0)
   - flutter_openim_sdk_ffi (0.0.1):
     - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_openim_sdk_ffi (from `.symlinks/plugins/flutter_openim_sdk_ffi/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   flutter_openim_sdk_ffi:
     :path: ".symlinks/plugins/flutter_openim_sdk_ffi/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_openim_sdk_ffi: ca62d3bca51d62676ddcd4efbfce6af8e47993f2
+  flutter_openim_sdk_ffi: a207d4f63a5a3d405a3baf4eba70f3e1d42e8f3a
+  path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
 
 PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
 

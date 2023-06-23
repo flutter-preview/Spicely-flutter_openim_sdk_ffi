@@ -4,7 +4,7 @@ const String _libName = 'flutter_openim_sdk_ffi';
 
 final ffi.DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
-    return ffi.DynamicLibrary.open('OpenIMSDKCore.framework');
+    return ffi.DynamicLibrary.open('$_libName.framework/$_libName');
   }
   if (Platform.isAndroid || Platform.isLinux) {
     return ffi.DynamicLibrary.open('lib$_libName.so');

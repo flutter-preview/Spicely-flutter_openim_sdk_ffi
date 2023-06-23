@@ -2,7 +2,8 @@
 #include <pthread.h>
 #include <dlfcn.h>
 #include "flutter_openim_sdk_ffi.h"
-#include "cJSON/cJSON.h"
+#include "include/dart_api_dl.c"
+#include "cJSON/cJSON.c"
 
 // 定义回调函数
 PrintCallback printCallback;
@@ -105,18 +106,28 @@ FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
 FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
 {
     // 加载.so文件
-    handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
+    // handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
+    handle = dlopen("flutter_openim_sdk_ffi.framework/openim_sdk_ffi.dylib", RTLD_LAZY);
+    // #if defined(_WIN32) || defined(_WIN64)
+    //     handle = LoadLibrary("openim_sdk_ffi.dll");
+    // #elif defined(__APPLE__)
+    //     handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
+    // #elif defined(__ANDROID__)
+    //     handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
+    // #elif defined(__linux__)
+    //     handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
+    // #endif
 
     const char *error = dlerror();
     if (error != NULL)
     { // 转换错误信息为字符串
         char errorString[256];
-        sprintf(errorString, "Error loading openim_sdk_ffi.so: %s\n", error);
+        sprintf(errorString, "Error loading openim_sdk_ffi: %s\n", error);
 
         printMessage(errorString);
         return false;
     }
-    printMessage("openim_sdk_ffi.so 加载完成");
+    printMessage("openim_sdk_ffi 加载完成");
     return true;
 }
 

@@ -84,15 +84,13 @@ extern "C" {
 #endif
 
 extern void RegisterCallback(CGO_OpenIM_Listener* callback, Dart_Port_DL port);
-extern void SetUserListener();
-extern void SetAdvancedMsgListener();
-extern void SetFriendListener();
-extern void SetConversationListener();
-extern void SetSignalingListener();
 extern char* GetSdkVersion();
 extern _Bool InitSDK(char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
 extern void GetUsersInfo(char* operationID, char* userIDList);
+extern void GetSelfUserInfo(char* operationID);
+extern void GetAllConversationList(char* operationID);
+extern void GetConversationListSplit(char* operationID, int32_t* offset, int32_t* count);
 
 #ifdef __cplusplus
 }

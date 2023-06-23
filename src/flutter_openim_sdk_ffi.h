@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "./include/dart_api_dl.h"
 #include "openim_sdk_ffi.h"
+#include "cJSON/cJSON.h"
 
 #if _WIN32
 #include <windows.h>
