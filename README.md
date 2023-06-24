@@ -3,12 +3,6 @@
 A new Flutter FFI plugin project.
 
 
-## Windows
-
-mingw-install-manager中
-![Alt text](image.png)
-[下载pthreads](https://sourceware.org/pub/pthreads-win32/pthreads-w32-2-9-1-release.zip)
-[参考](https://www.cnblogs.com/tfanalysis/p/5505163.html)
 ## Getting Started
 
 This project is a starting point for a Flutter
