@@ -18,23 +18,22 @@ final ffi.DynamicLibrary _dylib = () {
 }();
 
 final ffi.DynamicLibrary _imDylib = () {
-  final dirPath = Directory.current.absolute.path;
   if (Platform.isMacOS || Platform.isIOS) {
-    final path = p.join(dirPath, 'lib$_imLibName.dylib');
-    return ffi.DynamicLibrary.open(path);
+    return ffi.DynamicLibrary.open('lib$_imLibName.dylib');
   }
   if (Platform.isAndroid || Platform.isLinux) {
     return ffi.DynamicLibrary.open('lib$_imLibName.so');
   }
   if (Platform.isWindows) {
-    return ffi.DynamicLibrary.open('$_imLibName.dll');
+    return ffi.DynamicLibrary.open(
+        'D:/www/flutter_openim_sdk_ffi/example/build/windows/plugins/flutter_openim_sdk_ffi/shared/Debug/openim_sdk_ffi.dll');
   }
   throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
 
 final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
 
-final OpenimSdkFfiBindings _imBindings = OpenimSdkFfiBindings(_dylib);
+final OpenimSdkFfiBindings _imBindings = OpenimSdkFfiBindings(_imDylib);
 
 class OpenIM {
   static Future<String> get version async {
