@@ -177,7 +177,7 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
     // 加载.so文件
     // handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
     #if defined(_WIN32) || defined(_WIN64)
-        handle = LoadLibrary("openim_sdk_ffi.dll");
+        handle = LoadLibraryExA("openim_sdk_ffi.dll", NULL, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
     #else
         handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
     #endif

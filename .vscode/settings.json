@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "*.wpy": "vue",
-        "flutter_openim_sdk_ffi.h": "c"
-    }
-}
