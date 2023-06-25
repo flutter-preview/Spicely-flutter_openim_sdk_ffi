@@ -21,9 +21,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_openim_sdk_ffi: a207d4f63a5a3d405a3baf4eba70f3e1d42e8f3a
+  flutter_openim_sdk_ffi: 89185baef8809eb7136084dbbaf44fc6df22acee
   path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
 
 PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

@@ -106,7 +106,7 @@ void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID,
     CloseHandle(thread);
 }
 #else
-//  void *entry_point(void* arg)
+void *entry_point(void* arg)
 {
 
     // 将void指针转换回ThreadArgs结构体指针
@@ -179,7 +179,7 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
     #if defined(_WIN32) || defined(_WIN64)
         handle = LoadLibrary("openim_sdk_ffi.dll");
     #else
-        handle = dlopen("flutter_openim_sdk_ffi.framework/openim_sdk_ffi.dylib", RTLD_LAZY);
+        handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
     #endif
    
     // #if defined(_WIN32) || defined(_WIN64)
@@ -206,6 +206,8 @@ FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(Dart_Port_DL isolate_send_port)
     g_listener.onMethodChannel = onMethodChannelFunc;
     #if defined(_WIN32) || defined(_WIN64)
         void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(handle, "RegisterCallback");
+    #elif defined(__APPLE__)
+        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "_RegisterCallback");
     #else
         void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "RegisterCallback");
     #endif
@@ -219,6 +221,8 @@ FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
 {
     #if defined(_WIN32) || defined(_WIN64)
         char* (*openIMVersion)() = GetProcAddress(handle, "GetSdkVersion");
+    #elif defined(__APPLE__)
+        char* (*openIMVersion)() = dlsym(handle, "_GetSdkVersion");
     #else
         char* (*openIMVersion)() = dlsym(handle, "GetSdkVersion");
     #endif
@@ -230,6 +234,8 @@ FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char* config)
 {   
     #if defined(_WIN32) || defined(_WIN64)
         bool (*openIMInitSDK)(const char*, const char*) = GetProcAddress(handle, "InitSDK");
+    #elif defined(__APPLE__)
+        bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "_InitSDK");
     #else
         bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "InitSDK");
     #endif        

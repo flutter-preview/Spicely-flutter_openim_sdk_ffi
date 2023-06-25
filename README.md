@@ -15,6 +15,8 @@ flutter pub run ffigen --config ffigen.yaml
 
 nm -D openim_sdk_ffi.so
 
+nm -gU flutter_openim_sdk_ffi
+
 This template uses the following structure:
 
 * `src`: Contains the native source code, and a CmakeFile.txt file for building
