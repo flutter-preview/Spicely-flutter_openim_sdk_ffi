@@ -2,6 +2,8 @@ part of flutter_openim_sdk_ffi;
 
 const String _libName = 'flutter_openim_sdk_ffi';
 
+const String _imLibName = 'openim_sdk_ffi';
+
 final ffi.DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
     return ffi.DynamicLibrary.open('$_libName.framework/$_libName');
@@ -15,7 +17,24 @@ final ffi.DynamicLibrary _dylib = () {
   throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
 
+final ffi.DynamicLibrary _imDylib = () {
+  final dirPath = Directory.current.absolute.path;
+  if (Platform.isMacOS || Platform.isIOS) {
+    final path = p.join(dirPath, 'lib$_imLibName.dylib');
+    return ffi.DynamicLibrary.open(path);
+  }
+  if (Platform.isAndroid || Platform.isLinux) {
+    return ffi.DynamicLibrary.open('lib$_imLibName.so');
+  }
+  if (Platform.isWindows) {
+    return ffi.DynamicLibrary.open('$_imLibName.dll');
+  }
+  throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
+}();
+
 final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
+
+final OpenimSdkFfiBindings _imBindings = OpenimSdkFfiBindings(_dylib);
 
 class OpenIM {
   static Future<String> get version async {

@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
 
 SPEC CHECKSUMS:
-  flutter_openim_sdk_ffi: 0e0e40497155de5de0f1c5e5a78b2556ebe69a31
+  flutter_openim_sdk_ffi: 26e2fa077fba4b65b8f632933c0bdeee54cf186e
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
 

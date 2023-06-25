@@ -112,36 +112,36 @@ class OpenIMManager {
     final receivePort = ReceivePort();
     task.sendPort.send(receivePort.sendPort);
 
-    _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
-    _bindings.ffi_Dart_Dlopen();
+    // _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
+    // _bindings.ffi_Dart_Dlopen();
 
-    InitSdkParams data = task.data;
-    String? dataDir = data.dataDir;
-    if (dataDir == null) {
-      Directory document = await getApplicationDocumentsDirectory();
-      dataDir = document.path;
-    }
+    // InitSdkParams data = task.data;
+    // String? dataDir = data.dataDir;
+    // if (dataDir == null) {
+    //   Directory document = await getApplicationDocumentsDirectory();
+    //   dataDir = document.path;
+    // }
 
-    String config = jsonEncode({
-      'platform': getIMPlatform(),
-      'api_addr': data.apiAddr,
-      'ws_addr': data.wsAddr,
-      'data_dir': dataDir,
-      'log_level': 6,
-      'object_storage': data.objectStorage,
-      'encryption_key': data.encryptionKey,
-      'is_need_encryption': data.enabledEncryption,
-      'is_compression': data.enabledCompression,
-      'is_external_extensions': data.isExternalExtensions,
-    });
+    // String config = jsonEncode({
+    //   'platform': getIMPlatform(),
+    //   'api_addr': data.apiAddr,
+    //   'ws_addr': data.wsAddr,
+    //   'data_dir': dataDir,
+    //   'log_level': 6,
+    //   'object_storage': data.objectStorage,
+    //   'encryption_key': data.encryptionKey,
+    //   'is_need_encryption': data.enabledEncryption,
+    //   'is_compression': data.enabledCompression,
+    //   'is_external_extensions': data.isExternalExtensions,
+    // });
 
-    bool status = _bindings.ffi_Dart_InitSDK(
-      Utils.checkOperationID(data.operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
-      config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
-    );
+    // bool status = _bindings.ffi_Dart_InitSDK(
+    //   Utils.checkOperationID(data.operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
+    //   config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
+    // );
 
-    _bindings.ffi_Dart_RegisterCallback(receivePort.sendPort.nativePort);
-    task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
+    // _bindings.ffi_Dart_RegisterCallback(receivePort.sendPort.nativePort);
+    // task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
     receivePort.listen((msg) {
       if (msg is String) {
@@ -174,7 +174,7 @@ class OpenIMManager {
           _bindings.ffi_Dart_Login(operationID, uid, token);
           break;
         case _PortMethod.version:
-          String version = _bindings.ffi_Dart_GetSdkVersion().cast<Utf8>().toDartString();
+          String version = _imBindings.GetSdkVersion().cast<Utf8>().toDartString();
           msg.sendPort?.send(version);
           break;
         case _PortMethod.getUsersInfo:

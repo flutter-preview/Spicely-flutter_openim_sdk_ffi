@@ -20,7 +20,7 @@ A new Flutter FFI plugin project.
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
-  s.vendored_libraries = 'Dylib/libopenim_sdk_ffi.dylib'
+  s.vendored_libraries = 'libopenim_sdk_ffi.dylib'
 
   s.platform = :osx, '10.11'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
