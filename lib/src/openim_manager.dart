@@ -1,5 +1,23 @@
 part of flutter_openim_sdk_ffi;
 
+class _PortResult<T> {
+  final T? data;
+
+  final String? error;
+
+  _PortResult({
+    this.data,
+    this.error,
+  });
+
+  T get value {
+    if (error != null) {
+      throw error!;
+    }
+    return data!;
+  }
+}
+
 class _PortModel {
   String method;
 
@@ -175,7 +193,7 @@ class OpenIMManager {
           break;
         case _PortMethod.version:
           String version = _imBindings.GetSdkVersion().cast<Utf8>().toDartString();
-          msg.sendPort?.send(version);
+          msg.sendPort?.send(_PortResult(data: version));
           break;
         case _PortMethod.getUsersInfo:
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;

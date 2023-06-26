@@ -4,6 +4,12 @@ const String _libName = 'flutter_openim_sdk_ffi';
 
 const String _imLibName = 'openim_sdk_ffi';
 
+const mode = kReleaseMode
+    ? 'Release'
+    : kProfileMode
+        ? 'Profile'
+        : 'Debug';
+
 final ffi.DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
     return ffi.DynamicLibrary.open('$_libName.framework/$_libName');
@@ -25,8 +31,8 @@ final ffi.DynamicLibrary _imDylib = () {
     return ffi.DynamicLibrary.open('lib$_imLibName.so');
   }
   if (Platform.isWindows) {
-    return ffi.DynamicLibrary.open(
-        'D:/www/flutter_openim_sdk_ffi/example/build/windows/plugins/flutter_openim_sdk_ffi/shared/Debug/openim_sdk_ffi.dll');
+    String path = '${Directory.current.path}/build/windows/plugins/$_libName/shared/$mode/$_imLibName';
+    return ffi.DynamicLibrary.open(path);
   }
   throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
@@ -39,7 +45,9 @@ class OpenIM {
   static Future<String> get version async {
     ReceivePort receivePort = ReceivePort();
     OpenIMManager._openIMSendPort.send(_PortModel(method: _PortMethod.version, sendPort: receivePort.sendPort));
-    return await receivePort.first;
+    _PortResult<String> data = await receivePort.first;
+    receivePort.close();
+    return data.value;
   }
 
   static const _channel = const MethodChannel('flutter_openim_sdk');
