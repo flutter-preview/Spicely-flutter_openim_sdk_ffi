@@ -13,6 +13,7 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   ffi:
   path_provider:
+  dylib: 
 
 dev_dependencies:
   ffigen:
