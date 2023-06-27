@@ -130,7 +130,7 @@ class OpenIMManager {
     final receivePort = ReceivePort();
     task.sendPort.send(receivePort.sendPort);
 
-    // _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
+    _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
     // _bindings.ffi_Dart_Dlopen();
 
     // InitSdkParams data = task.data;

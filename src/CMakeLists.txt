@@ -15,12 +15,3 @@ set_target_properties(flutter_openim_sdk_ffi PROPERTIES
 )
 
 target_compile_definitions(flutter_openim_sdk_ffi PUBLIC DART_SHARED_LIB)
-
-if(WIN32)
-add_custom_command(TARGET flutter_openim_sdk_ffi POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy
-           "${CMAKE_CURRENT_SOURCE_DIR}/../windows/openim_sdk_ffi.dll"
-           $<TARGET_FILE_DIR:flutter_openim_sdk_ffi>
-  COMMENT "Copying openim_sdk_ffi.dll to output directory"
-)
-endif()

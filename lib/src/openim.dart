@@ -24,24 +24,16 @@ final ffi.DynamicLibrary _dylib = () {
 }();
 
 final ffi.DynamicLibrary _imDylib = () {
-  return ffi.DynamicLibrary.open(
-    resolveDylibPath(
-      _imLibName,
-      dartDefine: 'LIBFOO_PATH',
-      environmentVariable: 'LIBFOO_PATH',
-    ),
-  );
-  // if (Platform.isMacOS || Platform.isIOS) {
-  //   return ffi.DynamicLibrary.open('lib$_imLibName.dylib');
-  // }
-  // if (Platform.isAndroid || Platform.isLinux) {
-  //   return ffi.DynamicLibrary.open('lib$_imLibName.so');
-  // }
-  // if (Platform.isWindows) {
-  //   String path = '${Directory.current.path}/build/windows/plugins/$_libName/shared/$mode/$_imLibName';
-  //   return ffi.DynamicLibrary.open(path);
-  // }
-  // throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
+  if (Platform.isMacOS || Platform.isIOS) {
+    return ffi.DynamicLibrary.open('lib$_imLibName.dylib');
+  }
+  if (Platform.isAndroid || Platform.isLinux) {
+    return ffi.DynamicLibrary.open('lib$_imLibName.so');
+  }
+  if (Platform.isWindows) {
+    return ffi.DynamicLibrary.open('$_imLibName.dll');
+  }
+  throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
 
 final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
