@@ -3,7 +3,7 @@
  * Created Date: 2023-06-27 18:10:08
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-27 18:17:55
+ * Last Modified: 2023-06-28 16:05:44
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -84,12 +84,6 @@ typedef _Dcomplex GoComplex128;
 typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
 #endif
-
-/*
-  static assertion to make sure the file is being used on architecture
-  at least with matching size of GoInt.
-*/
-typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
