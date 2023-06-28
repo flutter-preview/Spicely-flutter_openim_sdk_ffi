@@ -30,7 +30,7 @@ class GroupManager {
                 'uidList': uidList,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupInviteResult.fromJson(map)));
+          .then((value) => []);
 
   /// 移除组成员
   /// [groupId] 组ID
@@ -51,7 +51,7 @@ class GroupManager {
                 'uidList': uidList,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupInviteResult.fromJson(map)));
+          .then((value) => []);
 
   /// 查询组成员资料
   /// [groupId] 组ID
@@ -69,7 +69,7 @@ class GroupManager {
                 'uidList': uidList,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupMembersInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 分页获取组成员列表
   /// [groupId] 群ID
@@ -93,7 +93,7 @@ class GroupManager {
                 'count': count,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupMembersInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 分页获取组成员列表
   /// [groupId] 群ID
@@ -126,7 +126,7 @@ class GroupManager {
           _buildParam({
             'operationID': Utils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toList(value, (map) => GroupInfo.fromJson(map)));
+      .then((value) => []);
 
   /// 查询已加入的组列表
   Future<List<dynamic>> getJoinedGroupListMap({String? operationID}) => _channel
@@ -180,7 +180,7 @@ class GroupManager {
                 'memberList': list.map((e) => e.toJson()).toList(),
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => GroupInfo.fromJson(map)));
+          .then((value) => GroupInfo(groupID: '1', groupName: '1'));
 
   /// 编辑组资料
   /// [groupID] 被编辑的群ID
@@ -226,7 +226,7 @@ class GroupManager {
                 'gidList': gidList,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 申请加入组，需要通过管理员/群组同意。
   /// [joinSource] 2：通过邀请  3：通过搜索  4：通过二维码
@@ -280,7 +280,7 @@ class GroupManager {
           _buildParam({
             'operationID': Utils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toList(value, (map) => GroupApplicationInfo.fromJson(map)));
+      .then((value) => []);
 
   /// 获取自己发出的入群申请记录
   Future<List<GroupApplicationInfo>> getSendGroupApplicationList({String? operationID}) => _channel
@@ -289,7 +289,7 @@ class GroupManager {
           _buildParam({
             'operationID': Utils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toList(value, (map) => GroupApplicationInfo.fromJson(map)));
+      .then((value) => []);
 
   /// 管理员或者群主同意某人进入某群
   /// 注：主动申请入群需要通过管理员/群组处理，被别人拉入群不需要管理员/群组处理
@@ -418,7 +418,7 @@ class GroupManager {
                 },
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 设置群成员权限
   /// [groupID] 群ID
@@ -467,7 +467,7 @@ class GroupManager {
                 'excludeUserIDList': excludeUserIDList,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupMembersInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 进群验证设置
   /// [groupID] 群ID
@@ -530,7 +530,7 @@ class GroupManager {
                 'groupID': groupID,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupMembersInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 查询群
   /// [groupID] 群id
@@ -562,7 +562,7 @@ class GroupManager {
                 },
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => GroupMembersInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 查询群
   /// [groupID] 群id

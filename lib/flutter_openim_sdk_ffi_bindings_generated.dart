@@ -41,14 +41,22 @@ class FlutterOpenimSdkFfiBindings {
   late final _setPrintCallback =
       _setPrintCallbackPtr.asFunction<void Function(PrintCallback)>();
 
-  bool ffi_Dart_Dlopen() {
-    return _ffi_Dart_Dlopen();
+  void ffi_Dart_RegisterCallback(
+    ffi.Pointer<ffi.Void> handle,
+    int isolate_send_port,
+  ) {
+    return _ffi_Dart_RegisterCallback(
+      handle,
+      isolate_send_port,
+    );
   }
 
-  late final _ffi_Dart_DlopenPtr =
-      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('ffi_Dart_Dlopen');
-  late final _ffi_Dart_Dlopen =
-      _ffi_Dart_DlopenPtr.asFunction<bool Function()>();
+  late final _ffi_Dart_RegisterCallbackPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Void>,
+              Dart_Port_DL)>>('ffi_Dart_RegisterCallback');
+  late final _ffi_Dart_RegisterCallback = _ffi_Dart_RegisterCallbackPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
 
   int ffi_Dart_InitializeApiDL(
     ffi.Pointer<ffi.Void> data,
@@ -63,133 +71,6 @@ class FlutterOpenimSdkFfiBindings {
           'ffi_Dart_InitializeApiDL');
   late final _ffi_Dart_InitializeApiDL = _ffi_Dart_InitializeApiDLPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-
-  ffi.Pointer<ffi.Char> ffi_Dart_GetSdkVersion() {
-    return _ffi_Dart_GetSdkVersion();
-  }
-
-  late final _ffi_Dart_GetSdkVersionPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-          'ffi_Dart_GetSdkVersion');
-  late final _ffi_Dart_GetSdkVersion =
-      _ffi_Dart_GetSdkVersionPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  bool ffi_Dart_InitSDK(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> config,
-  ) {
-    return _ffi_Dart_InitSDK(
-      operationID,
-      config,
-    );
-  }
-
-  late final _ffi_Dart_InitSDKPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Bool Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('ffi_Dart_InitSDK');
-  late final _ffi_Dart_InitSDK = _ffi_Dart_InitSDKPtr.asFunction<
-      bool Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void ffi_Dart_Login(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> uid,
-    ffi.Pointer<ffi.Char> token,
-  ) {
-    return _ffi_Dart_Login(
-      operationID,
-      uid,
-      token,
-    );
-  }
-
-  late final _ffi_Dart_LoginPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('ffi_Dart_Login');
-  late final _ffi_Dart_Login = _ffi_Dart_LoginPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
-  void ffi_Dart_RegisterCallback(
-    int isolate_send_port,
-  ) {
-    return _ffi_Dart_RegisterCallback(
-      isolate_send_port,
-    );
-  }
-
-  late final _ffi_Dart_RegisterCallbackPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(Dart_Port_DL)>>(
-          'ffi_Dart_RegisterCallback');
-  late final _ffi_Dart_RegisterCallback =
-      _ffi_Dart_RegisterCallbackPtr.asFunction<void Function(int)>();
-
-  void ffi_Dart_GetUsersInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDList,
-  ) {
-    return _ffi_Dart_GetUsersInfo(
-      operationID,
-      userIDList,
-    );
-  }
-
-  late final _ffi_Dart_GetUsersInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('ffi_Dart_GetUsersInfo');
-  late final _ffi_Dart_GetUsersInfo = _ffi_Dart_GetUsersInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void ffi_Dart_GetSelfUserInfo(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _ffi_Dart_GetSelfUserInfo(
-      operationID,
-    );
-  }
-
-  late final _ffi_Dart_GetSelfUserInfoPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'ffi_Dart_GetSelfUserInfo');
-  late final _ffi_Dart_GetSelfUserInfo = _ffi_Dart_GetSelfUserInfoPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void ffi_Dart_GetAllConversationList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _ffi_Dart_GetAllConversationList(
-      operationID,
-    );
-  }
-
-  late final _ffi_Dart_GetAllConversationListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'ffi_Dart_GetAllConversationList');
-  late final _ffi_Dart_GetAllConversationList =
-      _ffi_Dart_GetAllConversationListPtr
-          .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void ffi_Dart_GetConversationListSplit(
-    ffi.Pointer<ffi.Char> operationID,
-    int offset,
-    int count,
-  ) {
-    return _ffi_Dart_GetConversationListSplit(
-      operationID,
-      offset,
-      count,
-    );
-  }
-
-  late final _ffi_Dart_GetConversationListSplitPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32,
-              ffi.Int32)>>('ffi_Dart_GetConversationListSplit');
-  late final _ffi_Dart_GetConversationListSplit =
-      _ffi_Dart_GetConversationListSplitPtr
-          .asFunction<void Function(ffi.Pointer<ffi.Char>, int, int)>();
 }
 
 typedef PrintCallback

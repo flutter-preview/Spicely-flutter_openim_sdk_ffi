@@ -84,7 +84,7 @@ class MessageManager {
                 'groupID': groupID ?? '',
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 获取聊天记录(以startMsg为节点，以前的聊天记录)
   /// [userID] 接收消息的用户id
@@ -111,7 +111,7 @@ class MessageManager {
                 'count': count ?? 10,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => Message.fromJson(map)));
+          .then((value) => []);
 
   /// 撤回消息[revokeMessageV2]
   /// [message] 被撤回的消息体
@@ -159,7 +159,7 @@ class MessageManager {
                 "senderID": senderID,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 插入群聊消息到本地
   /// [groupID] 群id
@@ -180,7 +180,7 @@ class MessageManager {
                 "senderID": senderID,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 标记c2c单条消息已读
   /// [userID] 消息来源的userID
@@ -241,7 +241,7 @@ class MessageManager {
                 'text': text,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建@消息
   /// [text] 输入内容
@@ -266,7 +266,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建图片消息
   /// [imagePath] 路径
@@ -282,7 +282,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建图片消息
   /// [imagePath] 路径
@@ -298,7 +298,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建语音消息
   /// [soundPath] 路径
@@ -317,7 +317,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建语音消息
   /// [soundPath] 路径
@@ -336,7 +336,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建视频消息
   /// [videoPath] 路径
@@ -360,7 +360,7 @@ class MessageManager {
                 'snapshotPath': snapshotPath,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建视频消息
   /// [videoPath] 路径
@@ -384,7 +384,7 @@ class MessageManager {
                 'snapshotPath': snapshotPath,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建文件消息
   /// [filePath] 路径
@@ -402,7 +402,7 @@ class MessageManager {
               'fileName': fileName,
               "operationID": Utils.checkOperationID(operationID),
             }))
-        .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+        .then((value) => Message());
   }
 
   /// 创建文件消息
@@ -421,7 +421,7 @@ class MessageManager {
                 'fileName': fileName,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建合并消息
   /// [messageList] 被选中的消息
@@ -442,7 +442,7 @@ class MessageManager {
                 'summaryList': summaryList,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建转发消息
   /// [message] 被转发的消息
@@ -457,7 +457,7 @@ class MessageManager {
               'message': message.toJson(),
               "operationID": Utils.checkOperationID(operationID),
             }))
-        .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+        .then((value) => Message());
   }
 
   /// 创建位置消息
@@ -479,7 +479,7 @@ class MessageManager {
                 'description': description,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建自定义消息
   /// [data] 自定义数据
@@ -500,7 +500,7 @@ class MessageManager {
                 'description': description,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建引用消息
   /// [text] 回复的内容
@@ -518,7 +518,7 @@ class MessageManager {
                 'quoteMessage': quoteMsg.toJson(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建卡片消息
   /// [data] 自定义数据
@@ -533,7 +533,7 @@ class MessageManager {
                 'cardMessage': data,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建自定义表情消息
   /// [index] 位置表情，根据index匹配
@@ -551,7 +551,7 @@ class MessageManager {
                 'data': data,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 清空单聊消息记录
   /// [uid] 单聊对象id
@@ -618,7 +618,7 @@ class MessageManager {
                 },
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SearchResult.fromJson(map)));
+          .then((value) => SearchResult());
 
   /// 删除本地跟服务器的指定的消息
   /// [message] 被删除的消息
@@ -720,7 +720,7 @@ class MessageManager {
                 'count': count ?? 10,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => Message.fromJson(map)));
+          .then((value) => []);
 
   /// 撤回消息
   /// [message] 被撤回的消息体
@@ -763,7 +763,7 @@ class MessageManager {
                 'lastMinSeq': lastMinSeq ?? 0,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => AdvancedMessage.fromJson(map)));
+          .then((value) => AdvancedMessage());
 
   /// 查找消息详细
   /// [conversationID] 会话id
@@ -779,7 +779,7 @@ class MessageManager {
                 'searchParams': searchParams.map((e) => e.toJson()).toList(),
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SearchResult.fromJson(map)));
+          .then((value) => SearchResult());
 
   /// 富文本消息
   /// [text] 输入内容
@@ -798,7 +798,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 富文本消息
   /// [text] 回复的内容
@@ -819,7 +819,7 @@ class MessageManager {
                 'richMessageInfoList': list.map((e) => e.toJson()).toList(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 发送消息
   /// [message] 消息体 [createImageMessageByURL],[createSoundMessageByURL],[createVideoMessageByURL],[createFileMessageByURL]
@@ -843,7 +843,7 @@ class MessageManager {
                 'groupID': groupID ?? '',
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建图片消息
   Future<Message> createImageMessageByURL({
@@ -862,7 +862,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建语音消息
   Future<Message> createSoundMessageByURL({
@@ -877,7 +877,7 @@ class MessageManager {
               "operationID": Utils.checkOperationID(operationID),
             }),
           )
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建视频消息
   Future<Message> createVideoMessageByURL({
@@ -891,7 +891,7 @@ class MessageManager {
                 'videoElem': videoElem.toJson(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 创建视频消息
   Future<Message> createFileMessageByURL({
@@ -905,7 +905,7 @@ class MessageManager {
                 'fileElem': fileElem.toJson(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => Message.fromJson(map)));
+          .then((value) => Message());
 
   /// 用户资料改变监听
   Future setCustomBusinessListener(OnCustomBusinessListener listener) {
@@ -932,7 +932,7 @@ class MessageManager {
                 'list': list.map((e) => e.toJson()).toList(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => TypeKeySetResult.fromJson(map)));
+          .then((value) => []);
 
   Future<List<TypeKeySetResult>> deleteMessageReactionExtensions({
     required Message message,
@@ -947,7 +947,7 @@ class MessageManager {
                 'list': list,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => TypeKeySetResult.fromJson(map)));
+          .then((value) => []);
 
   Future<List<MessageTypeKeyMapping>> getMessageListReactionExtensions({
     List<Message> messageList = const [],
@@ -960,7 +960,7 @@ class MessageManager {
                 'messageList': messageList.map((e) => e.toJson()).toList(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => MessageTypeKeyMapping.fromJson(map)));
+          .then((value) => []);
 
   Future<List<TypeKeySetResult>> addMessageReactionExtensions({
     required Message message,
@@ -975,7 +975,7 @@ class MessageManager {
                 'list': list.map((e) => e.toJson()).toList(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => TypeKeySetResult.fromJson(map)));
+          .then((value) => []);
 
   Future<List<MessageTypeKeyMapping>> getMessageListSomeReactionExtensions({
     List<Message> messageList = const [],
@@ -990,7 +990,7 @@ class MessageManager {
                 'list': kvList.map((e) => e.toJson()).toList(),
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => MessageTypeKeyMapping.fromJson(map)));
+          .then((value) => []);
 
   static Map _buildParam(Map param) {
     param["ManagerName"] = "messageManager";

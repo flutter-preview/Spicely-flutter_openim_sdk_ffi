@@ -65,7 +65,7 @@ class ConversationManager {
     ));
     final value = await receivePort.first;
     receivePort.close();
-    return Utils.toObj(value, (v) => ConversationInfo.fromJson(v));
+    return ConversationInfo.fromJson(value);
   }
 
   /// 根据会话id获取多个会话

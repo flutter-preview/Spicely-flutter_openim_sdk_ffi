@@ -31,7 +31,7 @@ class OrganizationManager {
                 'count': count,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (v) => DeptInfo.fromJson(v)));
+          .then((value) => []);
 
   /// 获取部门下的成员列表，返回当前部门下的一级成员
   /// [departmentID] 当前部门id
@@ -52,7 +52,7 @@ class OrganizationManager {
                 'count': count,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (v) => DeptMemberInfo.fromJson(v)));
+          .then((value) => []);
 
   /// 获取成员所在的部门
   /// [userID] 成员ID
@@ -67,7 +67,7 @@ class OrganizationManager {
                 'userID': userID,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (v) => UserInDept.fromJson(v)));
+          .then((value) => []);
 
   /// 获取部门下的子部门跟员工
   /// [departmentID] 当前部门id
@@ -90,7 +90,7 @@ class OrganizationManager {
                 // 'memberCount': memberCount,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (v) => DeptMemberAndSubDept.fromJson(v)));
+          .then((value) => DeptMemberAndSubDept());
 
   /// 查询部门信息
   /// [departmentID] 部门ID
@@ -105,7 +105,7 @@ class OrganizationManager {
                 'departmentID': departmentID,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (v) => DeptInfo.fromJson(v)));
+          .then((value) => DeptInfo());
 
   /// 搜索组织人员
   /// [keyWord] 关键字
@@ -149,7 +149,7 @@ class OrganizationManager {
                 'count': count,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (v) => OrganizationSearchResult.fromJson(v)));
+          .then((value) => OrganizationSearchResult());
 
   static Map _buildParam(Map param) {
     param["ManagerName"] = "organizationManager";

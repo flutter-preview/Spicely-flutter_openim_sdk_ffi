@@ -5,9 +5,12 @@ class _PortResult<T> {
 
   final String? error;
 
+  final int? errCode;
+
   _PortResult({
     this.data,
     this.error,
+    this.errCode,
   });
 
   T get value {
@@ -19,15 +22,17 @@ class _PortResult<T> {
 }
 
 class _PortModel {
-  String method;
+  final String method;
 
-  dynamic data;
+  final dynamic data;
 
-  SendPort? sendPort;
+  final SendPort? sendPort;
 
-  int? errCode;
+  final int? errCode;
 
-  String? operationID;
+  final String? operationID;
+
+  final String? callMethodName;
 
   _PortModel({
     required this.method,
@@ -35,19 +40,23 @@ class _PortModel {
     this.sendPort,
     this.errCode,
     this.operationID,
+    this.callMethodName,
   });
 
-  _PortModel.fromJson(Map<String, dynamic> json) : method = json['method'] {
-    data = json['data'];
-    errCode = json['errCode'];
-    operationID = json['operationID'];
-  }
+  factory _PortModel.fromJson(Map<String, dynamic> json) => _PortModel(
+        method: json['method'] as String,
+        data: json['data'],
+        errCode: json['errCode'] as int?,
+        operationID: json['operationID'] as String?,
+        callMethodName: json['callMethodName'] as String?,
+      );
 
   toJson() => {
         'method': method,
         'data': data,
         'errCode': errCode,
         'operationID': operationID,
+        'callMethodName': callMethodName,
       };
 }
 
@@ -67,6 +76,7 @@ class InitSdkParams {
   final String? dataDir;
 
   final String objectStorage;
+  final int logLevel;
 
   final String? operationID;
 
@@ -78,6 +88,7 @@ class InitSdkParams {
   InitSdkParams({
     required this.apiAddr,
     required this.wsAddr,
+    required this.logLevel,
     this.dataDir,
     this.operationID,
     this.encryptionKey,
@@ -122,6 +133,30 @@ class OpenIMManager {
     return IMPlatform.ipad;
   }
 
+  /// 请求成功  返回数据
+  static _onSuccess(_PortModel msg) {
+    print(msg.toJson());
+    switch (msg.callMethodName) {
+      case _PortMethod.getUsersInfo:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: Utils.toListMap(msg.data)));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
+      case _PortMethod.getSelfUserInfo:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: Utils.toObj(msg.data)));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
+      default:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));
+          _sendPortMap.remove(msg.operationID!);
+        }
+    }
+  }
+
   static Future<void> _isolateEntry(_IsolateTaskData<InitSdkParams> task) async {
     if (task.rootIsolateToken != null) {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
@@ -131,6 +166,8 @@ class OpenIMManager {
     task.sendPort.send(receivePort.sendPort);
 
     _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
+
+    _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
 
     InitSdkParams data = task.data;
     String? dataDir = data.dataDir;
@@ -144,7 +181,7 @@ class OpenIMManager {
       'api_addr': data.apiAddr,
       'ws_addr': data.wsAddr,
       'data_dir': dataDir,
-      'log_level': 6,
+      'log_level': data.logLevel,
       'object_storage': data.objectStorage,
       'encryption_key': data.encryptionKey,
       'is_need_encryption': data.enabledEncryption,
@@ -157,7 +194,6 @@ class OpenIMManager {
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );
 
-    _bindings.ffi_Dart_RegisterCallback(receivePort.sendPort.nativePort);
     task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
     receivePort.listen((msg) {
@@ -165,16 +201,15 @@ class OpenIMManager {
         _PortModel data = _PortModel.fromJson(jsonDecode(msg));
         switch (data.method) {
           case 'onError':
+            print('OnError');
+            print(data.toJson());
             if (data.operationID != null) {
-              _sendPortMap[data.operationID!]?.send(data.errCode);
+              _sendPortMap[data.operationID!]?.send(_PortResult(error: data.data, errCode: data.errCode));
               _sendPortMap.remove(data.operationID!);
             }
             break;
-          case 'onSuccess':
-            if (data.operationID != null) {
-              _sendPortMap[data.operationID!]?.send(data.data);
-              _sendPortMap.remove(data.operationID!);
-            }
+          case 'OnSuccess':
+            _onSuccess(data);
             break;
 
           default:
@@ -184,11 +219,11 @@ class OpenIMManager {
       }
       switch ((msg as _PortModel).method) {
         case _PortMethod.login:
+          _sendPortMap[msg.data['operationID']] = msg.sendPort!;
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           final uid = (msg.data['uid'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           final token = (msg.data['token'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
-          _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-          _bindings.ffi_Dart_Login(operationID, uid, token);
+          _imBindings.Login(operationID, uid, token);
           break;
         case _PortMethod.version:
           String version = _imBindings.GetSdkVersion().cast<Utf8>().toDartString();
@@ -198,25 +233,25 @@ class OpenIMManager {
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           final userIDList = (jsonEncode(msg.data['userList'] as List<String>)).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-          _bindings.ffi_Dart_GetUsersInfo(operationID, userIDList);
+          _imBindings.GetUsersInfo(operationID, userIDList);
           break;
         case _PortMethod.getSelfUserInfo:
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-          _bindings.ffi_Dart_GetSelfUserInfo(operationID);
+          _imBindings.GetSelfUserInfo(operationID);
           calloc.free(operationID);
           break;
         case _PortMethod.getAllConversationList:
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-          _bindings.ffi_Dart_GetAllConversationList(operationID);
+          _imBindings.GetAllConversationList(operationID);
           calloc.free(operationID);
           break;
 
         case _PortMethod.getConversationListSplit:
           final operationID = (msg.data['operationID'] as String).toNativeUtf8() as ffi.Pointer<ffi.Char>;
           _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-          _bindings.ffi_Dart_GetConversationListSplit(operationID, msg.data['offset'], msg.data['count']);
+          _imBindings.GetConversationListSplit(operationID, msg.data['offset'], msg.data['count']);
           calloc.free(operationID);
           break;
       }
@@ -224,7 +259,18 @@ class OpenIMManager {
   }
 
   /// 初始化
-  static Future<bool> init({required String apiAddr, required String wsAddr, String? dataDir}) async {
+  static Future<bool> init({
+    required String apiAddr,
+    required String wsAddr,
+    String? dataDir,
+    int logLevel = 6,
+    String objectStorage = 'oss',
+    String? operationID,
+    String? encryptionKey,
+    bool enabledEncryption = false,
+    bool enabledCompression = false,
+    bool isExternalExtensions = false,
+  }) async {
     if (_isInit) return false;
     _isInit = true;
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
@@ -232,7 +278,17 @@ class OpenIMManager {
         _isolateEntry,
         _IsolateTaskData<InitSdkParams>(
           _receivePort.sendPort,
-          InitSdkParams(apiAddr: apiAddr, wsAddr: wsAddr, dataDir: dataDir),
+          InitSdkParams(
+            apiAddr: apiAddr,
+            wsAddr: wsAddr,
+            dataDir: dataDir,
+            objectStorage: objectStorage,
+            operationID: operationID,
+            logLevel: logLevel,
+            encryptionKey: encryptionKey,
+            enabledEncryption: enabledEncryption,
+            enabledCompression: enabledCompression,
+          ),
           rootIsolateToken,
         ));
 

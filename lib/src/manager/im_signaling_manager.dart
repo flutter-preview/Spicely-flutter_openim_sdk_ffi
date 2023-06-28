@@ -36,7 +36,7 @@ class SignalingManager {
                 'signalingInfo': info.toJson(),
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SignalingCertificate.fromJson(map)));
+          .then((value) => SignalingCertificate());
 
   /// 邀请群里某些人加入音视频
   /// [info] 信令对象[SignalingInfo]
@@ -51,7 +51,7 @@ class SignalingManager {
                 'signalingInfo': info.toJson(),
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SignalingCertificate.fromJson(map)));
+          .then((value) => SignalingCertificate());
 
   /// 同意某人音视频邀请
   /// [info] 信令对象[SignalingInfo]
@@ -66,7 +66,7 @@ class SignalingManager {
                 'signalingInfo': info.toJson(),
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SignalingCertificate.fromJson(map)));
+          .then((value) => SignalingCertificate());
 
   /// 拒绝某人音视频邀请
   /// [info] 信令对象[SignalingInfo]
@@ -120,7 +120,7 @@ class SignalingManager {
                 'groupID': groupID,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => RoomCallingInfo.fromJson(map)));
+          .then((value) => RoomCallingInfo());
 
   /// 获取进入房间的信息
   /// [roomID] 当前房间ID
@@ -135,7 +135,7 @@ class SignalingManager {
                 'roomID': roomID,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SignalingCertificate.fromJson(map..addAll({'roomID': roomID}))));
+          .then((value) => SignalingCertificate());
 
   ///  会议设置
   ///  required String roomID,
@@ -207,7 +207,7 @@ class SignalingManager {
                 },
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SignalingCertificate.fromJson(map)));
+          .then((value) => SignalingCertificate());
 
   /// 加入会议室
   /// [meetingID] 会议ID
@@ -230,7 +230,7 @@ class SignalingManager {
                 },
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => SignalingCertificate.fromJson(map)));
+          .then((value) => SignalingCertificate());
 
   /// 会议室 管理员对指定的某一个入会人员设置禁言
   /// [roomID] 会议ID
@@ -268,7 +268,7 @@ class SignalingManager {
               _buildParam({
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => MeetingInfoList.fromJson(map)));
+          .then((value) => MeetingInfoList());
 
   /// 结束会议
   /// [roomID] 会议ID

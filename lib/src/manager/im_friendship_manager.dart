@@ -35,7 +35,7 @@ class FriendshipManager {
                 "uidList": uidList,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (v) => UserInfo.fromJson(v)));
+          .then((value) => []);
 
   /// 发送一个好友请求，需要对方调用同意申请才能成为好友。
   /// [uid] 被邀请的用户ID
@@ -60,7 +60,7 @@ class FriendshipManager {
           _buildParam({
             "operationID": Utils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toList(value, (v) => FriendApplicationInfo.fromJson(v)));
+      .then((value) => []);
 
   /// 获取我发出的好友申请
   Future<List<FriendApplicationInfo>> getSendFriendApplicationList({String? operationID}) => _channel
@@ -69,7 +69,7 @@ class FriendshipManager {
           _buildParam({
             "operationID": Utils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toList(value, (v) => FriendApplicationInfo.fromJson(v)));
+      .then((value) => []);
 
   /// 获取好友列表，返回的列表包含了已拉入黑名单的好友
   Future<List<UserInfo>> getFriendList({String? operationID}) => _channel
@@ -78,7 +78,7 @@ class FriendshipManager {
           _buildParam({
             "operationID": Utils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toList(value, (v) => UserInfo.fromJson(v)));
+      .then((value) => []);
 
   /// 获取好友列表，返回的列表包含了已拉入黑名单的好友
   Future<List<dynamic>> getFriendListMap({String? operationID}) => _channel
@@ -125,7 +125,7 @@ class FriendshipManager {
           _buildParam({
             "operationID": Utils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toList(value, (v) => UserInfo.fromJson(v)));
+      .then((value) => []);
 
   /// 从黑名单移除
   /// [uid] 用户ID
@@ -153,7 +153,7 @@ class FriendshipManager {
                 'uidList': uidList,
                 "operationID": Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (v) => FriendshipInfo.fromJson(v)));
+          .then((value) => []);
 
   /// 删除好友
   /// [uid] 用户ID
@@ -224,7 +224,7 @@ class FriendshipManager {
                 },
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => FriendInfo.fromJson(map)));
+          .then((value) => []);
 
   static Map _buildParam(Map param) {
     param["ManagerName"] = "friendshipManager";

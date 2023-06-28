@@ -21,9 +21,12 @@ class UserManager {
       },
       sendPort: receivePort.sendPort,
     ));
-    final value = await receivePort.first;
+    _PortResult<List<UserInfo>> result = await receivePort.first;
     receivePort.close();
-    return Utils.toList(value, (v) => UserInfo.fromJson(v));
+    if (result.error != null) {
+      throw Exception(result.error!);
+    }
+    return result.data!;
   }
 
   /// 获取当前登录用户的信息
@@ -37,9 +40,12 @@ class UserManager {
       data: {'operationID': Utils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
     ));
-    final value = await receivePort.first;
+    _PortResult<Map<String, dynamic>> result = await receivePort.first;
     receivePort.close();
-    return Utils.toObj(value, (v) => UserInfo.fromJson(v));
+    if (result.error != null) {
+      throw Exception(result.error!);
+    }
+    return UserInfo.fromJson(result.data!);
   }
 
   /// 修改当前登录用户资料

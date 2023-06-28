@@ -22,7 +22,7 @@ class WorkMomentsManager {
               _buildParam({
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toObj(value, (map) => map['unreadCount']));
+          .then((value) => 1);
 
   /// 获取通知列表
   /// [offset] 开始下标
@@ -40,7 +40,7 @@ class WorkMomentsManager {
                 'count': count,
                 'operationID': Utils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toList(value, (map) => WorkMomentsInfo.fromJson(map)));
+          .then((value) => []);
 
   /// 清除通知列表
   Future clearWorkMomentsNotification({

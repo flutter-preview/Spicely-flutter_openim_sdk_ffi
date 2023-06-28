@@ -1,5 +1,7 @@
 
 name: OpenimSdkFfiBindings
+llvm-path:
+  - 'C:\apps\LLVM'
 description: |
   Bindings for `src/flutter_openim_sdk_ffi.h`.
 

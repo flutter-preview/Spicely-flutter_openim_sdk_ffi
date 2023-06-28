@@ -20,6 +20,7 @@ typedef struct {
     Dart_Port_DL port;
     char* methodName;
     char* operationID;
+    char* callMethodName;
     int32_t* errCode;
     char* message;
 } ThreadArgs;
@@ -41,8 +42,6 @@ void printMessage(const char *message)
     }
 }
 
-// 全局变量保存.so文件句柄
-void *handle = NULL;
 #if defined(_WIN32) || defined(_WIN64)
 
     DWORD WINAPI entry_point(LPVOID arg)
@@ -54,14 +53,18 @@ void *handle = NULL;
     char* operationID = args->operationID;
     int32_t* errCode = args->errCode;
     char* message = args->message;
+    char* callMethodName = args->callMethodName;
 
     Dart_CObject dart_object;
     dart_object.type = Dart_CObject_kString;
     cJSON *json = cJSON_CreateObject();
 
     cJSON_AddStringToObject(json, "method", methodName);
-     if (operationID != NULL) {
+    if (operationID != NULL) {
         cJSON_AddStringToObject(json, "operationID", operationID);
+    }
+    if (callMethodName != NULL) {
+        cJSON_AddStringToObject(json, "callMethodName", callMethodName);
     }
     if (errCode != NULL) {
         cJSON_AddItemToObject(json, "errCode", cJSON_CreateNumber(*errCode));
@@ -85,7 +88,7 @@ void *handle = NULL;
     return 0;
 }
 
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, int32_t* errCode, char* message)
+void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, int32_t* errCode, char* message)
 {
     ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
 
@@ -94,6 +97,7 @@ void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID,
     args->errCode = errCode;
     args->message = message;
     args->operationID = operationID;
+    args->callMethodName = callMethodName;
 
     HANDLE thread = CreateThread(NULL, 0, entry_point, (LPVOID)args, 0, NULL);
     if (thread == NULL)
@@ -118,6 +122,7 @@ void *entry_point(void* arg)
     char* operationID = args->operationID;
     int32_t* errCode = args->errCode;
     char* message = args->message;
+    char* callMethodName = args->callMethodName;
 
     Dart_CObject dart_object;
     dart_object.type = Dart_CObject_kString;
@@ -127,6 +132,9 @@ void *entry_point(void* arg)
      if (operationID != NULL) {
         cJSON_AddStringToObject(json, "operationID", operationID);
     }
+    if (callMethodName != NULL) {
+       cJSON_AddStringToObject(json, "callMethodName", callMethodName);
+    } 
     if (errCode != NULL) {
         cJSON_AddItemToObject(json, "errCode", cJSON_CreateNumber(*errCode));
     } 
@@ -148,7 +156,7 @@ void *entry_point(void* arg)
     pthread_exit(NULL);
 }
 
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, int32_t* errCode, char* message)
+void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName,  int32_t* errCode, char* message)
 {   
     // 创建参数结构体并分配内存
     ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
@@ -159,6 +167,7 @@ void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID,
     args->errCode = errCode;
     args->message = message;
     args->operationID = operationID;
+    args->callMethodName = callMethodName;
 
     pthread_t thread;
     pthread_create(&thread, NULL, entry_point, (void *)args);
@@ -172,42 +181,40 @@ FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
     return Dart_InitializeApiDL(data);
 }
 
-FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
-{
-    // 加载.so文件
-    // handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
-    #if defined(_WIN32) || defined(_WIN64)
-        handle = LoadLibraryExA("openim_sdk_ffi.dll", NULL, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-    #else
-        handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
-    #endif
+// FFI_PLUGIN_EXPORT bool ffi_Dart_Dlopen()
+// {
+//     // 加载.so文件
+//     // handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
+//     #if defined(_WIN32) || defined(_WIN64)
+//         handle = LoadLibraryExA("openim_sdk_ffi.dll", NULL, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+//     #else
+//         handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
+//     #endif
    
-    // #if defined(_WIN32) || defined(_WIN64)
-    //     handle = LoadLibrary("openim_sdk_ffi.dll");
-    // #elif defined(__APPLE__)
-    //     handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
-    // #elif defined(__ANDROID__)
-    //     handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
-    // #elif defined(__linux__)
-    //     handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
-    // #endif
+//     // #if defined(_WIN32) || defined(_WIN64)
+//     //     handle = LoadLibrary("openim_sdk_ffi.dll");
+//     // #elif defined(__APPLE__)
+//     //     handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
+//     // #elif defined(__ANDROID__)
+//     //     handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
+//     // #elif defined(__linux__)
+//     //     handle = dlopen("openim_sdk_ffi.so", RTLD_LAZY);
+//     // #endif
 
-    if (handle == NULL)
-    {
-        printMessage("openim_sdk_ffi 加载失败");
-        return false;
-    }
-    printMessage("openim_sdk_ffi 加载完成");
-    return true;
-}
+//     if (handle == NULL)
+//     {
+//         printMessage("openim_sdk_ffi 加载失败");
+//         return false;
+//     }
+//     printMessage("openim_sdk_ffi 加载完成");
+//     return true;
+// }
 
 // 在Dart中注册回调函数
-FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(Dart_Port_DL isolate_send_port) {
+FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port) {
     g_listener.onMethodChannel = onMethodChannelFunc;
     #if defined(_WIN32) || defined(_WIN64)
         void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(handle, "RegisterCallback");
-    #elif defined(__APPLE__)
-        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "_RegisterCallback");
     #else
         void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "RegisterCallback");
     #endif
@@ -217,80 +224,80 @@ FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(Dart_Port_DL isolate_send_port)
 }
 
 
-FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
-{
-    #if defined(_WIN32) || defined(_WIN64)
-        char* (*openIMVersion)() = GetProcAddress(handle, "GetSdkVersion");
-    #elif defined(__APPLE__)
-        char* (*openIMVersion)() = dlsym(handle, "_GetSdkVersion");
-    #else
-        char* (*openIMVersion)() = dlsym(handle, "GetSdkVersion");
-    #endif
-    return openIMVersion();
-}
+// FFI_PLUGIN_EXPORT char* ffi_Dart_GetSdkVersion()
+// {
+//     #if defined(_WIN32) || defined(_WIN64)
+//         char* (*openIMVersion)() = GetProcAddress(handle, "GetSdkVersion");
+//     #elif defined(__APPLE__)
+//         char* (*openIMVersion)() = dlsym(handle, "_GetSdkVersion");
+//     #else
+//         char* (*openIMVersion)() = dlsym(handle, "GetSdkVersion");
+//     #endif
+//     return openIMVersion();
+// }
 
 
-FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char* config)
-{   
-    #if defined(_WIN32) || defined(_WIN64)
-        bool (*openIMInitSDK)(const char*, const char*) = GetProcAddress(handle, "InitSDK");
-    #elif defined(__APPLE__)
-        bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "_InitSDK");
-    #else
-        bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "InitSDK");
-    #endif        
-    printMessage("openIM初始化成功\n");
-    return openIMInitSDK(operationID, config);
-}
+// FFI_PLUGIN_EXPORT bool ffi_Dart_InitSDK(char *operationID, char* config)
+// {   
+//     #if defined(_WIN32) || defined(_WIN64)
+//         bool (*openIMInitSDK)(const char*, const char*) = GetProcAddress(handle, "InitSDK");
+//     #elif defined(__APPLE__)
+//         bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "_InitSDK");
+//     #else
+//         bool (*openIMInitSDK)(const char*, const char*) = dlsym(handle, "InitSDK");
+//     #endif        
+//     printMessage("openIM初始化成功\n");
+//     return openIMInitSDK(operationID, config);
+// }
 
-FFI_PLUGIN_EXPORT void ffi_Dart_Login(char* operationID, char* uid, char* token)
-{
-    #if defined(_WIN32) || defined(_WIN64)
-        void (*openIMLogin)(const char* , const char*, const char*) = GetProcAddress(handle, "Login");
-    #else
-        void (*openIMLogin)(const char* , const char*, const char*) = dlsym(handle, "Login");
-    #endif
-    openIMLogin(operationID, uid, token);
-}
+// FFI_PLUGIN_EXPORT void ffi_Dart_Login(char* operationID, char* uid, char* token)
+// {
+//     #if defined(_WIN32) || defined(_WIN64)
+//         void (*openIMLogin)(const char* , const char*, const char*) = GetProcAddress(handle, "Login");
+//     #else
+//         void (*openIMLogin)(const char* , const char*, const char*) = dlsym(handle, "Login");
+//     #endif
+//     openIMLogin(operationID, uid, token);
+// }
 
-FFI_PLUGIN_EXPORT void ffi_Dart_GetUsersInfo(char* operationID, char* userIDList)
-{
-    #if defined(_WIN32) || defined(_WIN64)
-        void (*openGetUsersInfo)(const char* , const char*) = GetProcAddress(handle, "GetUsersInfo");
-    #else
-        void (*openGetUsersInfo)(const char* , const char*) = dlsym(handle, "GetUsersInfo");
-    #endif        
-    openGetUsersInfo(operationID, userIDList);
-}
+// FFI_PLUGIN_EXPORT void ffi_Dart_GetUsersInfo(char* operationID, char* userIDList)
+// {
+//     #if defined(_WIN32) || defined(_WIN64)
+//         void (*openGetUsersInfo)(const char* , const char*) = GetProcAddress(handle, "GetUsersInfo");
+//     #else
+//         void (*openGetUsersInfo)(const char* , const char*) = dlsym(handle, "GetUsersInfo");
+//     #endif        
+//     openGetUsersInfo(operationID, userIDList);
+// }
 
-FFI_PLUGIN_EXPORT void ffi_Dart_GetSelfUserInfo(char* operationID)
-{
-    #if defined(_WIN32) || defined(_WIN64)
-        void (*openGetSelfUserInfo)(const char*) = GetProcAddress(handle, "GetSelfUserInfo");
-    #else
-        void (*openGetSelfUserInfo)(const char*) = dlsym(handle, "GetSelfUserInfo");
-    #endif
-    openGetSelfUserInfo(operationID);
-}
+// FFI_PLUGIN_EXPORT void ffi_Dart_GetSelfUserInfo(char* operationID)
+// {
+//     #if defined(_WIN32) || defined(_WIN64)
+//         void (*openGetSelfUserInfo)(const char*) = GetProcAddress(handle, "GetSelfUserInfo");
+//     #else
+//         void (*openGetSelfUserInfo)(const char*) = dlsym(handle, "GetSelfUserInfo");
+//     #endif
+//     openGetSelfUserInfo(operationID);
+// }
 
-FFI_PLUGIN_EXPORT void ffi_Dart_GetAllConversationList(char* operationID) 
-{
-    #if defined(_WIN32) || defined(_WIN64)
-        void (*openGetAllConversationList)(const char*) = GetProcAddress(handle, "GetAllConversationList");
-    #else
-        void (*openGetAllConversationList)(const char*) = dlsym(handle, "GetAllConversationList");
-    #endif
-    openGetAllConversationList(operationID);
+// FFI_PLUGIN_EXPORT void ffi_Dart_GetAllConversationList(char* operationID) 
+// {
+//     #if defined(_WIN32) || defined(_WIN64)
+//         void (*openGetAllConversationList)(const char*) = GetProcAddress(handle, "GetAllConversationList");
+//     #else
+//         void (*openGetAllConversationList)(const char*) = dlsym(handle, "GetAllConversationList");
+//     #endif
+//     openGetAllConversationList(operationID);
     
-}
+// }
 
-FFI_PLUGIN_EXPORT void ffi_Dart_GetConversationListSplit(char* operationID, int32_t offset, int32_t count) 
-{
-    #if defined(_WIN32) || defined(_WIN64)
-        void (*openGetConversationListSplit)(const char*, int32_t, int32_t) = GetProcAddress(handle, "GetConversationListSplit");
-    #else
-        void (*openGetConversationListSplit)(const char*, int32_t, int32_t) = dlsym(handle, "GetConversationListSplit");
-    #endif
-    openGetConversationListSplit(operationID, offset, count);
+// FFI_PLUGIN_EXPORT void ffi_Dart_GetConversationListSplit(char* operationID, int32_t offset, int32_t count) 
+// {
+//     #if defined(_WIN32) || defined(_WIN64)
+//         void (*openGetConversationListSplit)(const char*, int32_t, int32_t) = GetProcAddress(handle, "GetConversationListSplit");
+//     #else
+//         void (*openGetConversationListSplit)(const char*, int32_t, int32_t) = dlsym(handle, "GetConversationListSplit");
+//     #endif
+//     openGetConversationListSplit(operationID, offset, count);
   
-}
+// }

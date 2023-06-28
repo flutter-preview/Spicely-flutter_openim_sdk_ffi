@@ -33,40 +33,40 @@ class IMManager {
 
   void _nativeCallback(_PortModel channel) {
     switch (channel.method) {
-      case 'onConnectFailed':
+      case 'OnConnectFailed':
         OpenIMManager._onEvent((listener) => listener.onConnectFailed(1, ''));
         break;
-      case 'onConnecting':
+      case 'OnConnecting':
         OpenIMManager._onEvent((listener) => listener.onConnecting());
         break;
-      case 'onConnectSuccess':
+      case 'OnConnectSuccess':
         OpenIMManager._onEvent((listener) => listener.onConnectSuccess());
         break;
-      case 'onKickedOffline':
+      case 'OnKickedOffline':
         OpenIMManager._onEvent((listener) => listener.onKickedOffline());
         break;
-      case 'onUserTokenExpired':
+      case 'OnUserTokenExpired':
         OpenIMManager._onEvent((listener) => listener.onUserTokenExpired());
         break;
-      case 'onSyncServerStart':
+      case 'OnSyncServerStart':
         OpenIMManager._onEvent((listener) => listener.onSyncServerStart());
         break;
-      case 'onSyncServerFinish':
+      case 'OnSyncServerFinish':
         OpenIMManager._onEvent((listener) => listener.onSyncServerFinish());
         break;
 
-      case 'onSyncServerFailed':
+      case 'OnSyncServerFailed':
         OpenIMManager._onEvent((listener) => listener.onSyncServerFailed());
         break;
-      case 'onNewConversation':
-        var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
-        OpenIMManager._onEvent((listener) => listener.onNewConversation(list));
+      case 'OnNewConversation':
+        // var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        // OpenIMManager._onEvent((listener) => listener.onNewConversation(list));
         break;
-      case 'onConversationChanged':
-        var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
-        OpenIMManager._onEvent((listener) => listener.onConversationChanged(list));
+      case 'OnConversationChanged':
+        // var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        // OpenIMManager._onEvent((listener) => listener.onConversationChanged(list));
         break;
-      case 'onTotalUnreadMessageCountChanged':
+      case 'OnTotalUnreadMessageCountChanged':
         OpenIMManager._onEvent((listener) => listener.onTotalUnreadMessageCountChanged(channel.errCode ?? 0));
         break;
     }
