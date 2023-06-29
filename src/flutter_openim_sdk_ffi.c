@@ -153,6 +153,7 @@ void *entry_point(void* arg)
 
     cJSON_Delete(json);
     free(json_string);
+    free(args);
     pthread_exit(NULL);
 }
 

@@ -198,7 +198,6 @@ class OpenIMManager {
     receivePort.listen((msg) {
       if (msg is String) {
         _PortModel data = _PortModel.fromJson(jsonDecode(msg));
-        print(msg);
         switch (data.method) {
           case 'onError':
             if (data.operationID != null) {

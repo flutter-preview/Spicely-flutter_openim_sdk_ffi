@@ -2,7 +2,7 @@ part of flutter_openim_sdk_ffi;
 
 const String _libName = 'flutter_openim_sdk_ffi';
 
-const String _imLibName = 'openimSDK';
+const String _imLibName = 'openim_sdk_ffi';
 
 const mode = kReleaseMode
     ? 'Release'
