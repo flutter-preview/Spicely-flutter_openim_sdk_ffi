@@ -129,11 +129,11 @@ void *entry_point(void* arg)
     cJSON *json = cJSON_CreateObject();
 
     cJSON_AddStringToObject(json, "method", methodName);
-     if (operationID != NULL) {
+    if (operationID != NULL) {
         cJSON_AddStringToObject(json, "operationID", operationID);
     }
     if (callMethodName != NULL) {
-       cJSON_AddStringToObject(json, "callMethodName", callMethodName);
+        cJSON_AddStringToObject(json, "callMethodName", callMethodName);
     } 
     if (errCode != NULL) {
         cJSON_AddItemToObject(json, "errCode", cJSON_CreateNumber(*errCode));

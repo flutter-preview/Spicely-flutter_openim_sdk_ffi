@@ -2,18 +2,18 @@ part of flutter_openim_sdk_ffi;
 
 void _onRecvNewMessage(ffi.Pointer<ffi.Char> data) {
   print('_onRecvNewMessage');
-  // Message msg = Utils.toObj(data.toDartString(), (map) => Message.fromJson(map));
+  // Message msg = IMUtils.toObj(data.toDartString(), (map) => Message.fromJson(map));
 }
 
 void _onMsgDeleted(ffi.Pointer<ffi.Char> data) {
   print('_onMsgDeleted');
-  // Message msg = Utils.toObj(data.toDartString(), (map) => Message.fromJson(map));
+  // Message msg = IMUtils.toObj(data.toDartString(), (map) => Message.fromJson(map));
   // msgListener.?.call(msg);
 }
 
 void _onNewRecvMessageRevoked(ffi.Pointer<ffi.Char> data) {
   print('_onNewRecvMessageRevoked');
-  // Message msg = Utils.toObj(data.toDartString(), (map) => Message.fromJson(map));
+  // Message msg = IMUtils.toObj(data.toDartString(), (map) => Message.fromJson(map));
   // msgListener.?.call(msg);
 }
 
@@ -82,7 +82,7 @@ class MessageManager {
                 'offlinePushInfo': offlinePushInfo.toJson(),
                 'userID': userID ?? '',
                 'groupID': groupID ?? '',
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -109,7 +109,7 @@ class MessageManager {
                 'conversationID': conversationID ?? '',
                 'startClientMsgID': startMsg?.clientMsgID ?? '',
                 'count': count ?? 10,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -124,7 +124,7 @@ class MessageManager {
           'revokeMessage',
           _buildParam(message.toJson()
             ..addAll({
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             })));
 
   /// 删除本地消息
@@ -137,7 +137,7 @@ class MessageManager {
           'deleteMessageFromLocalStorage',
           _buildParam(message.toJson()
             ..addAll({
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             })));
 
   /// 插入单聊消息到本地
@@ -157,7 +157,7 @@ class MessageManager {
                 "message": message?.toJson(),
                 "receiverID": receiverID,
                 "senderID": senderID,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -178,7 +178,7 @@ class MessageManager {
                 "message": message?.toJson(),
                 "groupID": groupID,
                 "senderID": senderID,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -195,7 +195,7 @@ class MessageManager {
           _buildParam({
             "messageIDList": messageIDList,
             "userID": userID,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 标记群聊消息已读
@@ -211,7 +211,7 @@ class MessageManager {
           _buildParam({
             "messageIDList": messageIDList,
             "groupID": groupID,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 正在输入提示
@@ -226,7 +226,7 @@ class MessageManager {
           _buildParam({
             "msgTip": msgTip,
             "userID": userID,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 创建文本消息
@@ -239,7 +239,7 @@ class MessageManager {
               'createTextMessage',
               _buildParam({
                 'text': text,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -263,7 +263,7 @@ class MessageManager {
               'atUserIDList': atUserIDList,
               'atUserInfoList': atUserInfoList.map((e) => e.toJson()).toList(),
               'quoteMessage': quoteMessage?.toJson(),
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -279,7 +279,7 @@ class MessageManager {
             'createImageMessage',
             _buildParam({
               'imagePath': imagePath,
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -295,7 +295,7 @@ class MessageManager {
             'createImageMessageFromFullPath',
             _buildParam({
               'imagePath': imagePath,
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -314,7 +314,7 @@ class MessageManager {
             _buildParam({
               'soundPath': soundPath,
               "duration": duration,
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -333,7 +333,7 @@ class MessageManager {
             _buildParam({
               'soundPath': soundPath,
               "duration": duration,
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -358,7 +358,7 @@ class MessageManager {
                 'videoType': videoType,
                 'duration': duration,
                 'snapshotPath': snapshotPath,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -382,7 +382,7 @@ class MessageManager {
                 'videoType': videoType,
                 'duration': duration,
                 'snapshotPath': snapshotPath,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -400,7 +400,7 @@ class MessageManager {
             _buildParam({
               'filePath': filePath,
               'fileName': fileName,
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }))
         .then((value) => Message());
   }
@@ -419,7 +419,7 @@ class MessageManager {
               _buildParam({
                 'filePath': filePath,
                 'fileName': fileName,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -440,7 +440,7 @@ class MessageManager {
                 'messageList': messageList.map((e) => e.toJson()).toList(),
                 'title': title,
                 'summaryList': summaryList,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -455,7 +455,7 @@ class MessageManager {
             'createForwardMessage',
             _buildParam({
               'message': message.toJson(),
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }))
         .then((value) => Message());
   }
@@ -477,7 +477,7 @@ class MessageManager {
                 'latitude': latitude,
                 'longitude': longitude,
                 'description': description,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -498,7 +498,7 @@ class MessageManager {
                 'data': data,
                 'extension': extension,
                 'description': description,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -516,7 +516,7 @@ class MessageManager {
               _buildParam({
                 'quoteText': text,
                 'quoteMessage': quoteMsg.toJson(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -531,7 +531,7 @@ class MessageManager {
               'createCardMessage',
               _buildParam({
                 'cardMessage': data,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -549,7 +549,7 @@ class MessageManager {
               _buildParam({
                 'index': index,
                 'data': data,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -563,7 +563,7 @@ class MessageManager {
           'clearC2CHistoryMessage',
           _buildParam({
             "userID": uid,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 清空组消息记录
@@ -576,7 +576,7 @@ class MessageManager {
           'clearGroupHistoryMessage',
           _buildParam({
             "groupID": gid,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 搜索消息
@@ -616,7 +616,7 @@ class MessageManager {
                   'pageIndex': pageIndex,
                   'count': count,
                 },
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SearchResult());
 
@@ -630,7 +630,7 @@ class MessageManager {
           'deleteMessageFromLocalAndSvr',
           _buildParam(message.toJson()
             ..addAll({
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             })));
 
   /// 删除本地所有聊天记录
@@ -640,7 +640,7 @@ class MessageManager {
       _channel.invokeMethod(
           'deleteAllMsgFromLocal',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 删除本地跟服务器所有聊天记录
@@ -650,7 +650,7 @@ class MessageManager {
       _channel.invokeMethod(
           'deleteAllMsgFromLocalAndSvr',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 标记消息已读
@@ -666,7 +666,7 @@ class MessageManager {
           _buildParam({
             "messageIDList": messageIDList,
             "conversationID": conversationID,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 删除本地跟服务器的单聊聊天记录
@@ -679,7 +679,7 @@ class MessageManager {
           'clearC2CHistoryMessageFromLocalAndSvr',
           _buildParam({
             "userID": uid,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 删除本地跟服务器的群聊天记录
@@ -692,7 +692,7 @@ class MessageManager {
           'clearGroupHistoryMessageFromLocalAndSvr',
           _buildParam({
             "groupID": gid,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 获取聊天记录(以startMsg为节点，新收到的聊天记录)，用在全局搜索定位某一条消息，然后此条消息后新增的消息
@@ -718,7 +718,7 @@ class MessageManager {
                 'conversationID': conversationID ?? '',
                 'startClientMsgID': startMsg?.clientMsgID ?? '',
                 'count': count ?? 10,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -732,7 +732,7 @@ class MessageManager {
           'newRevokeMessage',
           _buildParam(message.toJson()
             ..addAll({
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             })));
 
   /// 获取聊天记录(以startMsg为节点，以前的聊天记录)
@@ -761,7 +761,7 @@ class MessageManager {
                 'startClientMsgID': startMsg?.clientMsgID ?? '',
                 'count': count ?? 40,
                 'lastMinSeq': lastMinSeq ?? 0,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => AdvancedMessage());
 
@@ -777,7 +777,7 @@ class MessageManager {
               'findMessageList',
               _buildParam({
                 'searchParams': searchParams.map((e) => e.toJson()).toList(),
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SearchResult());
 
@@ -795,7 +795,7 @@ class MessageManager {
             _buildParam({
               'text': text,
               'richMessageInfoList': list.map((e) => e.toJson()).toList(),
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -817,7 +817,7 @@ class MessageManager {
                 'quoteText': text,
                 'quoteMessage': quoteMsg.toJson(),
                 'richMessageInfoList': list.map((e) => e.toJson()).toList(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -841,7 +841,7 @@ class MessageManager {
                 'offlinePushInfo': offlinePushInfo.toJson(),
                 'userID': userID ?? '',
                 'groupID': groupID ?? '',
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -859,7 +859,7 @@ class MessageManager {
               'sourcePicture': sourcePicture.toJson(),
               'bigPicture': bigPicture.toJson(),
               'snapshotPicture': snapshotPicture.toJson(),
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -874,7 +874,7 @@ class MessageManager {
             'createSoundMessageByURL',
             _buildParam({
               'soundElem': soundElem.toJson(),
-              "operationID": Utils.checkOperationID(operationID),
+              "operationID": IMUtils.checkOperationID(operationID),
             }),
           )
           .then((value) => Message());
@@ -889,7 +889,7 @@ class MessageManager {
               'createVideoMessageByURL',
               _buildParam({
                 'videoElem': videoElem.toJson(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -903,7 +903,7 @@ class MessageManager {
               'createFileMessageByURL',
               _buildParam({
                 'fileElem': fileElem.toJson(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => Message());
 
@@ -930,7 +930,7 @@ class MessageManager {
               _buildParam({
                 'message': message.toJson(),
                 'list': list.map((e) => e.toJson()).toList(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -945,7 +945,7 @@ class MessageManager {
               _buildParam({
                 'message': message.toJson(),
                 'list': list,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -958,7 +958,7 @@ class MessageManager {
               'getMessageListReactionExtensions',
               _buildParam({
                 'messageList': messageList.map((e) => e.toJson()).toList(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -973,7 +973,7 @@ class MessageManager {
               _buildParam({
                 'message': message.toJson(),
                 'list': list.map((e) => e.toJson()).toList(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -988,7 +988,7 @@ class MessageManager {
               _buildParam({
                 'messageList': messageList.map((e) => e.toJson()).toList(),
                 'list': kvList.map((e) => e.toJson()).toList(),
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 

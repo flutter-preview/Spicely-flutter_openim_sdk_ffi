@@ -33,7 +33,7 @@ class FriendshipManager {
               'getFriendsInfo',
               _buildParam({
                 "uidList": uidList,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -50,7 +50,7 @@ class FriendshipManager {
           _buildParam({
             "toUserID": uid,
             "reqMsg": reason,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 获取别人加我为好友的申请
@@ -58,7 +58,7 @@ class FriendshipManager {
       .invokeMethod(
           'getRecvFriendApplicationList',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }))
       .then((value) => []);
 
@@ -67,7 +67,7 @@ class FriendshipManager {
       .invokeMethod(
           'getSendFriendApplicationList',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }))
       .then((value) => []);
 
@@ -76,7 +76,7 @@ class FriendshipManager {
       .invokeMethod(
           'getFriendList',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }))
       .then((value) => []);
 
@@ -85,9 +85,9 @@ class FriendshipManager {
       .invokeMethod(
           'getFriendList',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toListMap(value));
+      .then((value) => IMUtils.toListMap(value));
 
   /// 设置好友备注
   /// [uid] 好友的userID
@@ -102,7 +102,7 @@ class FriendshipManager {
           _buildParam({
             'toUserID': uid,
             'remark': remark,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 加入黑名单
@@ -115,7 +115,7 @@ class FriendshipManager {
           'addBlacklist',
           _buildParam({
             "uid": uid,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 获取黑名单列表
@@ -123,7 +123,7 @@ class FriendshipManager {
       .invokeMethod(
           'getBlacklist',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }))
       .then((value) => []);
 
@@ -137,7 +137,7 @@ class FriendshipManager {
           'removeBlacklist',
           _buildParam({
             "uid": uid,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 检查友好关系
@@ -151,7 +151,7 @@ class FriendshipManager {
               'checkFriend',
               _buildParam({
                 'uidList': uidList,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -165,7 +165,7 @@ class FriendshipManager {
           'deleteFriend',
           _buildParam({
             "uid": uid,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 接受好友请求
@@ -181,7 +181,7 @@ class FriendshipManager {
           _buildParam({
             "toUserID": uid,
             "handleMsg": handleMsg,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 拒绝好友请求
@@ -197,7 +197,7 @@ class FriendshipManager {
           _buildParam({
             "toUserID": uid,
             "handleMsg": handleMsg,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 查好友
@@ -222,7 +222,7 @@ class FriendshipManager {
                   'isSearchNickname': isSearchNickname,
                   'isSearchRemark': isSearchRemark,
                 },
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 

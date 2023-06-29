@@ -16,7 +16,7 @@ class UserManager {
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getUsersInfo,
       data: {
-        'operationID': Utils.checkOperationID(operationID),
+        'operationID': IMUtils.checkOperationID(operationID),
         'uidList': uidList,
       },
       sendPort: receivePort.sendPort,
@@ -37,15 +37,15 @@ class UserManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getSelfUserInfo,
-      data: {'operationID': Utils.checkOperationID(operationID)},
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
     ));
-    _PortResult<Map<String, dynamic>> result = await receivePort.first;
+    _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
       throw Exception(result.error!);
     }
-    return UserInfo.fromJson(result.data!);
+    return UserInfo.fromJson(Map.from(result.data));
   }
 
   /// 修改当前登录用户资料
@@ -80,7 +80,7 @@ class UserManager {
             'birth': birth,
             'email': email,
             'ex': ex,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   static Map _buildParam(Map param) {

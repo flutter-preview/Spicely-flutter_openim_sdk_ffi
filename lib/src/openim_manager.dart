@@ -135,17 +135,16 @@ class OpenIMManager {
 
   /// 请求成功  返回数据
   static _onSuccess(_PortModel msg) {
-    print(msg.toJson());
     switch (msg.callMethodName) {
       case _PortMethod.getUsersInfo:
         if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: Utils.toListMap(msg.data)));
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toListMap(msg.data)));
           _sendPortMap.remove(msg.operationID!);
         }
         break;
       case _PortMethod.getSelfUserInfo:
         if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: Utils.toObj(msg.data)));
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data)));
           _sendPortMap.remove(msg.operationID!);
         }
         break;
@@ -166,8 +165,6 @@ class OpenIMManager {
     task.sendPort.send(receivePort.sendPort);
 
     _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
-
-    _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
 
     InitSdkParams data = task.data;
     String? dataDir = data.dataDir;
@@ -190,19 +187,20 @@ class OpenIMManager {
     });
 
     bool status = _imBindings.InitSDK(
-      Utils.checkOperationID(data.operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
+      IMUtils.checkOperationID(data.operationID).toNativeUtf8() as ffi.Pointer<ffi.Char>,
       config.toNativeUtf8() as ffi.Pointer<ffi.Char>,
     );
+
+    _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
 
     task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
     receivePort.listen((msg) {
       if (msg is String) {
         _PortModel data = _PortModel.fromJson(jsonDecode(msg));
+        print(msg);
         switch (data.method) {
           case 'onError':
-            print('OnError');
-            print(data.toJson());
             if (data.operationID != null) {
               _sendPortMap[data.operationID!]?.send(_PortResult(error: data.data, errCode: data.errCode));
               _sendPortMap.remove(data.operationID!);

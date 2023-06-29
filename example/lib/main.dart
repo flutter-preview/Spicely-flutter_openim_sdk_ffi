@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     sumResult = 1;
     sumAsyncResult = Future.value(2);
-    init();
+    // init();
   }
 
   Future<void> init() async {

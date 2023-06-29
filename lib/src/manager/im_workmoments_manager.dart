@@ -20,7 +20,7 @@ class WorkMomentsManager {
           .invokeMethod(
               'getWorkMomentsUnReadCount',
               _buildParam({
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => 1);
 
@@ -38,7 +38,7 @@ class WorkMomentsManager {
               _buildParam({
                 'offset': offset,
                 'count': count,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -49,7 +49,7 @@ class WorkMomentsManager {
       _channel.invokeMethod(
           'clearWorkMomentsNotification',
           _buildParam({
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   static Map _buildParam(Map param) {

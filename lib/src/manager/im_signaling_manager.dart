@@ -34,7 +34,7 @@ class SignalingManager {
               'signalingInvite',
               _buildParam({
                 'signalingInfo': info.toJson(),
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SignalingCertificate());
 
@@ -49,7 +49,7 @@ class SignalingManager {
               'signalingInviteInGroup',
               _buildParam({
                 'signalingInfo': info.toJson(),
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SignalingCertificate());
 
@@ -64,7 +64,7 @@ class SignalingManager {
               'signalingAccept',
               _buildParam({
                 'signalingInfo': info.toJson(),
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SignalingCertificate());
 
@@ -78,7 +78,7 @@ class SignalingManager {
           'signalingReject',
           _buildParam({
             'signalingInfo': info.toJson(),
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 邀请者取消音视频通话
@@ -91,7 +91,7 @@ class SignalingManager {
           'signalingCancel',
           _buildParam({
             'signalingInfo': info.toJson(),
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 挂断
@@ -104,7 +104,7 @@ class SignalingManager {
           'signalingHungUp',
           _buildParam({
             'signalingInfo': info.toJson(),
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 获取当前群通话信息
@@ -118,7 +118,7 @@ class SignalingManager {
               'signalingGetRoomByGroupID',
               _buildParam({
                 'groupID': groupID,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => RoomCallingInfo());
 
@@ -133,7 +133,7 @@ class SignalingManager {
               'signalingGetTokenByRoomID',
               _buildParam({
                 'roomID': roomID,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SignalingCertificate());
 
@@ -173,7 +173,7 @@ class SignalingManager {
         'signalingUpdateMeetingInfo',
         _buildParam({
           'info': info,
-          'operationID': Utils.checkOperationID(operationID),
+          'operationID': IMUtils.checkOperationID(operationID),
         }));
   }
 
@@ -205,7 +205,7 @@ class SignalingManager {
                   'inviteeUserIDList': inviteeUserIDList,
                   'ex': ex,
                 },
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SignalingCertificate());
 
@@ -228,7 +228,7 @@ class SignalingManager {
                   'meetingName': meetingName,
                   'participantNickname': participantNickname,
                 },
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => SignalingCertificate());
 
@@ -254,7 +254,7 @@ class SignalingManager {
             'userID': userID,
             'mute': mute,
             'muteAll': muteAll,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 获取所有的未完成会议
@@ -266,7 +266,7 @@ class SignalingManager {
           .invokeMethod(
               'signalingGetMeetings',
               _buildParam({
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => MeetingInfoList());
 
@@ -280,7 +280,7 @@ class SignalingManager {
           'signalingCloseRoom',
           _buildParam({
             'roomID': roomID,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 自定义信令
@@ -296,7 +296,7 @@ class SignalingManager {
           _buildParam({
             'roomID': roomID,
             'customInfo': customInfo,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   static Map _buildParam(Map param) {

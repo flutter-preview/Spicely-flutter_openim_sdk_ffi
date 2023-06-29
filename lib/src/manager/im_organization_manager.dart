@@ -29,7 +29,7 @@ class OrganizationManager {
                 'departmentID': departmentID,
                 'offset': offset,
                 'count': count,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -50,7 +50,7 @@ class OrganizationManager {
                 'departmentID': departmentID,
                 'offset': offset,
                 'count': count,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -65,7 +65,7 @@ class OrganizationManager {
               'getUserInDepartment',
               _buildParam({
                 'userID': userID,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -88,7 +88,7 @@ class OrganizationManager {
                 // 'departmentCount': departmentCount,
                 // 'memberOffset': memberOffset,
                 // 'memberCount': memberCount,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => DeptMemberAndSubDept());
 
@@ -103,7 +103,7 @@ class OrganizationManager {
               'getDepartmentInfo',
               _buildParam({
                 'departmentID': departmentID,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => DeptInfo());
 
@@ -147,7 +147,7 @@ class OrganizationManager {
                 },
                 'offset': offset,
                 'count': count,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => OrganizationSearchResult());
 

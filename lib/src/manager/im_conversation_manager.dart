@@ -20,12 +20,12 @@ class ConversationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getAllConversationList,
-      data: {'operationID': Utils.checkOperationID(operationID)},
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
     ));
     final value = await receivePort.first;
     receivePort.close();
-    return Utils.toList(value, (v) => ConversationInfo.fromJson(v));
+    return IMUtils.toList(value, (v) => ConversationInfo.fromJson(v));
   }
 
   /// 分页获取会话
@@ -40,12 +40,12 @@ class ConversationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getConversationListSplit,
-      data: {'operationID': Utils.checkOperationID(operationID), 'offset': offset, 'count': count},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'offset': offset, 'count': count},
       sendPort: receivePort.sendPort,
     ));
     final value = await receivePort.first;
     receivePort.close();
-    return Utils.toList(value, (v) => ConversationInfo.fromJson(v));
+    return IMUtils.toList(value, (v) => ConversationInfo.fromJson(v));
   }
 
   /// 查询会话，如果会话不存在会自动生成一个
@@ -60,7 +60,7 @@ class ConversationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getOneConversation,
-      data: {'operationID': Utils.checkOperationID(operationID), 'sessionType': sessionType, 'sourceID': sourceID},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'sessionType': sessionType, 'sourceID': sourceID},
       sendPort: receivePort.sendPort,
     ));
     final value = await receivePort.first;
@@ -78,12 +78,12 @@ class ConversationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getMultipleConversation,
-      data: {'operationID': Utils.checkOperationID(operationID), 'conversationIDList': conversationIDList},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'conversationIDList': conversationIDList},
       sendPort: receivePort.sendPort,
     ));
     final value = await receivePort.first;
     receivePort.close();
-    return Utils.toList(value, (v) => ConversationInfo.fromJson(v));
+    return IMUtils.toList(value, (v) => ConversationInfo.fromJson(v));
   }
 
   /// 通过会话id删除指定会话
@@ -96,7 +96,7 @@ class ConversationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.deleteConversation,
-      data: {'operationID': Utils.checkOperationID(operationID), 'conversationID': conversationID},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'conversationID': conversationID},
       sendPort: receivePort.sendPort,
     ));
     final value = await receivePort.first;
@@ -117,7 +117,7 @@ class ConversationManager {
           _buildParam({
             "conversationID": conversationID,
             "draftText": draftText,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 置顶会话
@@ -133,7 +133,7 @@ class ConversationManager {
           _buildParam({
             "conversationID": conversationID,
             "isPinned": isPinned,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 获取未读消息总数
@@ -144,7 +144,7 @@ class ConversationManager {
       _channel.invokeMethod(
           'getTotalUnreadMsgCount',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 查询会话id
@@ -174,7 +174,7 @@ class ConversationManager {
           _buildParam({
             "conversationIDList": conversationIDList,
             "status": status,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 查询免打扰状态
@@ -189,9 +189,9 @@ class ConversationManager {
               'getConversationRecvMessageOpt',
               _buildParam({
                 "conversationIDList": conversationIDList,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toListMap(value));
+          .then((value) => IMUtils.toListMap(value));
 
   /// 阅后即焚
   /// [conversationID] 会话id
@@ -206,7 +206,7 @@ class ConversationManager {
           _buildParam({
             "conversationID": conversationID,
             "isPrivate": isPrivate,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 删除本地以及服务器的会话
@@ -219,7 +219,7 @@ class ConversationManager {
           'deleteConversationFromLocalAndSvr',
           _buildParam({
             "conversationID": conversationID,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 删除所有本地会话
@@ -229,7 +229,7 @@ class ConversationManager {
       _channel.invokeMethod(
           'deleteAllConversationFromLocal',
           _buildParam({
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 重置强提醒标识[GroupAtType]
@@ -242,7 +242,7 @@ class ConversationManager {
           'resetConversationGroupAtType',
           _buildParam({
             "conversationID": conversationID,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 查询@所有人标识
@@ -261,7 +261,7 @@ class ConversationManager {
           'setGlobalRecvMessageOpt',
           _buildParam({
             "status": status,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 设置阅后即焚时长
@@ -277,7 +277,7 @@ class ConversationManager {
           _buildParam({
             "conversationID": conversationID,
             "burnDuration": burnDuration,
-            "operationID": Utils.checkOperationID(operationID),
+            "operationID": IMUtils.checkOperationID(operationID),
           }));
 
   /// 会话列表自定义排序规则。

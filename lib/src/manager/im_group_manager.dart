@@ -28,7 +28,7 @@ class GroupManager {
                 'gid': groupId,
                 'reason': reason,
                 'uidList': uidList,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -49,7 +49,7 @@ class GroupManager {
                 'gid': groupId,
                 'reason': reason,
                 'uidList': uidList,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -67,7 +67,7 @@ class GroupManager {
               _buildParam({
                 'gid': groupId,
                 'uidList': uidList,
-                "operationID": Utils.checkOperationID(operationID),
+                "operationID": IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -91,7 +91,7 @@ class GroupManager {
                 'filter': filter,
                 'offset': offset,
                 'count': count,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -115,16 +115,16 @@ class GroupManager {
                 'filter': filter,
                 'offset': offset,
                 'count': count,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toListMap(value));
+          .then((value) => IMUtils.toListMap(value));
 
   /// 查询已加入的组列表
   Future<List<GroupInfo>> getJoinedGroupList({String? operationID}) => _channel
       .invokeMethod(
           'getJoinedGroupList',
           _buildParam({
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }))
       .then((value) => []);
 
@@ -133,9 +133,9 @@ class GroupManager {
       .invokeMethod(
           'getJoinedGroupList',
           _buildParam({
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }))
-      .then((value) => Utils.toListMap(value));
+      .then((value) => IMUtils.toListMap(value));
 
   /// 检查是否已加入组
   /// [gid] 组ID
@@ -144,7 +144,7 @@ class GroupManager {
     String? operationID,
   }) =>
       getJoinedGroupList(
-        operationID: Utils.checkOperationID(operationID),
+        operationID: IMUtils.checkOperationID(operationID),
       ).then((list) => list.where((e) => e.groupID == gid).length > 0);
 
   /// 创建一个组
@@ -178,7 +178,7 @@ class GroupManager {
                   "ex": ex,
                 },
                 'memberList': list.map((e) => e.toJson()).toList(),
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => GroupInfo(groupID: '1', groupName: '1'));
 
@@ -210,7 +210,7 @@ class GroupManager {
               "faceURL": faceUrl,
               "ex": ex,
             },
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 查询组信息
@@ -224,7 +224,7 @@ class GroupManager {
               'getGroupsInfo',
               _buildParam({
                 'gidList': gidList,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -242,7 +242,7 @@ class GroupManager {
             'gid': gid,
             'reason': reason,
             'joinSource': joinSource,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 退出组
@@ -254,7 +254,7 @@ class GroupManager {
           'quitGroup',
           _buildParam({
             'gid': gid,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 转移组拥有者权限
@@ -270,7 +270,7 @@ class GroupManager {
           _buildParam({
             'gid': gid,
             'uid': uid,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 作为群主或者管理员，收到的群成员入群申请
@@ -278,7 +278,7 @@ class GroupManager {
       .invokeMethod(
           'getRecvGroupApplicationList',
           _buildParam({
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }))
       .then((value) => []);
 
@@ -287,7 +287,7 @@ class GroupManager {
       .invokeMethod(
           'getSendGroupApplicationList',
           _buildParam({
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }))
       .then((value) => []);
 
@@ -307,7 +307,7 @@ class GroupManager {
             'gid': gid,
             'uid': uid,
             'handleMsg': handleMsg,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 管理员或者群主拒绝某人进入某群
@@ -327,7 +327,7 @@ class GroupManager {
             'gid': gid,
             'uid': uid,
             'handleMsg': handleMsg,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 解散群
@@ -340,7 +340,7 @@ class GroupManager {
           'dismissGroup',
           _buildParam({
             'gid': groupID,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 开启群禁言，所有群成员禁止发言
@@ -356,7 +356,7 @@ class GroupManager {
           _buildParam({
             'gid': groupID,
             'mute': mute,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 禁言群成员
@@ -375,7 +375,7 @@ class GroupManager {
             'gid': groupID,
             'uid': userID,
             'seconds': seconds,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 设置群成员昵称
@@ -394,7 +394,7 @@ class GroupManager {
             'gid': groupID,
             'uid': userID,
             'groupNickname': groupNickname ?? '',
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 查询群
@@ -416,7 +416,7 @@ class GroupManager {
                   'isSearchGroupID': isSearchGroupID,
                   'isSearchGroupName': isSearchGroupName,
                 },
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -436,7 +436,7 @@ class GroupManager {
             'groupID': groupID,
             'userID': userID,
             'roleLevel': roleLevel,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 根据加入时间分页获取组成员列表
@@ -465,7 +465,7 @@ class GroupManager {
                 'joinTimeBegin': joinTimeBegin,
                 'joinTimeEnd': joinTimeEnd,
                 'excludeUserIDList': excludeUserIDList,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -482,7 +482,7 @@ class GroupManager {
           _buildParam({
             'groupID': groupID,
             'needVerification': needVerification,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 不允许通过群获取成员资料
@@ -498,7 +498,7 @@ class GroupManager {
           _buildParam({
             'groupID': groupID,
             'status': status,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 不允许通过群添加好友
@@ -514,7 +514,7 @@ class GroupManager {
           _buildParam({
             'groupID': groupID,
             'status': status,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 获取群拥有者，管理员
@@ -528,7 +528,7 @@ class GroupManager {
               'getGroupMemberOwnerAndAdmin',
               _buildParam({
                 'groupID': groupID,
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -560,7 +560,7 @@ class GroupManager {
                   'offset': offset,
                   'count': count,
                 },
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
           .then((value) => []);
 
@@ -592,9 +592,9 @@ class GroupManager {
                   'offset': offset,
                   'count': count,
                 },
-                'operationID': Utils.checkOperationID(operationID),
+                'operationID': IMUtils.checkOperationID(operationID),
               }))
-          .then((value) => Utils.toListMap(value));
+          .then((value) => IMUtils.toListMap(value));
 
   /// 修改GroupMemberInfo ex字段
   Future<dynamic> setGroupMemberInfo({
@@ -611,7 +611,7 @@ class GroupManager {
               'userID': userID,
               'ex': ex,
             },
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   static Map _buildParam(Map param) {

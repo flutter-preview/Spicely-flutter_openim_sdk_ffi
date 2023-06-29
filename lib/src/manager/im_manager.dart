@@ -59,11 +59,11 @@ class IMManager {
         OpenIMManager._onEvent((listener) => listener.onSyncServerFailed());
         break;
       case 'OnNewConversation':
-        // var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        // var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
         // OpenIMManager._onEvent((listener) => listener.onNewConversation(list));
         break;
       case 'OnConversationChanged':
-        // var list = Utils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        // var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
         // OpenIMManager._onEvent((listener) => listener.onConversationChanged(list));
         break;
       case 'OnTotalUnreadMessageCountChanged':
@@ -81,7 +81,7 @@ class IMManager {
     //     dynamic data = call.arguments['data'];
     //     switch (type) {
     //       case 'onSelfInfoUpdated':
-    //         uInfo = Utils.toObj(data, (map) => UserInfo.fromJson(map));
+    //         uInfo = IMUtils.toObj(data, (map) => UserInfo.fromJson(map));
     //         // userManager.listener.selfInfoUpdated(uInfo);
     //         break;
     //     }
@@ -90,43 +90,43 @@ class IMManager {
     //     dynamic data = call.arguments['data'];
     //     switch (type) {
     //       case 'onGroupApplicationAccepted':
-    //         final i = Utils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
     //         groupManager.listener.groupApplicationAccepted(i);
     //         break;
     //       case 'onGroupApplicationAdded':
-    //         final i = Utils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
     //         groupManager.listener.groupApplicationAdded(i);
     //         break;
     //       case 'onGroupApplicationDeleted':
-    //         final i = Utils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
     //         groupManager.listener.groupApplicationDeleted(i);
     //         break;
     //       case 'onGroupApplicationRejected':
-    //         final i = Utils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
     //         groupManager.listener.groupApplicationRejected(i);
     //         break;
     //       case 'onGroupInfoChanged':
-    //         final i = Utils.toObj(data, (map) => GroupInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupInfo.fromJson(map));
     //         groupManager.listener.groupInfoChanged(i);
     //         break;
     //       case 'onGroupMemberAdded':
-    //         final i = Utils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
     //         groupManager.listener.groupMemberAdded(i);
     //         break;
     //       case 'onGroupMemberDeleted':
-    //         final i = Utils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
     //         groupManager.listener.groupMemberDeleted(i);
     //         break;
     //       case 'onGroupMemberInfoChanged':
-    //         final i = Utils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
     //         groupManager.listener.groupMemberInfoChanged(i);
     //         break;
     //       case 'onJoinedGroupAdded':
-    //         final i = Utils.toObj(data, (map) => GroupInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupInfo.fromJson(map));
     //         groupManager.listener.joinedGroupAdded(i);
     //         break;
     //       case 'onJoinedGroupDeleted':
-    //         final i = Utils.toObj(data, (map) => GroupInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupInfo.fromJson(map));
     //         groupManager.listener.joinedGroupDeleted(i);
     //         break;
     //     }
@@ -136,7 +136,7 @@ class IMManager {
     //     switch (type) {
     //       case 'onRecvNewMessage':
     //         var value = call.arguments['data']['newMessage'];
-    //         final msg = Utils.toObj(value, (map) => Message.fromJson(map));
+    //         final msg = IMUtils.toObj(value, (map) => Message.fromJson(map));
     //         messageManager.msgListener.recvNewMessage(msg);
     //         break;
     //       case 'onRecvMessageRevoked':
@@ -145,35 +145,35 @@ class IMManager {
     //         break;
     //       case 'onRecvC2CReadReceipt':
     //         var value = call.arguments['data']['c2cMessageReadReceipt'];
-    //         var list = Utils.toList(value, (map) => ReadReceiptInfo.fromJson(map));
+    //         var list = IMUtils.toList(value, (map) => ReadReceiptInfo.fromJson(map));
     //         messageManager.msgListener.recvC2CMessageReadReceipt(list);
     //         break;
     //       case 'onRecvGroupReadReceipt':
     //         var value = call.arguments['data']['groupMessageReadReceipt'];
-    //         var list = Utils.toList(value, (map) => ReadReceiptInfo.fromJson(map));
+    //         var list = IMUtils.toList(value, (map) => ReadReceiptInfo.fromJson(map));
     //         messageManager.msgListener.recvGroupMessageReadReceipt(list);
     //         break;
     //       case 'onNewRecvMessageRevoked':
     //         var value = call.arguments['data']['revokedMessageV2'];
-    //         var info = Utils.toObj(value, (map) => RevokedInfo.fromJson(map));
+    //         var info = IMUtils.toObj(value, (map) => RevokedInfo.fromJson(map));
     //         messageManager.msgListener.recvMessageRevokedV2(info);
     //         break;
     //       case 'onRecvMessageExtensionsChanged':
     //         var msgID = call.arguments['data']['msgID'];
     //         var value = call.arguments['data']['list'];
-    //         var list = Utils.toList(value, (map) => KeyValue.fromJson(map));
+    //         var list = IMUtils.toList(value, (map) => KeyValue.fromJson(map));
     //         messageManager.msgListener.recvMessageExtensionsChanged(msgID, list);
     //         break;
     //       case 'onRecvMessageExtensionsDeleted':
     //         var msgID = call.arguments['data']['msgID'];
     //         var value = call.arguments['data']['list'];
-    //         var list = Utils.toList(value, (map) => '$map');
+    //         var list = IMUtils.toList(value, (map) => '$map');
     //         messageManager.msgListener.recvMessageExtensionsDeleted(msgID, list);
     //         break;
     //       case 'onRecvMessageExtensionsAdded':
     //         var msgID = call.arguments['data']['msgID'];
     //         var value = call.arguments['data']['list'];
-    //         var list = Utils.toList(value, (map) => KeyValue.fromJson(map));
+    //         var list = IMUtils.toList(value, (map) => KeyValue.fromJson(map));
     //         messageManager.msgListener.recvMessageExtensionsAdded(msgID, list);
     //         break;
     //     }
@@ -201,39 +201,39 @@ class IMManager {
 
     //     switch (type) {
     //       case 'onBlacklistAdded':
-    //         final u = Utils.toObj(data, (map) => BlacklistInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => BlacklistInfo.fromJson(map));
     //         friendshipManager.listener.blacklistAdded(u);
     //         break;
     //       case 'onBlacklistDeleted':
-    //         final u = Utils.toObj(data, (map) => BlacklistInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => BlacklistInfo.fromJson(map));
     //         friendshipManager.listener.blacklistDeleted(u);
     //         break;
     //       case 'onFriendApplicationAccepted':
-    //         final u = Utils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
     //         friendshipManager.listener.friendApplicationAccepted(u);
     //         break;
     //       case 'onFriendApplicationAdded':
-    //         final u = Utils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
     //         friendshipManager.listener.friendApplicationAdded(u);
     //         break;
     //       case 'onFriendApplicationDeleted':
-    //         final u = Utils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
     //         friendshipManager.listener.friendApplicationDeleted(u);
     //         break;
     //       case 'onFriendApplicationRejected':
-    //         final u = Utils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
     //         friendshipManager.listener.friendApplicationRejected(u);
     //         break;
     //       case 'onFriendInfoChanged':
-    //         final u = Utils.toObj(data, (map) => FriendInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendInfo.fromJson(map));
     //         friendshipManager.listener.friendInfoChanged(u);
     //         break;
     //       case 'onFriendAdded':
-    //         final u = Utils.toObj(data, (map) => FriendInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendInfo.fromJson(map));
     //         friendshipManager.listener.friendAdded(u);
     //         break;
     //       case 'onFriendDeleted':
-    //         final u = Utils.toObj(data, (map) => FriendInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendInfo.fromJson(map));
     //         friendshipManager.listener.friendDeleted(u);
     //         break;
     //     }
@@ -244,16 +244,16 @@ class IMManager {
     //     switch (type) {
     //       case 'onRoomParticipantConnected':
     //       case 'onRoomParticipantDisconnected':
-    //         info = Utils.toObj(data, (map) => RoomCallingInfo.fromJson(map));
+    //         info = IMUtils.toObj(data, (map) => RoomCallingInfo.fromJson(map));
     //         break;
     //       case 'onStreamChange':
-    //         info = Utils.toObj(data, (map) => MeetingStreamEvent.fromJson(map));
+    //         info = IMUtils.toObj(data, (map) => MeetingStreamEvent.fromJson(map));
     //         break;
     //       case 'onReceiveCustomSignal':
-    //         info = Utils.toObj(data, (map) => CustomSignaling.fromJson(map));
+    //         info = IMUtils.toObj(data, (map) => CustomSignaling.fromJson(map));
     //         break;
     //       default:
-    //         info = Utils.toObj(data, (map) => SignalingInfo.fromJson(map));
+    //         info = IMUtils.toObj(data, (map) => SignalingInfo.fromJson(map));
     //         break;
     //     }
     //     switch (type) {
@@ -321,7 +321,7 @@ class IMManager {
     //     String data = call.arguments['data'];
     //     switch (type) {
     //       case 'onMessageKvInfoChanged':
-    //         final list = Utils.toList(data, (map) => MessageKv.fromJson(map)).toList();
+    //         final list = IMUtils.toList(data, (map) => MessageKv.fromJson(map)).toList();
     //         messageManager.messageKvInfoListener?.messageKvInfoChanged(list);
     //         break;
     //     }
@@ -330,23 +330,23 @@ class IMManager {
     //     String data = call.arguments['data'];
     //     switch (type) {
     //       case 'onFriendApplicationAccepted':
-    //         final u = Utils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
     //         _listenerForService?.friendApplicationAccepted(u);
     //         break;
     //       case 'onFriendApplicationAdded':
-    //         final u = Utils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
+    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
     //         _listenerForService?.friendApplicationAdded(u);
     //         break;
     //       case 'onGroupApplicationAccepted':
-    //         final i = Utils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
     //         _listenerForService?.groupApplicationAccepted(i);
     //         break;
     //       case 'onGroupApplicationAdded':
-    //         final i = Utils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
+    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
     //         _listenerForService?.groupApplicationAdded(i);
     //         break;
     //       case 'onRecvNewMessage':
-    //         final msg = Utils.toObj(data, (map) => Message.fromJson(map));
+    //         final msg = IMUtils.toObj(data, (map) => Message.fromJson(map));
     //         _listenerForService?.recvNewMessage(msg);
     //         break;
     //     }
@@ -380,7 +380,7 @@ class IMManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.login,
-      data: {'operationID': Utils.checkOperationID(operationID), 'uid': uid, 'token': token},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'uid': uid, 'token': token},
       sendPort: receivePort.sendPort,
     ));
     await receivePort.first;
@@ -402,7 +402,7 @@ class IMManager {
     var value = await _channel.invokeMethod(
         'logout',
         _buildParam({
-          'operationID': Utils.checkOperationID(operationID),
+          'operationID': IMUtils.checkOperationID(operationID),
         }));
     this.isLogined = false;
     this.token = null;
@@ -422,7 +422,7 @@ class IMManager {
   Future wakeUp({String? operationID}) => _channel.invokeMethod(
       'wakeUp',
       _buildParam({
-        'operationID': Utils.checkOperationID(operationID),
+        'operationID': IMUtils.checkOperationID(operationID),
       }));
 
   /// 上传图片到服务器
@@ -441,7 +441,7 @@ class IMManager {
             'path': path,
             'token': token ?? this.token,
             'obj': objectStorage ?? this._objectStorage,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 更新firebase客户端注册token
@@ -460,7 +460,7 @@ class IMManager {
           'setAppBackgroundStatus',
           _buildParam({
             'isBackground': isBackground,
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   /// 网络改变
@@ -470,7 +470,7 @@ class IMManager {
       _channel.invokeMethod(
           'networkChanged',
           _buildParam({
-            'operationID': Utils.checkOperationID(operationID),
+            'operationID': IMUtils.checkOperationID(operationID),
           }));
 
   ///

@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'flutter_openim_sdk_ffi_bindings_generated.dart';
 import 'openim_sdk_ffi_bindings_generated.dart';
-import 'src/utils.dart';
+import 'src/Utils.dart';
 
 part './src/openim.dart';
 part './src/models/workmoments_info.dart';
