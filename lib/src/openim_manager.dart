@@ -137,6 +137,7 @@ class OpenIMManager {
   static _onSuccess(_PortModel msg) {
     switch (msg.callMethodName) {
       case _PortMethod.getUsersInfo:
+      case _PortMethod.getAllConversationList:
         if (msg.operationID != null) {
           _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toListMap(msg.data)));
           _sendPortMap.remove(msg.operationID!);

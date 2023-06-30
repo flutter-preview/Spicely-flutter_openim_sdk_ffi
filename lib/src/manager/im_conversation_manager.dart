@@ -23,9 +23,12 @@ class ConversationManager {
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
     ));
-    final value = await receivePort.first;
+    final result = await receivePort.first;
     receivePort.close();
-    return IMUtils.toList(value, (v) => ConversationInfo.fromJson(v));
+    if (result.error != null) {
+      throw Exception(result.error!);
+    }
+    return IMUtils.toList(result.data, (map) => ConversationInfo.fromJson(map));
   }
 
   /// 分页获取会话
@@ -43,9 +46,12 @@ class ConversationManager {
       data: {'operationID': IMUtils.checkOperationID(operationID), 'offset': offset, 'count': count},
       sendPort: receivePort.sendPort,
     ));
-    final value = await receivePort.first;
+    final result = await receivePort.first;
     receivePort.close();
-    return IMUtils.toList(value, (v) => ConversationInfo.fromJson(v));
+    if (result.error != null) {
+      throw Exception(result.error!);
+    }
+    return IMUtils.toList(result.data, (map) => ConversationInfo.fromJson(map));
   }
 
   /// 查询会话，如果会话不存在会自动生成一个
@@ -63,9 +69,12 @@ class ConversationManager {
       data: {'operationID': IMUtils.checkOperationID(operationID), 'sessionType': sessionType, 'sourceID': sourceID},
       sendPort: receivePort.sendPort,
     ));
-    final value = await receivePort.first;
+    final result = await receivePort.first;
     receivePort.close();
-    return ConversationInfo.fromJson(value);
+    if (result.error != null) {
+      throw Exception(result.error!);
+    }
+    return ConversationInfo.fromJson(Map.from(result.data));
   }
 
   /// 根据会话id获取多个会话
