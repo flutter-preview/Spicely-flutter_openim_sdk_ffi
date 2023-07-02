@@ -1,66 +1,12 @@
 part of flutter_openim_sdk_ffi;
 
-void _onRecvNewMessage(ffi.Pointer<ffi.Char> data) {
-  print('_onRecvNewMessage');
-  // Message msg = IMUtils.toObj(data.toDartString(), (map) => Message.fromJson(map));
-}
-
-void _onMsgDeleted(ffi.Pointer<ffi.Char> data) {
-  print('_onMsgDeleted');
-  // Message msg = IMUtils.toObj(data.toDartString(), (map) => Message.fromJson(map));
-  // msgListener.?.call(msg);
-}
-
-void _onNewRecvMessageRevoked(ffi.Pointer<ffi.Char> data) {
-  print('_onNewRecvMessageRevoked');
-  // Message msg = IMUtils.toObj(data.toDartString(), (map) => Message.fromJson(map));
-  // msgListener.?.call(msg);
-}
-
-void _onRecvC2CReadReceipt(ffi.Pointer<ffi.Char> data) {
-  print('_onRecvC2CReadReceipt');
-}
-
-void _onRecvMessageExtensionsAdded(ffi.Pointer<ffi.Char> id, ffi.Pointer<ffi.Char> data) {
-  print('_onRecvMessageExtensionsAdded');
-}
-
-void _onRecvMessageExtensionsChanged(ffi.Pointer<ffi.Char> id, ffi.Pointer<ffi.Char> data) {
-  print('onRecvMessageExtensionsChanged');
-}
-
-void _onRecvMessageExtensionsDeleted(ffi.Pointer<ffi.Char> id, ffi.Pointer<ffi.Char> data) {
-  print('_onRecvMessageExtensionsDeleted');
-}
-
-void _onRecvGroupReadReceipt(ffi.Pointer<ffi.Char> data) {
-  print('_onRecvC2CReadReceipt');
-}
-
-void _onRecvOfflineNewMessages(ffi.Pointer<ffi.Char> data) {
-  print('_onRecvC2CReadReceipt');
-}
-
 class MessageManager {
-  MethodChannel _channel;
-
   OnMsgSendProgressListener? msgSendProgressListener;
   late OnAdvancedMsgListener msgListener;
   OnCustomBusinessListener? customBusinessListener;
   OnMessageKvInfoListener? messageKvInfoListener;
 
-  MessageManager(this._channel);
-
-  /// 消息监听
-  void setAdvancedMsgListener(OnAdvancedMsgListener listener) {
-    msgListener = listener;
-    // _bindings.SetAdvancedMsgListener();
-  }
-
-  /// 消息发送进度监听
-  void setMsgSendProgressListener(OnMsgSendProgressListener listener) {
-    msgSendProgressListener = listener;
-  }
+  MessageManager();
 
   /// 发送消息
   /// [message] 消息体
@@ -73,18 +19,25 @@ class MessageManager {
     String? userID,
     String? groupID,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'sendMessage',
-              _buildParam({
-                'message': message.toJson(),
-                'offlinePushInfo': offlinePushInfo.toJson(),
-                'userID': userID ?? '',
-                'groupID': groupID ?? '',
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.sendMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+        'offlinePushInfo': offlinePushInfo.toJson(),
+        'userID': userID ?? '',
+        'groupID': groupID ?? '',
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 获取聊天记录(以startMsg为节点，以前的聊天记录)
   /// [userID] 接收消息的用户id
@@ -99,46 +52,73 @@ class MessageManager {
     Message? startMsg,
     int? count,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getHistoryMessageList',
-              _buildParam({
-                'userID': userID ?? '',
-                'groupID': groupID ?? '',
-                'conversationID': conversationID ?? '',
-                'startClientMsgID': startMsg?.clientMsgID ?? '',
-                'count': count ?? 10,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getHistoryMessageList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'userID': userID ?? '',
+        'groupID': groupID ?? '',
+        'conversationID': conversationID ?? '',
+        'startClientMsgID': startMsg?.clientMsgID ?? '',
+        'count': count ?? 10,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => Message.fromJson(map));
+  }
 
   /// 撤回消息[revokeMessageV2]
   /// [message] 被撤回的消息体
   @deprecated
-  Future revokeMessage({
+  Future<void> revokeMessage({
     required Message message,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'revokeMessage',
-          _buildParam(message.toJson()
-            ..addAll({
-              "operationID": IMUtils.checkOperationID(operationID),
-            })));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.revokeMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 删除本地消息
   /// [message] 被删除的消息体
-  Future deleteMessageFromLocalStorage({
+  Future<void> deleteMessageFromLocalStorage({
     required Message message,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'deleteMessageFromLocalStorage',
-          _buildParam(message.toJson()
-            ..addAll({
-              "operationID": IMUtils.checkOperationID(operationID),
-            })));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.deleteMessageFromLocalStorage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 插入单聊消息到本地
   /// [receiverID] 接收者id
@@ -149,17 +129,23 @@ class MessageManager {
     String? senderID,
     Message? message,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'insertSingleMessageToLocalStorage',
-              _buildParam({
-                "message": message?.toJson(),
-                "receiverID": receiverID,
-                "senderID": senderID,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.insertSingleMessageToLocalStorage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message?.toJson(),
+        'receiverID': receiverID,
+        'senderID': senderID,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 插入群聊消息到本地
   /// [groupID] 群id
@@ -170,78 +156,117 @@ class MessageManager {
     String? senderID,
     Message? message,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'insertGroupMessageToLocalStorage',
-              _buildParam({
-                "message": message?.toJson(),
-                "groupID": groupID,
-                "senderID": senderID,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.insertGroupMessageToLocalStorage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message?.toJson(),
+        'groupID': groupID,
+        'senderID': senderID,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 标记c2c单条消息已读
   /// [userID] 消息来源的userID
   /// [messageIDList] 消息clientMsgID集合
-  Future markC2CMessageAsRead({
+  Future<void> markC2CMessageAsRead({
     required String userID,
     required List<String> messageIDList,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'markC2CMessageAsRead',
-          _buildParam({
-            "messageIDList": messageIDList,
-            "userID": userID,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.markC2CMessageAsRead,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'messageIDList': messageIDList,
+        'userID': userID,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 标记群聊消息已读
   /// [groupID] 群id
   /// [messageIDList] 消息clientMsgID集合
-  Future markGroupMessageAsRead({
+  Future<void> markGroupMessageAsRead({
     required String groupID,
     required List<String> messageIDList,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'markGroupMessageAsRead',
-          _buildParam({
-            "messageIDList": messageIDList,
-            "groupID": groupID,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.markGroupMessageAsRead,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'messageIDList': messageIDList,
+        'groupID': groupID,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 正在输入提示
   /// [msgTip] 自定义内容
-  Future typingStatusUpdate({
+  Future<void> typingStatusUpdate({
     required String userID,
     String? msgTip,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'typingStatusUpdate',
-          _buildParam({
-            "msgTip": msgTip,
-            "userID": userID,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.typingStatusUpdate,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'msgTip': msgTip,
+        'userID': userID,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 创建文本消息
   Future<Message> createTextMessage({
     required String text,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createTextMessage',
-              _buildParam({
-                'text': text,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createTextMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'text': text,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建@消息
   /// [text] 输入内容
@@ -254,51 +279,66 @@ class MessageManager {
     List<AtUserInfo> atUserInfoList = const [],
     Message? quoteMessage,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createTextAtMessage',
-            _buildParam({
-              'text': text,
-              'atUserIDList': atUserIDList,
-              'atUserInfoList': atUserInfoList.map((e) => e.toJson()).toList(),
-              'quoteMessage': quoteMessage?.toJson(),
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createTextAtMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'text': text,
+        'atUserIDList': atUserIDList,
+        'atUserInfoList': atUserInfoList.map((e) => e.toJson()).toList(),
+        'quoteMessage': quoteMessage?.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建图片消息
   /// [imagePath] 路径
   Future<Message> createImageMessage({
     required String imagePath,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createImageMessage',
-            _buildParam({
-              'imagePath': imagePath,
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createImageMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'imagePath': imagePath,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建图片消息
   /// [imagePath] 路径
   Future<Message> createImageMessageFromFullPath({
     required String imagePath,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createImageMessageFromFullPath',
-            _buildParam({
-              'imagePath': imagePath,
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createImageMessageFromFullPath,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'imagePath': imagePath,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建语音消息
   /// [soundPath] 路径
@@ -307,17 +347,22 @@ class MessageManager {
     required String soundPath,
     required int duration,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createSoundMessage',
-            _buildParam({
-              'soundPath': soundPath,
-              "duration": duration,
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createSoundMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'soundPath': soundPath,
+        'duration': duration,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建语音消息
   /// [soundPath] 路径
@@ -326,17 +371,22 @@ class MessageManager {
     required String soundPath,
     required int duration,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createSoundMessageFromFullPath',
-            _buildParam({
-              'soundPath': soundPath,
-              "duration": duration,
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createSoundMessageFromFullPath,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'soundPath': soundPath,
+        'duration': duration,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建视频消息
   /// [videoPath] 路径
@@ -349,18 +399,24 @@ class MessageManager {
     required int duration,
     required String snapshotPath,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createVideoMessage',
-              _buildParam({
-                'videoPath': videoPath,
-                'videoType': videoType,
-                'duration': duration,
-                'snapshotPath': snapshotPath,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createVideoMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'videoPath': videoPath,
+        'videoType': videoType,
+        'duration': duration,
+        'snapshotPath': snapshotPath,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建视频消息
   /// [videoPath] 路径
@@ -373,18 +429,24 @@ class MessageManager {
     required int duration,
     required String snapshotPath,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createVideoMessageFromFullPath',
-              _buildParam({
-                'videoPath': videoPath,
-                'videoType': videoType,
-                'duration': duration,
-                'snapshotPath': snapshotPath,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createVideoMessageFromFullPath,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'videoPath': videoPath,
+        'videoType': videoType,
+        'duration': duration,
+        'snapshotPath': snapshotPath,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建文件消息
   /// [filePath] 路径
@@ -393,16 +455,21 @@ class MessageManager {
     required String filePath,
     required String fileName,
     String? operationID,
-  }) {
-    return _channel
-        .invokeMethod(
-            'createFileMessage',
-            _buildParam({
-              'filePath': filePath,
-              'fileName': fileName,
-              "operationID": IMUtils.checkOperationID(operationID),
-            }))
-        .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createFileMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'filePath': filePath,
+        'fileName': fileName,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
   }
 
   /// 创建文件消息
@@ -412,16 +479,22 @@ class MessageManager {
     required String filePath,
     required String fileName,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createFileMessageFromFullPath',
-              _buildParam({
-                'filePath': filePath,
-                'fileName': fileName,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createFileMessageFromFullPath,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'filePath': filePath,
+        'fileName': fileName,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建合并消息
   /// [messageList] 被选中的消息
@@ -432,32 +505,43 @@ class MessageManager {
     required String title,
     required List<String> summaryList,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createMergerMessage',
-              _buildParam({
-                'messageList': messageList.map((e) => e.toJson()).toList(),
-                'title': title,
-                'summaryList': summaryList,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createMergerMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'messageList': messageList.map((e) => e.toJson()).toList(),
+        'title': title,
+        'summaryList': summaryList,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建转发消息
   /// [message] 被转发的消息
   Future<Message> createForwardMessage({
     required Message message,
     String? operationID,
-  }) {
-    return _channel
-        .invokeMethod(
-            'createForwardMessage',
-            _buildParam({
-              'message': message.toJson(),
-              "operationID": IMUtils.checkOperationID(operationID),
-            }))
-        .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createForwardMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
   }
 
   /// 创建位置消息
@@ -469,17 +553,23 @@ class MessageManager {
     required double longitude,
     required String description,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createLocationMessage',
-              _buildParam({
-                'latitude': latitude,
-                'longitude': longitude,
-                'description': description,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createLocationMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'latitude': latitude,
+        'longitude': longitude,
+        'description': description,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建自定义消息
   /// [data] 自定义数据
@@ -490,17 +580,23 @@ class MessageManager {
     required String extension,
     required String description,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createCustomMessage',
-              _buildParam({
-                'data': data,
-                'extension': extension,
-                'description': description,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createCustomMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'data': data,
+        'extension': extension,
+        'description': description,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建引用消息
   /// [text] 回复的内容
@@ -509,31 +605,43 @@ class MessageManager {
     required String text,
     required Message quoteMsg,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createQuoteMessage',
-              _buildParam({
-                'quoteText': text,
-                'quoteMessage': quoteMsg.toJson(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createQuoteMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'text': text,
+        'quoteMsg': quoteMsg.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建卡片消息
   /// [data] 自定义数据
   Future<Message> createCardMessage({
     required Map<String, dynamic> data,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createCardMessage',
-              _buildParam({
-                'cardMessage': data,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createCardMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'data': data,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 创建自定义表情消息
   /// [index] 位置表情，根据index匹配
@@ -542,42 +650,66 @@ class MessageManager {
     int index = -1,
     String? data,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createFaceMessage',
-              _buildParam({
-                'index': index,
-                'data': data,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createFaceMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'index': index,
+        'data': data,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(Map.from(result.value));
+  }
 
   /// 清空单聊消息记录
   /// [uid] 单聊对象id
-  Future<dynamic> clearC2CHistoryMessage({
+  Future<void> clearC2CHistoryMessage({
     required String uid,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'clearC2CHistoryMessage',
-          _buildParam({
-            "userID": uid,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.clearC2CHistoryMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'uid': uid,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 清空组消息记录
   /// [gid] 组id
-  Future<dynamic> clearGroupHistoryMessage({
+  Future<void> clearGroupHistoryMessage({
     required String gid,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'clearGroupHistoryMessage',
-          _buildParam({
-            "groupID": gid,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.clearGroupHistoryMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'gid': gid,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 搜索消息
   /// [conversationID] 根据会话查询，如果是全局搜索传null
@@ -600,100 +732,158 @@ class MessageManager {
     int pageIndex = 1,
     int count = 40,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'searchLocalMessages',
-              _buildParam({
-                'filter': {
-                  'conversationID': conversationID,
-                  'keywordList': keywordList,
-                  'keywordListMatchType': keywordListMatchType,
-                  'senderUserIDList': senderUserIDList,
-                  'messageTypeList': messageTypeList,
-                  'searchTimePosition': searchTimePosition,
-                  'searchTimePeriod': searchTimePeriod,
-                  'pageIndex': pageIndex,
-                  'count': count,
-                },
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SearchResult());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.searchLocalMessages,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'conversationID': conversationID,
+        'keywordList': keywordList,
+        'keywordListMatchType': keywordListMatchType,
+        'senderUserIDList': senderUserIDList,
+        'messageTypeList': messageTypeList,
+        'searchTimePosition': searchTimePosition,
+        'searchTimePeriod': searchTimePeriod,
+        'pageIndex': pageIndex,
+        'count': count,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SearchResult.fromJson(Map.from(result.value));
+  }
 
   /// 删除本地跟服务器的指定的消息
   /// [message] 被删除的消息
-  Future<dynamic> deleteMessageFromLocalAndSvr({
+  Future<void> deleteMessageFromLocalAndSvr({
     required Message message,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'deleteMessageFromLocalAndSvr',
-          _buildParam(message.toJson()
-            ..addAll({
-              "operationID": IMUtils.checkOperationID(operationID),
-            })));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.deleteMessageFromLocalAndSvr,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 删除本地所有聊天记录
-  Future<dynamic> deleteAllMsgFromLocal({
+  Future<void> deleteAllMsgFromLocal({
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'deleteAllMsgFromLocal',
-          _buildParam({
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.deleteAllMsgFromLocal,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 删除本地跟服务器所有聊天记录
-  Future<dynamic> deleteAllMsgFromLocalAndSvr({
+  Future<void> deleteAllMsgFromLocalAndSvr({
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'deleteAllMsgFromLocalAndSvr',
-          _buildParam({
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.deleteAllMsgFromLocalAndSvr,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 标记消息已读
   /// [conversationID] 会话ID
   /// [messageIDList] 被标记的消息clientMsgID
-  Future markMessageAsReadByConID({
+  Future<void> markMessageAsReadByConID({
     required String conversationID,
     required List<String> messageIDList,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'markMessageAsReadByConID',
-          _buildParam({
-            "messageIDList": messageIDList,
-            "conversationID": conversationID,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.markMessageAsReadByConID,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'conversationID': conversationID,
+        'messageIDList': messageIDList,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 删除本地跟服务器的单聊聊天记录
   /// [uid] 聊天对象的userID
-  Future<dynamic> clearC2CHistoryMessageFromLocalAndSvr({
+  Future<void> clearC2CHistoryMessageFromLocalAndSvr({
     required String uid,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'clearC2CHistoryMessageFromLocalAndSvr',
-          _buildParam({
-            "userID": uid,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.clearC2CHistoryMessageFromLocalAndSvr,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'uid': uid,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 删除本地跟服务器的群聊天记录
   /// [gid] 组id
-  Future<dynamic> clearGroupHistoryMessageFromLocalAndSvr({
+  Future<void> clearGroupHistoryMessageFromLocalAndSvr({
     required String gid,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'clearGroupHistoryMessageFromLocalAndSvr',
-          _buildParam({
-            "groupID": gid,
-            "operationID": IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.clearGroupHistoryMessageFromLocalAndSvr,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'gid': gid,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 获取聊天记录(以startMsg为节点，新收到的聊天记录)，用在全局搜索定位某一条消息，然后此条消息后新增的消息
   /// [userID] 接收消息的用户id
@@ -708,32 +898,47 @@ class MessageManager {
     Message? startMsg,
     int? count,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getHistoryMessageListReverse',
-              _buildParam({
-                'userID': userID ?? '',
-                'groupID': groupID ?? '',
-                'conversationID': conversationID ?? '',
-                'startClientMsgID': startMsg?.clientMsgID ?? '',
-                'count': count ?? 10,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getHistoryMessageListReverse,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'userID': userID,
+        'groupID': groupID,
+        'conversationID': conversationID,
+        'startMsg': startMsg?.toJson(),
+        'count': count,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => Message.fromJson(map));
+  }
 
   /// 撤回消息
   /// [message] 被撤回的消息体
-  Future revokeMessageV2({
+  Future<void> revokeMessageV2({
     required Message message,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'newRevokeMessage',
-          _buildParam(message.toJson()
-            ..addAll({
-              "operationID": IMUtils.checkOperationID(operationID),
-            })));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.revokeMessageV2,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 获取聊天记录(以startMsg为节点，以前的聊天记录)
   /// [userID] 接收消息的用户id
@@ -750,20 +955,26 @@ class MessageManager {
     Message? startMsg,
     int? count,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getAdvancedHistoryMessageList',
-              _buildParam({
-                'userID': userID ?? '',
-                'groupID': groupID ?? '',
-                'conversationID': conversationID ?? '',
-                'startClientMsgID': startMsg?.clientMsgID ?? '',
-                'count': count ?? 40,
-                'lastMinSeq': lastMinSeq ?? 0,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => AdvancedMessage());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getAdvancedHistoryMessageList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'userID': userID,
+        'groupID': groupID,
+        'conversationID': conversationID,
+        'lastMinSeq': lastMinSeq,
+        'startMsg': startMsg?.toJson(),
+        'count': count,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return AdvancedMessage.fromJson(result.value);
+  }
 
   /// 查找消息详细
   /// [conversationID] 会话id
@@ -771,15 +982,21 @@ class MessageManager {
   Future<SearchResult> findMessageList({
     required List<SearchParams> searchParams,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'findMessageList',
-              _buildParam({
-                'searchParams': searchParams.map((e) => e.toJson()).toList(),
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SearchResult());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.findMessageList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'searchParams': searchParams.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SearchResult.fromJson(result.value);
+  }
 
   /// 富文本消息
   /// [text] 输入内容
@@ -788,17 +1005,22 @@ class MessageManager {
     required String text,
     List<RichMessageInfo> list = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createAdvancedTextMessage',
-            _buildParam({
-              'text': text,
-              'richMessageInfoList': list.map((e) => e.toJson()).toList(),
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createAdvancedTextMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'text': text,
+        'richMessageInfoList': list.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(result.value);
+  }
 
   /// 富文本消息
   /// [text] 回复的内容
@@ -809,17 +1031,23 @@ class MessageManager {
     required Message quoteMsg,
     List<RichMessageInfo> list = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createAdvancedQuoteMessage',
-              _buildParam({
-                'quoteText': text,
-                'quoteMessage': quoteMsg.toJson(),
-                'richMessageInfoList': list.map((e) => e.toJson()).toList(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createAdvancedQuoteMessage,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'text': text,
+        'quoteMsg': quoteMsg.toJson(),
+        'richMessageInfoList': list.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(result.value);
+  }
 
   /// 发送消息
   /// [message] 消息体 [createImageMessageByURL],[createSoundMessageByURL],[createVideoMessageByURL],[createFileMessageByURL]
@@ -832,18 +1060,24 @@ class MessageManager {
     String? userID,
     String? groupID,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'sendMessageNotOss',
-              _buildParam({
-                'message': message.toJson(),
-                'offlinePushInfo': offlinePushInfo.toJson(),
-                'userID': userID ?? '',
-                'groupID': groupID ?? '',
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.sendMessageNotOss,
+      data: {
+        'message': message.toJson(),
+        'offlinePushInfo': offlinePushInfo.toJson(),
+        'userID': userID ?? '',
+        'groupID': groupID ?? '',
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(result.value);
+  }
 
   /// 创建图片消息
   Future<Message> createImageMessageByURL({
@@ -851,146 +1085,186 @@ class MessageManager {
     required PictureInfo bigPicture,
     required PictureInfo snapshotPicture,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createImageMessageByURL',
-            _buildParam({
-              'sourcePicture': sourcePicture.toJson(),
-              'bigPicture': bigPicture.toJson(),
-              'snapshotPicture': snapshotPicture.toJson(),
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createImageMessageByURL,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'sourcePicture': sourcePicture.toJson(),
+        'bigPicture': bigPicture.toJson(),
+        'snapshotPicture': snapshotPicture.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(result.value);
+  }
 
   /// 创建语音消息
   Future<Message> createSoundMessageByURL({
     required SoundElem soundElem,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-            'createSoundMessageByURL',
-            _buildParam({
-              'soundElem': soundElem.toJson(),
-              "operationID": IMUtils.checkOperationID(operationID),
-            }),
-          )
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createSoundMessageByURL,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'soundElem': soundElem.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(result.value);
+  }
 
   /// 创建视频消息
   Future<Message> createVideoMessageByURL({
     required VideoElem videoElem,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createVideoMessageByURL',
-              _buildParam({
-                'videoElem': videoElem.toJson(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createVideoMessageByURL,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'videoElem': videoElem.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return Message.fromJson(result.value);
+  }
 
   /// 创建视频消息
   Future<Message> createFileMessageByURL({
     required FileElem fileElem,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createFileMessageByURL',
-              _buildParam({
-                'fileElem': fileElem.toJson(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => Message());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createFileMessageByURL,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'fileElem': fileElem.toJson(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
 
-  /// 用户资料改变监听
-  Future setCustomBusinessListener(OnCustomBusinessListener listener) {
-    this.customBusinessListener = listener;
-    return _channel.invokeMethod('setCustomBusinessListener', _buildParam({}));
-  }
-
-  ///
-  Future setMessageKvInfoListener(OnMessageKvInfoListener listener) {
-    this.messageKvInfoListener = listener;
-    return _channel.invokeMethod('setMessageKvInfoListener', _buildParam({}));
+    return Message.fromJson(result.value);
   }
 
   Future<List<TypeKeySetResult>> setMessageReactionExtensions({
     required Message message,
     List<KeyValue> list = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'setMessageReactionExtensions',
-              _buildParam({
-                'message': message.toJson(),
-                'list': list.map((e) => e.toJson()).toList(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setMessageReactionExtensions,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+        'list': list.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => TypeKeySetResult.fromJson(map));
+  }
 
   Future<List<TypeKeySetResult>> deleteMessageReactionExtensions({
     required Message message,
     List<String> list = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'deleteMessageReactionExtensions',
-              _buildParam({
-                'message': message.toJson(),
-                'list': list,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.deleteMessageReactionExtensions,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+        'list': list,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => TypeKeySetResult.fromJson(map));
+  }
 
   Future<List<MessageTypeKeyMapping>> getMessageListReactionExtensions({
     List<Message> messageList = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getMessageListReactionExtensions',
-              _buildParam({
-                'messageList': messageList.map((e) => e.toJson()).toList(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getMessageListReactionExtensions,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'messageList': messageList.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => MessageTypeKeyMapping.fromJson(map));
+  }
 
   Future<List<TypeKeySetResult>> addMessageReactionExtensions({
     required Message message,
     List<KeyValue> list = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'addMessageReactionExtensions',
-              _buildParam({
-                'message': message.toJson(),
-                'list': list.map((e) => e.toJson()).toList(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.addMessageReactionExtensions,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'message': message.toJson(),
+        'list': list.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => TypeKeySetResult.fromJson(map));
+  }
 
   Future<List<MessageTypeKeyMapping>> getMessageListSomeReactionExtensions({
     List<Message> messageList = const [],
     List<KeyValue> kvList = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getMessageListSomeReactionExtensions',
-              _buildParam({
-                'messageList': messageList.map((e) => e.toJson()).toList(),
-                'list': kvList.map((e) => e.toJson()).toList(),
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getMessageListSomeReactionExtensions,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'messageList': messageList.map((e) => e.toJson()).toList(),
+        'kvList': kvList.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => MessageTypeKeyMapping.fromJson(map));
+  }
 
   static Map _buildParam(Map param) {
     param["ManagerName"] = "messageManager";

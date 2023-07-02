@@ -1,17 +1,6 @@
 part of flutter_openim_sdk_ffi;
 
 class GroupManager {
-  MethodChannel _channel;
-  late OnGroupListener listener;
-
-  GroupManager(this._channel);
-
-  /// 组关系监听
-  Future setGroupListener(OnGroupListener listener) {
-    this.listener = listener;
-    return _channel.invokeMethod('setGroupListener', _buildParam({}));
-  }
-
   /// 邀请进组，直接进组无需同意。
   /// [groupId] 组ID
   /// [uidList] 用户ID列表
@@ -20,17 +9,23 @@ class GroupManager {
     required List<String> uidList,
     String? reason,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'inviteUserToGroup',
-              _buildParam({
-                'gid': groupId,
-                'reason': reason,
-                'uidList': uidList,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.inviteUserToGroup,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'uidList': uidList,
+        'reason': reason,
+        'groupId': groupId,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupInviteResult.fromJson(map));
+  }
 
   /// 移除组成员
   /// [groupId] 组ID
@@ -41,17 +36,23 @@ class GroupManager {
     required List<String> uidList,
     String? reason,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'kickGroupMember',
-              _buildParam({
-                'gid': groupId,
-                'reason': reason,
-                'uidList': uidList,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.kickGroupMember,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'uidList': uidList,
+        'reason': reason,
+        'groupId': groupId,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupInviteResult.fromJson(map));
+  }
 
   /// 查询组成员资料
   /// [groupId] 组ID
@@ -60,16 +61,22 @@ class GroupManager {
     required String groupId,
     required List<String> uidList,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getGroupMembersInfo',
-              _buildParam({
-                'gid': groupId,
-                'uidList': uidList,
-                "operationID": IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getGroupMembersInfo,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'uidList': uidList,
+        'groupId': groupId,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupMembersInfo.fromJson(map));
+  }
 
   /// 分页获取组成员列表
   /// [groupId] 群ID
@@ -82,18 +89,24 @@ class GroupManager {
     int offset = 0,
     int count = 0,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getGroupMemberList',
-              _buildParam({
-                'gid': groupId,
-                'filter': filter,
-                'offset': offset,
-                'count': count,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getGroupMemberList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'filter': filter,
+        'offset': offset,
+        'count': count,
+        'groupId': groupId,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupMembersInfo.fromJson(map));
+  }
 
   /// 分页获取组成员列表
   /// [groupId] 群ID
@@ -106,36 +119,56 @@ class GroupManager {
     int offset = 0,
     int count = 0,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getGroupMemberList',
-              _buildParam({
-                'gid': groupId,
-                'filter': filter,
-                'offset': offset,
-                'count': count,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => IMUtils.toListMap(value));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getGroupMemberList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'filter': filter,
+        'offset': offset,
+        'count': count,
+        'groupId': groupId,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toListMap(result.value);
+  }
 
   /// 查询已加入的组列表
-  Future<List<GroupInfo>> getJoinedGroupList({String? operationID}) => _channel
-      .invokeMethod(
-          'getJoinedGroupList',
-          _buildParam({
-            'operationID': IMUtils.checkOperationID(operationID),
-          }))
-      .then((value) => []);
+  Future<List<GroupInfo>> getJoinedGroupList({String? operationID}) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getJoinedGroupList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupInfo.fromJson(map));
+  }
 
   /// 查询已加入的组列表
-  Future<List<dynamic>> getJoinedGroupListMap({String? operationID}) => _channel
-      .invokeMethod(
-          'getJoinedGroupList',
-          _buildParam({
-            'operationID': IMUtils.checkOperationID(operationID),
-          }))
-      .then((value) => IMUtils.toListMap(value));
+  Future<List<dynamic>> getJoinedGroupListMap({String? operationID}) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getJoinedGroupList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toListMap(result.value);
+  }
 
   /// 检查是否已加入组
   /// [gid] 组ID
@@ -145,7 +178,7 @@ class GroupManager {
   }) =>
       getJoinedGroupList(
         operationID: IMUtils.checkOperationID(operationID),
-      ).then((list) => list.where((e) => e.groupID == gid).length > 0);
+      ).then((list) => list.where((e) => e.groupID == gid).isNotEmpty);
 
   /// 创建一个组
   /// [groupName] 群名
@@ -164,23 +197,29 @@ class GroupManager {
     String? ex,
     required List<GroupMemberRole> list,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'createGroup',
-              _buildParam({
-                'gInfo': {
-                  "groupName": groupName,
-                  "notification": notification,
-                  "introduction": introduction,
-                  "faceURL": faceUrl,
-                  "groupType": groupType,
-                  "ex": ex,
-                },
-                'memberList': list.map((e) => e.toJson()).toList(),
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => GroupInfo(groupID: '1', groupName: '1'));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createGroup,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'gInfo': {
+          "groupName": groupName,
+          "notification": notification,
+          "introduction": introduction,
+          "faceURL": faceUrl,
+          "groupType": groupType,
+          "ex": ex,
+        },
+        'memberList': list.map((e) => e.toJson()).toList(),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return GroupInfo.fromJson(result.value);
+  }
 
   /// 编辑组资料
   /// [groupID] 被编辑的群ID
@@ -189,7 +228,7 @@ class GroupManager {
   /// [introduction] 新的群介绍
   /// [faceUrl] 新的群头像
   /// [ex] 新的额外信息
-  Future<dynamic> setGroupInfo({
+  Future<void> setGroupInfo({
     required String groupID,
     String? groupName,
     String? notification,
@@ -197,186 +236,286 @@ class GroupManager {
     String? faceUrl,
     String? ex,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setGroupInfo',
-          _buildParam({
-            "gid": groupID,
-            'gInfo': {
-              // "groupID": groupID,
-              "groupName": groupName,
-              "notification": notification,
-              "introduction": introduction,
-              "faceURL": faceUrl,
-              "ex": ex,
-            },
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setGroupInfo,
+      data: {
+        "gid": groupID,
+        'gInfo': {
+          "groupName": groupName,
+          "notification": notification,
+          "introduction": introduction,
+          "faceURL": faceUrl,
+          "ex": ex,
+        },
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 查询组信息
   /// [gidList] 组ID列表
   Future<List<GroupInfo>> getGroupsInfo({
     required List<String> gidList,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getGroupsInfo',
-              _buildParam({
-                'gidList': gidList,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getGroupsInfo,
+      data: {
+        "gidList": gidList,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupInfo.fromJson(map));
+  }
 
   /// 申请加入组，需要通过管理员/群组同意。
   /// [joinSource] 2：通过邀请  3：通过搜索  4：通过二维码
-  Future<dynamic> joinGroup({
+  Future<void> joinGroup({
     required String gid,
     String? reason,
     String? operationID,
     int joinSource = 3,
-  }) =>
-      _channel.invokeMethod(
-          'joinGroup',
-          _buildParam({
-            'gid': gid,
-            'reason': reason,
-            'joinSource': joinSource,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.joinGroup,
+      data: {
+        "gid": gid,
+        "reason": reason,
+        "joinSource": joinSource,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 退出组
   Future<dynamic> quitGroup({
     required String gid,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'quitGroup',
-          _buildParam({
-            'gid': gid,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.quitGroup,
+      data: {
+        "gid": gid,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 转移组拥有者权限
   /// [gid] 组ID
   /// [uid] 新拥有者ID
-  Future<dynamic> transferGroupOwner({
+  Future<void> transferGroupOwner({
     required String gid,
     required String uid,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'transferGroupOwner',
-          _buildParam({
-            'gid': gid,
-            'uid': uid,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.transferGroupOwner,
+      data: {
+        "gid": gid,
+        "uid": uid,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 作为群主或者管理员，收到的群成员入群申请
-  Future<List<GroupApplicationInfo>> getRecvGroupApplicationList({String? operationID}) => _channel
-      .invokeMethod(
-          'getRecvGroupApplicationList',
-          _buildParam({
-            'operationID': IMUtils.checkOperationID(operationID),
-          }))
-      .then((value) => []);
+  Future<List<GroupApplicationInfo>> getRecvGroupApplicationList({String? operationID}) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getRecvGroupApplicationList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupApplicationInfo.fromJson(map));
+  }
 
   /// 获取自己发出的入群申请记录
-  Future<List<GroupApplicationInfo>> getSendGroupApplicationList({String? operationID}) => _channel
-      .invokeMethod(
-          'getSendGroupApplicationList',
-          _buildParam({
-            'operationID': IMUtils.checkOperationID(operationID),
-          }))
-      .then((value) => []);
+  Future<List<GroupApplicationInfo>> getSendGroupApplicationList({String? operationID}) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getSendGroupApplicationList,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupApplicationInfo.fromJson(map));
+  }
 
   /// 管理员或者群主同意某人进入某群
   /// 注：主动申请入群需要通过管理员/群组处理，被别人拉入群不需要管理员/群组处理
   /// [gid] 组id
   /// [uid] 申请者用户ID
-  Future<dynamic> acceptGroupApplication({
+  Future<void> acceptGroupApplication({
     required String gid,
     required String uid,
     String? handleMsg,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'acceptGroupApplication',
-          _buildParam({
-            'gid': gid,
-            'uid': uid,
-            'handleMsg': handleMsg,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.acceptGroupApplication,
+      data: {
+        'gid': gid,
+        'uid': uid,
+        'handleMsg': handleMsg,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 管理员或者群主拒绝某人进入某群
   /// 注：主动申请入群需要通过管理员/群组处理，被别人拉入群不需要管理员/群组处理
   /// [gid] 组id
   /// [uid] 申请者用户ID
   /// [handleMsg] 说明
-  Future<dynamic> refuseGroupApplication({
+  Future<void> refuseGroupApplication({
     required String gid,
     required String uid,
     String? handleMsg,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'refuseGroupApplication',
-          _buildParam({
-            'gid': gid,
-            'uid': uid,
-            'handleMsg': handleMsg,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.refuseGroupApplication,
+      data: {
+        'gid': gid,
+        'uid': uid,
+        'handleMsg': handleMsg,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 解散群
   /// [groupID] 群ID
-  Future<dynamic> dismissGroup({
+  Future<void> dismissGroup({
     required String groupID,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'dismissGroup',
-          _buildParam({
-            'gid': groupID,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.dismissGroup,
+      data: {
+        'gid': groupID,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 开启群禁言，所有群成员禁止发言
   /// [groupID] 将开启群禁言的组ID
   /// [mute] true：开启，false：关闭
-  Future<dynamic> changeGroupMute({
+  Future<void> changeGroupMute({
     required String groupID,
     required bool mute,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'changeGroupMute',
-          _buildParam({
-            'gid': groupID,
-            'mute': mute,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.changeGroupMute,
+      data: {
+        'gid': groupID,
+        'mute': mute,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 禁言群成员
   /// [groupID] 群ID
   /// [userID] 将被禁言的成员ID
   /// [seconds] 被禁言的时间s，设置为0则为解除禁言
-  Future<dynamic> changeGroupMemberMute({
+  Future<void> changeGroupMemberMute({
     required String groupID,
     required String userID,
     int seconds = 0,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'changeGroupMemberMute',
-          _buildParam({
-            'gid': groupID,
-            'uid': userID,
-            'seconds': seconds,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.changeGroupMemberMute,
+      data: {
+        'gid': groupID,
+        'uid': userID,
+        'seconds': seconds,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 设置群成员昵称
   /// [groupID] 群ID
@@ -387,15 +526,23 @@ class GroupManager {
     required String userID,
     String? groupNickname,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setGroupMemberNickname',
-          _buildParam({
-            'gid': groupID,
-            'uid': userID,
-            'groupNickname': groupNickname ?? '',
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setGroupMemberNickname,
+      data: {
+        'gid': groupID,
+        'uid': userID,
+        'groupNickname': groupNickname,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
+  }
 
   /// 查询群
   /// [keywordList] 搜索关键词，目前仅支持一个关键词搜索，不能为空
@@ -406,38 +553,51 @@ class GroupManager {
     bool isSearchGroupID = false,
     bool isSearchGroupName = false,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'searchGroups',
-              _buildParam({
-                'searchParam': {
-                  'keywordList': keywordList,
-                  'isSearchGroupID': isSearchGroupID,
-                  'isSearchGroupName': isSearchGroupName,
-                },
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.searchGroups,
+      data: {
+        'keywordList': keywordList,
+        'isSearchGroupID': isSearchGroupID,
+        'isSearchGroupName': isSearchGroupName,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupInfo.fromJson(map));
+  }
 
   /// 设置群成员权限
   /// [groupID] 群ID
   /// [userID] 群成员的用户ID
   /// [roleLevel] 角色等级，参考[GroupRoleLevel]
-  Future<dynamic> setGroupMemberRoleLevel({
+  Future<void> setGroupMemberRoleLevel({
     required String groupID,
     required String userID,
     required int roleLevel,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setGroupMemberRoleLevel',
-          _buildParam({
-            'groupID': groupID,
-            'userID': userID,
-            'roleLevel': roleLevel,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setGroupMemberRoleLevel,
+      data: {
+        'gid': groupID,
+        'uid': userID,
+        'roleLevel': roleLevel,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 根据加入时间分页获取组成员列表
   /// [groupID] 群ID
@@ -454,52 +614,76 @@ class GroupManager {
     int joinTimeEnd = 0,
     List<String> excludeUserIDList = const [],
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getGroupMemberListByJoinTimeFilter',
-              _buildParam({
-                'groupID': groupID,
-                'offset': offset,
-                'count': count,
-                'joinTimeBegin': joinTimeBegin,
-                'joinTimeEnd': joinTimeEnd,
-                'excludeUserIDList': excludeUserIDList,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getGroupMemberListByJoinTime,
+      data: {
+        'gid': groupID,
+        'offset': offset,
+        'count': count,
+        'joinTimeBegin': joinTimeBegin,
+        'joinTimeEnd': joinTimeEnd,
+        'excludeUserIDList': excludeUserIDList,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupMembersInfo.fromJson(map));
+  }
 
   /// 进群验证设置
   /// [groupID] 群ID
   /// [needVerification] 进群设置，参考[GroupVerification]类
-  Future<dynamic> setGroupVerification({
+  Future<void> setGroupVerification({
     required String groupID,
     required int needVerification,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setGroupVerification',
-          _buildParam({
-            'groupID': groupID,
-            'needVerification': needVerification,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setGroupVerification,
+      data: {
+        'gid': groupID,
+        'needVerification': needVerification,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 不允许通过群获取成员资料
   /// [groupID] 群ID
   /// [status] 0：关闭，1：打开
-  Future<dynamic> setGroupLookMemberInfo({
+  Future<void> setGroupLookMemberInfo({
     required String groupID,
     required int status,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setGroupLookMemberInfo',
-          _buildParam({
-            'groupID': groupID,
-            'status': status,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setGroupLookMemberInfo,
+      data: {
+        'gid': groupID,
+        'status': status,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 不允许通过群添加好友
   /// [groupID] 群ID
@@ -508,29 +692,44 @@ class GroupManager {
     required String groupID,
     required int status,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setGroupApplyMemberFriend',
-          _buildParam({
-            'groupID': groupID,
-            'status': status,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setGroupApplyMemberFriend,
+      data: {
+        'gid': groupID,
+        'status': status,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 获取群拥有者，管理员
   /// [groupId] 群ID
   Future<List<GroupMembersInfo>> getGroupOwnerAndAdmin({
     required String groupID,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getGroupMemberOwnerAndAdmin',
-              _buildParam({
-                'groupID': groupID,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getGroupOwnerAndAdmin,
+      data: {
+        'gid': groupID,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupMembersInfo.fromJson(map));
+  }
 
   /// 查询群
   /// [groupID] 群id
@@ -547,22 +746,28 @@ class GroupManager {
     int offset = 0,
     int count = 40,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'searchGroupMembers',
-              _buildParam({
-                'searchParam': {
-                  'groupID': groupID,
-                  'keywordList': keywordList,
-                  'isSearchUserID': isSearchUserID,
-                  'isSearchMemberNickname': isSearchMemberNickname,
-                  'offset': offset,
-                  'count': count,
-                },
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.searchGroupMembers,
+      data: {
+        'searchParam': {
+          'groupID': groupID,
+          'keywordList': keywordList,
+          'isSearchUserID': isSearchUserID,
+          'isSearchMemberNickname': isSearchMemberNickname,
+          'offset': offset,
+          'count': count,
+        },
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => GroupMembersInfo.fromJson(map));
+  }
 
   /// 查询群
   /// [groupID] 群id
@@ -579,43 +784,51 @@ class GroupManager {
     int offset = 0,
     int count = 40,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'searchGroupMembers',
-              _buildParam({
-                'searchParam': {
-                  'groupID': groupID,
-                  'keywordList': keywordList,
-                  'isSearchUserID': isSearchUserID,
-                  'isSearchMemberNickname': isSearchMemberNickname,
-                  'offset': offset,
-                  'count': count,
-                },
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => IMUtils.toListMap(value));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.searchGroupMembers,
+      data: {
+        'searchParam': {
+          'groupID': groupID,
+          'keywordList': keywordList,
+          'isSearchUserID': isSearchUserID,
+          'isSearchMemberNickname': isSearchMemberNickname,
+          'offset': offset,
+          'count': count,
+        },
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
+  }
 
   /// 修改GroupMemberInfo ex字段
-  Future<dynamic> setGroupMemberInfo({
+  Future<void> setGroupMemberInfo({
     required String groupID,
     required String userID,
     String? ex,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setGroupMemberInfo',
-          _buildParam({
-            'info': {
-              'groupID': groupID,
-              'userID': userID,
-              'ex': ex,
-            },
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
-
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "groupManager";
-    return param;
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setGroupMemberInfo,
+      data: {
+        'groupID': groupID,
+        'userID': userID,
+        'ex': ex,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
   }
 }

@@ -1,10 +1,6 @@
 part of flutter_openim_sdk_ffi;
 
 class UserManager {
-  MethodChannel _channel;
-
-  UserManager(this._channel);
-
   /// 获取用户资料
   /// [uidList] 用户ID列表
   Future<List<UserInfo>> getUsersInfo({
@@ -21,12 +17,10 @@ class UserManager {
       },
       sendPort: receivePort.sendPort,
     ));
-    _PortResult<List<UserInfo>> result = await receivePort.first;
+    _PortResult result = await receivePort.first;
     receivePort.close();
-    if (result.error != null) {
-      throw Exception(result.error!);
-    }
-    return result.data!;
+
+    return IMUtils.toList(result.value, (map) => UserInfo.fromJson(Map.from(map)));
   }
 
   /// 获取当前登录用户的信息
@@ -42,10 +36,8 @@ class UserManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-    if (result.error != null) {
-      throw Exception(result.error!);
-    }
-    return UserInfo.fromJson(Map.from(result.data));
+
+    return UserInfo.fromJson(Map.from(result.value));
   }
 
   /// 修改当前登录用户资料
@@ -67,24 +59,27 @@ class UserManager {
     String? email,
     String? ex,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setSelfInfo',
-          _buildParam({
-            // 'userID': userID,
-            'nickname': nickname,
-            'faceURL': faceURL,
-            'gender': gender,
-            'appMangerLevel': appMangerLevel,
-            'phoneNumber': phoneNumber,
-            'birth': birth,
-            'email': email,
-            'ex': ex,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
 
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "userManager";
-    return param;
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setSelfInfo,
+      data: {
+        'nickname': nickname,
+        'faceURL': faceURL,
+        'gender': gender,
+        'appMangerLevel': appMangerLevel,
+        'phoneNumber': phoneNumber,
+        'birth': birth,
+        'email': email,
+        'ex': ex,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value!;
   }
 }

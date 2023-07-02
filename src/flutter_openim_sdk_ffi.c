@@ -67,7 +67,7 @@ void printMessage(const char *message)
         cJSON_AddStringToObject(json, "callMethodName", callMethodName);
     }
     if (errCode != NULL) {
-        cJSON_AddItemToObject(json, "errCode", cJSON_CreateNumber(*errCode));
+        cJSON_AddNumberToObject(json, "errCode", *errCode);
     } 
     if (message != NULL) {
         cJSON_AddStringToObject(json, "data", message);
@@ -136,7 +136,7 @@ void *entry_point(void* arg)
         cJSON_AddStringToObject(json, "callMethodName", callMethodName);
     } 
     if (errCode != NULL) {
-        cJSON_AddItemToObject(json, "errCode", cJSON_CreateNumber(*errCode));
+       cJSON_AddStringToObject(json, "errCode", errCode);
     } 
     if (message != NULL) {
         cJSON_AddStringToObject(json, "data", message);

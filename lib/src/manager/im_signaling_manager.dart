@@ -12,169 +12,227 @@ void _onRoomParticipantConnected(ffi.Pointer<ffi.Char> data) {}
 void _onRoomParticipantDisconnected(ffi.Pointer<ffi.Char> data) {}
 
 class SignalingManager {
-  MethodChannel _channel;
-  late OnSignalingListener listener;
-
-  SignalingManager(this._channel);
-
-  /// 信令监听
-  void setSignalingListener(OnSignalingListener listener) {
-    this.listener = listener;
-    // _bindings.SetSignalingListener();
-  }
-
   /// 邀请个人加入音视频
   /// [info] 信令对象[SignalingInfo]
   Future<SignalingCertificate> signalingInvite({
     required SignalingInfo info,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingInvite',
-              _buildParam({
-                'signalingInfo': info.toJson(),
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SignalingCertificate());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingInvite,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SignalingCertificate.fromJson(result.value);
+  }
 
   /// 邀请群里某些人加入音视频
   /// [info] 信令对象[SignalingInfo]
   Future<SignalingCertificate> signalingInviteInGroup({
     required SignalingInfo info,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingInviteInGroup',
-              _buildParam({
-                'signalingInfo': info.toJson(),
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SignalingCertificate());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingInviteInGroup,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SignalingCertificate.fromJson(result.value);
+  }
 
   /// 同意某人音视频邀请
   /// [info] 信令对象[SignalingInfo]
   Future<SignalingCertificate> signalingAccept({
     required SignalingInfo info,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingAccept',
-              _buildParam({
-                'signalingInfo': info.toJson(),
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SignalingCertificate());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingAccept,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SignalingCertificate.fromJson(result.value);
+  }
 
   /// 拒绝某人音视频邀请
   /// [info] 信令对象[SignalingInfo]
-  Future<dynamic> signalingReject({
+  Future<void> signalingReject({
     required SignalingInfo info,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'signalingReject',
-          _buildParam({
-            'signalingInfo': info.toJson(),
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingReject,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 邀请者取消音视频通话
   /// [info] 信令对象[SignalingInfo]
-  Future<dynamic> signalingCancel({
+  Future<void> signalingCancel({
     required SignalingInfo info,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'signalingCancel',
-          _buildParam({
-            'signalingInfo': info.toJson(),
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingCancel,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 挂断
   /// [info] 信令对象[SignalingInfo]
-  Future<dynamic> signalingHungUp({
+  Future<void> signalingHungUp({
     required SignalingInfo info,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'signalingHungUp',
-          _buildParam({
-            'signalingInfo': info.toJson(),
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingHungUp,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 获取当前群通话信息
   /// [groupID] 当前群ID
   Future<RoomCallingInfo> signalingGetRoomByGroupID({
     required String groupID,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingGetRoomByGroupID',
-              _buildParam({
-                'groupID': groupID,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => RoomCallingInfo());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingGetRoomByGroupID,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'groupID': groupID},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return RoomCallingInfo.fromJson(result.value);
+  }
 
   /// 获取进入房间的信息
   /// [roomID] 当前房间ID
   Future<SignalingCertificate> signalingGetTokenByRoomID({
     required String roomID,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingGetTokenByRoomID',
-              _buildParam({
-                'roomID': roomID,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SignalingCertificate());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingGetTokenByRoomID,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'roomID': roomID},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SignalingCertificate.fromJson(result.value);
+  }
 
   ///  会议设置
   ///  required String roomID,
+  ///
   ///  String? meetingName,
+  ///
   ///  String? ex,
+  ///
   ///  int startTime = 0,
+  ///
   ///  int endTime = 0,
+  ///
   ///  bool participantCanUnmuteSelf = true,
+  ///
   ///  bool participantCanEnableVideo = true,
+  ///
   ///  bool onlyHostInviteUser = true,
+  ///
   ///  bool onlyHostShareScreen = true,
+  ///
   ///  bool joinDisableMicrophone = true,
+  ///
   ///  bool joinDisableVideo = true,
+  ///
   ///  bool isMuteAllVideo = true,
+  ///
   ///  bool isMuteAllMicrophone = true,
+  ///
   ///  List<String> addCanScreenUserIDList = const [],
+  ///
   ///  List<String> reduceCanScreenUserIDList = const [],
+  ///
   ///  List<String> addDisableMicrophoneUserIDList = const [],
+  ///
   ///  List<String> reduceDisableMicrophoneUserIDList = const [],
+  ///
   ///  List<String> addDisableVideoUserIDList = const [],
+  ///
   ///  List<String> reduceDisableVideoUserIDList = const [],
+  ///
   ///  List<String> addPinedUserIDList = const [],
+  ///
   ///  List<String> reducePinedUserIDList = const [],
+  ///
   ///  List<String> addBeWatchedUserIDList = const [],
+  ///
   ///  List<String> reduceBeWatchedUserIDList = const [],
-  Future<dynamic> signalingUpdateMeetingInfo({
+  Future<void> signalingUpdateMeetingInfo({
     required Map info,
     String? operationID,
-  }) {
+  }) async {
     if (info['meetingID'] != null) {
       info['roomID'] = info['meetingID'];
     }
     assert(info['roomID'] != null);
-    return _channel.invokeMethod(
-        'signalingUpdateMeetingInfo',
-        _buildParam({
-          'info': info,
-          'operationID': IMUtils.checkOperationID(operationID),
-        }));
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingUpdateMeetingInfo,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
   }
 
   /// 创建会议室
@@ -192,22 +250,27 @@ class SignalingManager {
     List<String> inviteeUserIDList = const [],
     String? ex,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingCreateMeeting',
-              _buildParam({
-                'info': {
-                  'meetingName': meetingName,
-                  'meetingHostUserID': meetingHostUserID,
-                  'startTime': startTime,
-                  'meetingDuration': meetingDuration,
-                  'inviteeUserIDList': inviteeUserIDList,
-                  'ex': ex,
-                },
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SignalingCertificate());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingCreateMeeting,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'meetingName': meetingName,
+        'meetingHostUserID': meetingHostUserID,
+        'startTime': startTime,
+        'meetingDuration': meetingDuration,
+        'inviteeUserIDList': inviteeUserIDList,
+        'ex': ex,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SignalingCertificate.fromJson(result.value);
+  }
 
   /// 加入会议室
   /// [meetingID] 会议ID
@@ -218,19 +281,24 @@ class SignalingManager {
     String? meetingName,
     String? participantNickname,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingJoinMeeting',
-              _buildParam({
-                'info': {
-                  'meetingID': meetingID,
-                  'meetingName': meetingName,
-                  'participantNickname': participantNickname,
-                },
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => SignalingCertificate());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingJoinMeeting,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'meetingID': meetingID,
+        'meetingName': meetingName,
+        'participantNickname': participantNickname,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return SignalingCertificate.fromJson(result.value);
+  }
 
   /// 会议室 管理员对指定的某一个入会人员设置禁言
   /// [roomID] 会议ID
@@ -245,43 +313,64 @@ class SignalingManager {
     bool mute = false,
     bool muteAll = false,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'signalingOperateStream',
-          _buildParam({
-            'roomID': roomID,
-            'streamType': streamType,
-            'userID': userID,
-            'mute': mute,
-            'muteAll': muteAll,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingOperateStream,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'roomID': roomID,
+        'streamType': streamType,
+        'userID': userID,
+        'mute': mute,
+        'muteAll': muteAll,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 获取所有的未完成会议
   /// [roomID] 会议ID
   Future<MeetingInfoList> signalingGetMeetings({
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'signalingGetMeetings',
-              _buildParam({
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => MeetingInfoList());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingGetMeetings,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+    return MeetingInfoList.fromJson(result.value);
+  }
 
   /// 结束会议
   /// [roomID] 会议ID
   Future<dynamic> signalingCloseRoom({
     required String roomID,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'signalingCloseRoom',
-          _buildParam({
-            'roomID': roomID,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingCloseRoom,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'roomID': roomID},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 自定义信令
   /// [roomID] 会议ID
@@ -290,17 +379,18 @@ class SignalingManager {
     required String roomID,
     required String customInfo,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'signalingSendCustomSignal',
-          _buildParam({
-            'roomID': roomID,
-            'customInfo': customInfo,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
 
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "signalingManager";
-    return param;
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.signalingSendCustomSignal,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'roomID': roomID, 'customInfo': customInfo},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
   }
 }

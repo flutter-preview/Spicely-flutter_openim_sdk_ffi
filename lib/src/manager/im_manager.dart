@@ -1,7 +1,6 @@
 part of flutter_openim_sdk_ffi;
 
 class IMManager {
-  MethodChannel _channel;
   late ConversationManager conversationManager;
   late FriendshipManager friendshipManager;
   late MessageManager messageManager;
@@ -12,26 +11,29 @@ class IMManager {
   late SignalingManager signalingManager;
   late WorkMomentsManager workMomentsManager;
   late OrganizationManager organizationManager;
-  OnListenerForService? _listenerForService;
+
   late String uid;
+
   late UserInfo uInfo;
+
   bool isLogined = false;
   String? token;
   String? _objectStorage;
 
-  IMManager(this._channel) {
-    conversationManager = ConversationManager(_channel);
-    friendshipManager = FriendshipManager(_channel);
-    messageManager = MessageManager(_channel);
-    groupManager = GroupManager(_channel);
-    userManager = UserManager(_channel);
+  IMManager() {
+    conversationManager = ConversationManager();
+    friendshipManager = FriendshipManager();
+    messageManager = MessageManager();
+    groupManager = GroupManager();
+    userManager = UserManager();
     // offlinePushManager = OfflinePushManager(_channel);
-    signalingManager = SignalingManager(_channel);
-    workMomentsManager = WorkMomentsManager(_channel);
-    organizationManager = OrganizationManager(_channel);
+    signalingManager = SignalingManager();
+    workMomentsManager = WorkMomentsManager();
+    organizationManager = OrganizationManager();
   }
 
   void _nativeCallback(_PortModel channel) {
+    print(channel.toJson());
     switch (channel.method) {
       case 'OnConnectFailed':
         OpenIMManager._onEvent((listener) => listener.onConnectFailed(1, ''));
@@ -59,15 +61,19 @@ class IMManager {
         OpenIMManager._onEvent((listener) => listener.onSyncServerFailed());
         break;
       case 'OnNewConversation':
-        // var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
-        // OpenIMManager._onEvent((listener) => listener.onNewConversation(list));
+        var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        OpenIMManager._onEvent((listener) => listener.onNewConversation(list));
         break;
       case 'OnConversationChanged':
-        // var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
-        // OpenIMManager._onEvent((listener) => listener.onConversationChanged(list));
+        var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
+        OpenIMManager._onEvent((listener) => listener.onConversationChanged(list));
         break;
       case 'OnTotalUnreadMessageCountChanged':
         OpenIMManager._onEvent((listener) => listener.onTotalUnreadMessageCountChanged(channel.errCode ?? 0));
+        break;
+      case 'OnProgress':
+        OpenIMManager._onEvent((listener) => listener.onProgress(channel.data ?? '', channel.errCode ?? 0));
+
         break;
     }
     // _channel.setMethodCallHandler((call) {
@@ -177,19 +183,7 @@ class IMManager {
     //         messageManager.msgListener.recvMessageExtensionsAdded(msgID, list);
     //         break;
     //     }
-    //   } else if (call.method == ListenerType.msgSendProgressListener) {
-    //     String type = call.arguments['type'];
-    //     dynamic data = call.arguments['data'];
-    //     String msgID = data['clientMsgID'] ?? '';
-    //     int progress = data['progress'] ?? 100;
-    //     switch (type) {
-    //       case 'onProgress':
-    //         messageManager.msgSendProgressListener?.progress(
-    //           msgID,
-    //           progress,
-    //         );
-    //         break;
-    //     }
+
     //   } else if (call.method == ListenerType.conversationListener) {
     //     String type = call.arguments['type'];
     //     dynamic data = call.arguments['data'];
@@ -359,8 +353,18 @@ class IMManager {
   }
 
   /// 反初始化SDK
-  Future<dynamic> unInitSDK() {
-    return _channel.invokeMethod('unInitSDK', _buildParam({}));
+  Future<void> unInitSDK() async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.unInitSDK,
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
   }
 
   /// 登录
@@ -373,9 +377,9 @@ class IMManager {
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
-    isLogined = true;
-    uid = uid;
-    token = token;
+    this.isLogined = true;
+    this.uid = uid;
+    this.token = token;
     ReceivePort receivePort = ReceivePort();
 
     OpenIMManager._openIMSendPort.send(_PortModel(
@@ -398,19 +402,33 @@ class IMManager {
   }
 
   /// 登出
-  Future<dynamic> logout({String? operationID}) async {
-    var value = await _channel.invokeMethod(
-        'logout',
-        _buildParam({
-          'operationID': IMUtils.checkOperationID(operationID),
-        }));
-    this.isLogined = false;
-    this.token = null;
-    return value;
+  Future<void> logout({String? operationID}) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.logout,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
   }
 
   /// 获取登录状态
-  Future<int?> getLoginStatus() => _channel.invokeMethod<int>('getLoginStatus', _buildParam({}));
+  Future<int?> getLoginStatus() async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getLoginStatus,
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
+  }
 
   /// 获取当前登录用户id
   Future<String> getLoginUserID() async => uid;
@@ -419,74 +437,112 @@ class IMManager {
   Future<UserInfo> getLoginUserInfo() async => uInfo;
 
   /// 从后台回到前台立刻唤醒
-  Future wakeUp({String? operationID}) => _channel.invokeMethod(
-      'wakeUp',
-      _buildParam({
-        'operationID': IMUtils.checkOperationID(operationID),
-      }));
+  Future wakeUp({String? operationID}) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.wakeUp,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 上传图片到服务器
   /// [path] 图片路径
   /// [token] im token
   /// [objectStorage] 存储对象 cos/minio
-  Future uploadImage({
+  Future<void> uploadImage({
     required String path,
     String? token,
     String? objectStorage,
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'uploadImage',
-          _buildParam({
-            'path': path,
-            'token': token ?? this.token,
-            'obj': objectStorage ?? this._objectStorage,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.uploadImage,
+      data: {
+        'path': path,
+        'token': token ?? this.token,
+        'obj': objectStorage ?? _objectStorage,
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
 
   /// 更新firebase客户端注册token
   /// [fcmToken] firebase token
-  Future updateFcmToken({
+  Future<void> updateFcmToken({
     required String fcmToken,
     String? operationID,
-  }) async {}
+  }) async {
+    ReceivePort receivePort = ReceivePort();
 
-  /// 标记app处于后台
-  Future setAppBackgroundStatus({
-    required bool isBackground,
-    String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'setAppBackgroundStatus',
-          _buildParam({
-            'isBackground': isBackground,
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
-
-  /// 网络改变
-  Future networkChanged({
-    String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'networkChanged',
-          _buildParam({
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
-
-  ///
-  Future setListenerForService(OnListenerForService listener) {
-    if (Platform.isAndroid) {
-      this._listenerForService = listener;
-      return _channel.invokeMethod('setListenerForService', _buildParam({}));
-    } else {
-      throw UnsupportedError("only supprot android platform");
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.updateFcmToken,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'fcmToken': fcmToken,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
+    receivePort.close();
   }
 
-  MethodChannel get channel => _channel;
+  /// 标记app处于后台
+  Future<void> setAppBackgroundStatus({
+    required bool isBackground,
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
 
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "imManager";
-    return param;
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setAppBackgroundStatus,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'isBackground': isBackground,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
+  }
+
+  /// 网络改变
+  Future<void> networkChanged({
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.networkChanged,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
   }
 }

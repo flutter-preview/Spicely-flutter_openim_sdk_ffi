@@ -1,111 +1,112 @@
 part of flutter_openim_sdk_ffi;
 
 class OrganizationManager {
-  MethodChannel _channel;
-  late OnOrganizationListener listener;
-
-  OrganizationManager(this._channel);
-
-  /// 组织架构发生变化回调
-  Future setOrganizationListener(OnOrganizationListener listener) {
-    this.listener = listener;
-    return _channel.invokeMethod('setOrganizationListener', _buildParam({}));
-  }
-
   /// 获取子部门列表，返回当前部门下的一级子部门
   /// [departmentID] 当前部门id
   /// [offset] 开始下标
   /// [count] 每页大小
-  Future<List<DeptInfo>> getSubDept({
+  Future<List<DeptInfo>> getSubDepartment({
     required String departmentID,
     int offset = 0,
     int count = 40,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getSubDepartment',
-              _buildParam({
-                'departmentID': departmentID,
-                'offset': offset,
-                'count': count,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getSubDepartment,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'offset': offset, 'count': count},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => DeptInfo.fromJson(map));
+  }
 
   /// 获取部门下的成员列表，返回当前部门下的一级成员
   /// [departmentID] 当前部门id
   /// [offset] 开始下标
   /// [count] 每页大小
-  Future<List<DeptMemberInfo>> getDeptMember({
+  Future<List<DeptMemberInfo>> getDepartmentMember({
     required String departmentID,
     int offset = 0,
     int count = 40,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getDepartmentMember',
-              _buildParam({
-                'departmentID': departmentID,
-                'offset': offset,
-                'count': count,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getDepartmentMember,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'offset': offset, 'count': count},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => DeptMemberInfo.fromJson(map));
+  }
 
   /// 获取成员所在的部门
   /// [userID] 成员ID
-  Future<List<UserInDept>> getUserInDept({
+  Future<List<UserInDept>> getUserInDepartment({
     required String userID,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getUserInDepartment',
-              _buildParam({
-                'userID': userID,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getUserInDepartment,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'userID': userID},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => UserInDept.fromJson(map));
+  }
 
   /// 获取部门下的子部门跟员工
   /// [departmentID] 当前部门id
-  Future<DeptMemberAndSubDept> getDeptMemberAndSubDept({
+  Future<DeptMemberAndSubDept> getDepartmentMemberAndSubDepartment({
     required String departmentID,
     // int departmentOffset = 0,
     // int departmentCount = 40,
     // int memberOffset = 0,
     // int memberCount = 40,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getDepartmentMemberAndSubDepartment',
-              _buildParam({
-                'departmentID': departmentID,
-                // 'departmentOffset': departmentOffset,
-                // 'departmentCount': departmentCount,
-                // 'memberOffset': memberOffset,
-                // 'memberCount': memberCount,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => DeptMemberAndSubDept());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getDepartmentMemberAndSubDepartment,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return DeptMemberAndSubDept.fromJson(result.value);
+  }
 
   /// 查询部门信息
   /// [departmentID] 部门ID
-  Future<DeptInfo> getDeptInfo({
+  Future<DeptInfo> getDepartmentInfo({
     required String departmentID,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getDepartmentInfo',
-              _buildParam({
-                'departmentID': departmentID,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => DeptInfo());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getDepartmentInfo,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return DeptInfo.fromJson(result.value);
+  }
 
   /// 搜索组织人员
   /// [keyWord] 关键字
@@ -130,29 +131,29 @@ class OrganizationManager {
     int offset = 0,
     int count = 40,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'searchOrganization',
-              _buildParam({
-                'searchParam': {
-                  'keyWord': keyWord,
-                  'isSearchUserName': isSearchUserName,
-                  'isSearchEnglishName': isSearchEnglishName,
-                  'isSearchPosition': isSearchPosition,
-                  'isSearchUserID': isSearchUserID,
-                  'isSearchMobile': isSearchMobile,
-                  'isSearchEmail': isSearchEmail,
-                  'isSearchTelephone': isSearchTelephone,
-                },
-                'offset': offset,
-                'count': count,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => OrganizationSearchResult());
+  }) async {
+    ReceivePort receivePort = ReceivePort();
 
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "organizationManager";
-    return param;
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.searchOrganization,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'keyWord': keyWord,
+        'isSearchUserName': isSearchUserName,
+        'isSearchEnglishName': isSearchEnglishName,
+        'isSearchPosition': isSearchPosition,
+        'isSearchUserID': isSearchUserID,
+        'isSearchMobile': isSearchMobile,
+        'isSearchEmail': isSearchEmail,
+        'isSearchTelephone': isSearchTelephone,
+        'offset': offset,
+        'count': count,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return OrganizationSearchResult.fromJson(result.value);
   }
 }

@@ -68,6 +68,7 @@ part './src/listener/organization_listener.dart';
 part './src/listener/signaling_listener.dart';
 part './src/listener/user_listener.dart';
 part './src/listener/workmoments_listener.dart';
+part './src/openim_error.dart';
 
 part './src/struct/struct.dart';
 part 'src/callback/callback.dart';

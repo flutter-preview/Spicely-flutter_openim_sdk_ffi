@@ -49,9 +49,7 @@ class OpenIM {
     return data.value;
   }
 
-  static const _channel = const MethodChannel('flutter_openim_sdk');
-
-  static final iMManager = IMManager(_channel);
+  static final iMManager = IMManager();
 
   OpenIM._();
 }

@@ -1,28 +1,24 @@
 part of flutter_openim_sdk_ffi;
 
 class WorkMomentsManager {
-  MethodChannel _channel;
-  late OnWorkMomentsListener listener;
-
-  WorkMomentsManager(this._channel);
-
-  /// 朋友圈信息发送变化通知
-  Future setWorkMomentsListener(OnWorkMomentsListener listener) {
-    this.listener = listener;
-    return _channel.invokeMethod('setWorkMomentsListener', _buildParam({}));
-  }
-
   /// 获取朋友圈未读消息总数
   Future<int> getWorkMomentsUnReadCount({
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getWorkMomentsUnReadCount',
-              _buildParam({
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => 1);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getWorkMomentsUnReadCount,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
+  }
 
   /// 获取通知列表
   /// [offset] 开始下标
@@ -31,29 +27,39 @@ class WorkMomentsManager {
     required int offset,
     required int count,
     String? operationID,
-  }) =>
-      _channel
-          .invokeMethod(
-              'getWorkMomentsNotification',
-              _buildParam({
-                'offset': offset,
-                'count': count,
-                'operationID': IMUtils.checkOperationID(operationID),
-              }))
-          .then((value) => []);
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getWorkMomentsNotification,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'offset': offset,
+        'count': count,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return IMUtils.toList(result.value, (map) => WorkMomentsInfo.fromJson(map));
+  }
 
   /// 清除通知列表
   Future clearWorkMomentsNotification({
     String? operationID,
-  }) =>
-      _channel.invokeMethod(
-          'clearWorkMomentsNotification',
-          _buildParam({
-            'operationID': IMUtils.checkOperationID(operationID),
-          }));
+  }) async {
+    ReceivePort receivePort = ReceivePort();
 
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "workMomentsManager";
-    return param;
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.clearWorkMomentsNotification,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+    receivePort.close();
   }
 }
