@@ -16,7 +16,7 @@ class GroupManager {
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
         'uidList': uidList,
-        'reason': reason,
+        'reason': reason ?? '',
         'groupId': groupId,
       },
       sendPort: receivePort.sendPort,
@@ -294,7 +294,7 @@ class GroupManager {
       method: _PortMethod.joinGroup,
       data: {
         "gid": gid,
-        "reason": reason,
+        "reason": reason ?? '',
         "joinSource": joinSource,
         'operationID': IMUtils.checkOperationID(operationID),
       },
@@ -401,7 +401,7 @@ class GroupManager {
       data: {
         'gid': gid,
         'uid': uid,
-        'handleMsg': handleMsg,
+        'handleMsg': handleMsg ?? '',
         'operationID': IMUtils.checkOperationID(operationID),
       },
       sendPort: receivePort.sendPort,
@@ -533,7 +533,7 @@ class GroupManager {
       data: {
         'gid': groupID,
         'uid': userID,
-        'groupNickname': groupNickname,
+        'groupNickname': groupNickname ?? '',
         'operationID': IMUtils.checkOperationID(operationID),
       },
       sendPort: receivePort.sendPort,
@@ -617,7 +617,7 @@ class GroupManager {
   }) async {
     ReceivePort receivePort = ReceivePort();
     OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.getGroupMemberListByJoinTime,
+      method: _PortMethod.getGroupMemberListByJoinTimeFilter,
       data: {
         'gid': groupID,
         'offset': offset,
@@ -718,7 +718,7 @@ class GroupManager {
   }) async {
     ReceivePort receivePort = ReceivePort();
     OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.getGroupOwnerAndAdmin,
+      method: _PortMethod.getGroupMemberOwnerAndAdmin,
       data: {
         'gid': groupID,
         'operationID': IMUtils.checkOperationID(operationID),

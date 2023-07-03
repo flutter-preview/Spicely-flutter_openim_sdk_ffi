@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-01 17:31:10
+ * Last Modified: 2023-07-03 16:03:45
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -179,11 +179,11 @@ class _PortMethod {
   static const String setGroupMemberNickname = 'SetGroupMemberNickname';
   static const String searchGroups = 'SearchGroups';
   static const String setGroupMemberRoleLevel = 'SetGroupMemberRoleLevel';
-  static const String getGroupMemberListByJoinTime = 'GetGroupMemberListByJoinTime';
+  static const String getGroupMemberListByJoinTimeFilter = 'GetGroupMemberListByJoinTimeFilter';
   static const String setGroupVerification = 'SetGroupVerification';
   static const String setGroupLookMemberInfo = 'SetGroupLookMemberInfo';
   static const String setGroupApplyMemberFriend = 'SetGroupApplyMemberFriend';
-  static const String getGroupOwnerAndAdmin = 'GetGroupOwnerAndAdmin';
+  static const String getGroupMemberOwnerAndAdmin = 'GetGroupMemberOwnerAndAdmin';
   static const String searchGroupMembers = 'SearchGroupMembers';
   static const String setGroupMemberInfo = 'SetGroupMemberInfo';
 

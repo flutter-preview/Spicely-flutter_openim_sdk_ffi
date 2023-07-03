@@ -33,7 +33,7 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> methodName,
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> callMethodName,
-    ffi.Pointer<ffi.Int32> errCode,
+    int errCode,
     ffi.Pointer<ffi.Char> message,
   ) {
     return _callOnMethodChannel(
@@ -55,7 +55,7 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int32>,
+              ffi.Int32,
               ffi.Pointer<ffi.Char>)>>('callOnMethodChannel');
   late final _callOnMethodChannel = _callOnMethodChannelPtr.asFunction<
       void Function(
@@ -64,7 +64,7 @@ class OpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Int32>,
+          int,
           ffi.Pointer<ffi.Char>)>();
 
   void RegisterCallback(
@@ -319,7 +319,7 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> groupID,
     ffi.Pointer<ffi.Char> reqMsg,
-    ffi.Pointer<ffi.Int32> joinSource,
+    int joinSource,
   ) {
     return _JoinGroup(
       operationID,
@@ -332,10 +332,10 @@ class OpenimSdkFfiBindings {
   late final _JoinGroupPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int32>)>>('JoinGroup');
+              ffi.Pointer<ffi.Char>, ffi.Int32)>>('JoinGroup');
   late final _JoinGroup = _JoinGroupPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int32>)>();
+          ffi.Pointer<ffi.Char>, int)>();
 
   void QuitGroup(
     ffi.Pointer<ffi.Char> operationID,
@@ -626,7 +626,7 @@ class OpenimSdkFfiBindings {
     int count,
     int joinTimeBegin,
     int joinTimeEnd,
-    GoString filterUserIDList,
+    ffi.Pointer<ffi.Char> filterUserIDList,
   ) {
     return _GetGroupMemberListByJoinTimeFilter(
       operationID,
@@ -648,11 +648,11 @@ class OpenimSdkFfiBindings {
               ffi.Int32,
               ffi.Int64,
               ffi.Int64,
-              GoString)>>('GetGroupMemberListByJoinTimeFilter');
+              ffi.Pointer<ffi.Char>)>>('GetGroupMemberListByJoinTimeFilter');
   late final _GetGroupMemberListByJoinTimeFilter =
       _GetGroupMemberListByJoinTimeFilterPtr.asFunction<
           void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int,
-              int, int, GoString)>();
+              int, int, ffi.Pointer<ffi.Char>)>();
 
   void GetGroupMembersInfo(
     ffi.Pointer<ffi.Char> operationID,
@@ -756,6 +756,20 @@ class OpenimSdkFfiBindings {
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
           'GetRecvGroupApplicationList');
   late final _GetRecvGroupApplicationList = _GetRecvGroupApplicationListPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void GetSendGroupApplicationList(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetSendGroupApplicationList(
+      operationID,
+    );
+  }
+
+  late final _GetSendGroupApplicationListPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetSendGroupApplicationList');
+  late final _GetSendGroupApplicationList = _GetSendGroupApplicationListPtr
       .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 
   void AcceptGroupApplication(
@@ -1030,6 +1044,54 @@ class OpenimSdkFfiBindings {
   late final _RefuseFriendApplication = _RefuseFriendApplicationPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
+  void AddBlack(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> blackUserID,
+  ) {
+    return _AddBlack(
+      operationID,
+      blackUserID,
+    );
+  }
+
+  late final _AddBlackPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('AddBlack');
+  late final _AddBlack = _AddBlackPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetBlackList(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetBlackList(
+      operationID,
+    );
+  }
+
+  late final _GetBlackListPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetBlackList');
+  late final _GetBlackList =
+      _GetBlackListPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void RemoveBlack(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> removeUserID,
+  ) {
+    return _RemoveBlack(
+      operationID,
+      removeUserID,
+    );
+  }
+
+  late final _RemoveBlackPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('RemoveBlack');
+  late final _RemoveBlack = _RemoveBlackPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
   void GetAllConversationList(
     ffi.Pointer<ffi.Char> operationID,
   ) {
@@ -1046,8 +1108,8 @@ class OpenimSdkFfiBindings {
 
   void GetConversationListSplit(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Int32> offset,
-    ffi.Pointer<ffi.Int32> count,
+    int offset,
+    int count,
   ) {
     return _GetConversationListSplit(
       operationID,
@@ -1058,16 +1120,14 @@ class OpenimSdkFfiBindings {
 
   late final _GetConversationListSplitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>)>>('GetConversationListSplit');
-  late final _GetConversationListSplit =
-      _GetConversationListSplitPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>)>();
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32,
+              ffi.Int32)>>('GetConversationListSplit');
+  late final _GetConversationListSplit = _GetConversationListSplitPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>, int, int)>();
 
   void GetOneConversation(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Int> sessionType,
+    int sessionType,
     ffi.Pointer<ffi.Char> sourceID,
   ) {
     return _GetOneConversation(
@@ -1079,11 +1139,10 @@ class OpenimSdkFfiBindings {
 
   late final _GetOneConversationPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int>,
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int,
               ffi.Pointer<ffi.Char>)>>('GetOneConversation');
   late final _GetOneConversation = _GetOneConversationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int>,
-          ffi.Pointer<ffi.Char>)>();
+      void Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>)>();
 
   void GetMultipleConversation(
     ffi.Pointer<ffi.Char> operationID,
@@ -1145,7 +1204,7 @@ class OpenimSdkFfiBindings {
   void SetOneConversationRecvMessageOpt(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> conversationID,
-    ffi.Pointer<ffi.Int> opt,
+    int opt,
   ) {
     return _SetOneConversationRecvMessageOpt(
       operationID,
@@ -1157,16 +1216,15 @@ class OpenimSdkFfiBindings {
   late final _SetOneConversationRecvMessageOptPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>)>>('SetOneConversationRecvMessageOpt');
+              ffi.Int)>>('SetOneConversationRecvMessageOpt');
   late final _SetOneConversationRecvMessageOpt =
       _SetOneConversationRecvMessageOptPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>)>();
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
 
   void SetConversationRecvMessageOpt(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> conversationIDList,
-    ffi.Pointer<ffi.Int> opt,
+    int opt,
   ) {
     return _SetConversationRecvMessageOpt(
       operationID,
@@ -1178,15 +1236,14 @@ class OpenimSdkFfiBindings {
   late final _SetConversationRecvMessageOptPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>)>>('SetConversationRecvMessageOpt');
+              ffi.Int)>>('SetConversationRecvMessageOpt');
   late final _SetConversationRecvMessageOpt =
       _SetConversationRecvMessageOptPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>)>();
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
 
   void SetGlobalRecvMessageOpt(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Int> opt,
+    int opt,
   ) {
     return _SetGlobalRecvMessageOpt(
       operationID,
@@ -1196,10 +1253,10 @@ class OpenimSdkFfiBindings {
 
   late final _SetGlobalRecvMessageOptPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>)>>('SetGlobalRecvMessageOpt');
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('SetGlobalRecvMessageOpt');
   late final _SetGlobalRecvMessageOpt = _SetGlobalRecvMessageOptPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int>)>();
+      void Function(ffi.Pointer<ffi.Char>, int)>();
 
   void HideConversation(
     ffi.Pointer<ffi.Char> operationID,
@@ -1309,7 +1366,7 @@ class OpenimSdkFfiBindings {
   void PinConversation(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> conversationID,
-    ffi.Pointer<ffi.Bool> isPinned,
+    bool isPinned,
   ) {
     return _PinConversation(
       operationID,
@@ -1321,10 +1378,9 @@ class OpenimSdkFfiBindings {
   late final _PinConversationPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Bool>)>>('PinConversation');
+              ffi.Bool)>>('PinConversation');
   late final _PinConversation = _PinConversationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Bool>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
 
   void GetTotalUnreadMsgCount(
     ffi.Pointer<ffi.Char> operationID,
@@ -1381,11 +1437,43 @@ class OpenimSdkFfiBindings {
       ffi.Pointer<ffi.Char> Function(
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
+  ffi.Pointer<ffi.Char> CreateTextAtMessage(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> text,
+    ffi.Pointer<ffi.Char> atUserList,
+    ffi.Pointer<ffi.Char> atUsersInfo,
+    ffi.Pointer<ffi.Char> message,
+  ) {
+    return _CreateTextAtMessage(
+      operationID,
+      text,
+      atUserList,
+      atUsersInfo,
+      message,
+    );
+  }
+
+  late final _CreateTextAtMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('CreateTextAtMessage');
+  late final _CreateTextAtMessage = _CreateTextAtMessagePtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
+
   ffi.Pointer<ffi.Char> CreateLocationMessage(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> description,
-    ffi.Pointer<ffi.Double> longitude,
-    ffi.Pointer<ffi.Double> latitude,
+    double longitude,
+    double latitude,
   ) {
     return _CreateLocationMessage(
       operationID,
@@ -1400,14 +1488,11 @@ class OpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Double>,
-              ffi.Pointer<ffi.Double>)>>('CreateLocationMessage');
+              ffi.Double,
+              ffi.Double)>>('CreateLocationMessage');
   late final _CreateLocationMessage = _CreateLocationMessagePtr.asFunction<
       ffi.Pointer<ffi.Char> Function(
-          ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Double>,
-          ffi.Pointer<ffi.Double>)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, double, double)>();
 
   ffi.Pointer<ffi.Char> CreateCustomMessage(
     ffi.Pointer<ffi.Char> operationID,
@@ -1510,7 +1595,7 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> videoFullPath,
     ffi.Pointer<ffi.Char> videoType,
-    ffi.Pointer<ffi.Int64> duration,
+    int duration,
     ffi.Pointer<ffi.Char> snapshotFullPath,
   ) {
     return _CreateVideoMessageFromFullPath(
@@ -1528,7 +1613,7 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int64>,
+              ffi.Int64,
               ffi.Pointer<ffi.Char>)>>('CreateVideoMessageFromFullPath');
   late final _CreateVideoMessageFromFullPath =
       _CreateVideoMessageFromFullPathPtr.asFunction<
@@ -1536,7 +1621,7 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int64>,
+              int,
               ffi.Pointer<ffi.Char>)>();
 
   ffi.Pointer<ffi.Char> CreateImageMessageFromFullPath(
@@ -1561,7 +1646,7 @@ class OpenimSdkFfiBindings {
   ffi.Pointer<ffi.Char> CreateSoundMessageFromFullPath(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> soundPath,
-    ffi.Pointer<ffi.Int64> duration,
+    int duration,
   ) {
     return _CreateSoundMessageFromFullPath(
       operationID,
@@ -1575,11 +1660,11 @@ class OpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int64>)>>('CreateSoundMessageFromFullPath');
+              ffi.Int64)>>('CreateSoundMessageFromFullPath');
   late final _CreateSoundMessageFromFullPath =
       _CreateSoundMessageFromFullPathPtr.asFunction<
-          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int64>)>();
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
 
   ffi.Pointer<ffi.Char> CreateFileMessageFromFullPath(
     ffi.Pointer<ffi.Char> operationID,
@@ -1671,7 +1756,7 @@ class OpenimSdkFfiBindings {
   ffi.Pointer<ffi.Char> CreateSoundMessage(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> soundPath,
-    ffi.Pointer<ffi.Int64> duration,
+    int duration,
   ) {
     return _CreateSoundMessage(
       operationID,
@@ -1682,13 +1767,11 @@ class OpenimSdkFfiBindings {
 
   late final _CreateSoundMessagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int64>)>>('CreateSoundMessage');
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Int64)>>('CreateSoundMessage');
   late final _CreateSoundMessage = _CreateSoundMessagePtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int64>)>();
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
 
   ffi.Pointer<ffi.Char> CreateVideoMessageByURL(
     ffi.Pointer<ffi.Char> operationID,
@@ -1712,7 +1795,7 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> videoPath,
     ffi.Pointer<ffi.Char> videoType,
-    ffi.Pointer<ffi.Int64> duration,
+    int duration,
     ffi.Pointer<ffi.Char> snapshotPath,
   ) {
     return _CreateVideoMessage(
@@ -1730,14 +1813,14 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int64>,
+              ffi.Int64,
               ffi.Pointer<ffi.Char>)>>('CreateVideoMessage');
   late final _CreateVideoMessage = _CreateVideoMessagePtr.asFunction<
       ffi.Pointer<ffi.Char> Function(
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Int64>,
+          int,
           ffi.Pointer<ffi.Char>)>();
 
   ffi.Pointer<ffi.Char> CreateFileMessageByURL(
@@ -1810,7 +1893,7 @@ class OpenimSdkFfiBindings {
 
   ffi.Pointer<ffi.Char> CreateFaceMessage(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Int> index,
+    int index,
     ffi.Pointer<ffi.Char> data,
   ) {
     return _CreateFaceMessage(
@@ -1822,13 +1905,11 @@ class OpenimSdkFfiBindings {
 
   late final _CreateFaceMessagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>,
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>, ffi.Int,
               ffi.Pointer<ffi.Char>)>>('CreateFaceMessage');
   late final _CreateFaceMessage = _CreateFaceMessagePtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Char>)>();
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>)>();
 
   ffi.Pointer<ffi.Char> CreateForwardMessage(
     ffi.Pointer<ffi.Char> operationID,
@@ -2364,7 +2445,7 @@ class OpenimSdkFfiBindings {
 
   ffi.Pointer<ffi.Char> GetConversationIDBySessionType(
     ffi.Pointer<ffi.Char> sourceID,
-    ffi.Pointer<ffi.Int> sessionType,
+    int sessionType,
   ) {
     return _GetConversationIDBySessionType(
       sourceID,
@@ -2375,11 +2456,10 @@ class OpenimSdkFfiBindings {
   late final _GetConversationIDBySessionTypePtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>)>>('GetConversationIDBySessionType');
+              ffi.Int)>>('GetConversationIDBySessionType');
   late final _GetConversationIDBySessionType =
       _GetConversationIDBySessionTypePtr.asFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int>)>();
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>, int)>();
 
   ffi.Pointer<ffi.Char> GetAtAllTag() {
     return _GetAtAllTag();
@@ -2498,7 +2578,7 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> message,
     ffi.Pointer<ffi.Char> typeKey,
     ffi.Pointer<ffi.Char> ex,
-    ffi.Pointer<ffi.Bool> isCanRepeat,
+    bool isCanRepeat,
   ) {
     return _SetTypeKeyInfo(
       operationID,
@@ -2516,14 +2596,10 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Bool>)>>('SetTypeKeyInfo');
+              ffi.Bool)>>('SetTypeKeyInfo');
   late final _SetTypeKeyInfo = _SetTypeKeyInfoPtr.asFunction<
-      void Function(
-          ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Bool>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
 
   void GetTypeKeyListInfo(
     ffi.Pointer<ffi.Char> operationID,
@@ -2703,8 +2779,8 @@ class OpenimSdkFfiBindings {
   void GetSubDepartment(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> departmentID,
-    ffi.Pointer<ffi.Int> offset,
-    ffi.Pointer<ffi.Int> size,
+    int offset,
+    int size,
   ) {
     return _GetSubDepartment(
       operationID,
@@ -2717,16 +2793,15 @@ class OpenimSdkFfiBindings {
   late final _GetSubDepartmentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>>('GetSubDepartment');
+              ffi.Int, ffi.Int)>>('GetSubDepartment');
   late final _GetSubDepartment = _GetSubDepartmentPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
 
   void GetDepartmentMember(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> departmentID,
-    ffi.Pointer<ffi.Int> offset,
-    ffi.Pointer<ffi.Int> size,
+    int offset,
+    int size,
   ) {
     return _GetDepartmentMember(
       operationID,
@@ -2738,14 +2813,10 @@ class OpenimSdkFfiBindings {
 
   late final _GetDepartmentMemberPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>)>>('GetDepartmentMember');
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int, ffi.Int)>>('GetDepartmentMember');
   late final _GetDepartmentMember = _GetDepartmentMemberPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
 
   void GetUserInDepartment(
     ffi.Pointer<ffi.Char> operationID,
@@ -2903,7 +2974,7 @@ class OpenimSdkFfiBindings {
 
   void SetAppBadge(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Int32> appUnreadCount,
+    int appUnreadCount,
   ) {
     return _SetAppBadge(
       operationID,
@@ -2913,10 +2984,9 @@ class OpenimSdkFfiBindings {
 
   late final _SetAppBadgePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int32>)>>('SetAppBadge');
-  late final _SetAppBadge = _SetAppBadgePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Int32>)>();
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>('SetAppBadge');
+  late final _SetAppBadge =
+      _SetAppBadgePtr.asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
 }
 
 final class _GoString_ extends ffi.Struct {
@@ -2926,7 +2996,8 @@ final class _GoString_ extends ffi.Struct {
   external int n;
 }
 
-typedef ptrdiff_t = ffi.LongLong;
+typedef ptrdiff_t = __darwin_ptrdiff_t;
+typedef __darwin_ptrdiff_t = ffi.Long;
 
 final class CGO_OpenIM_Listener extends ffi.Struct {
   external ffi.Pointer<
@@ -2936,7 +3007,7 @@ final class CGO_OpenIM_Listener extends ffi.Struct {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Int32>,
+              ffi.Int32,
               ffi.Pointer<ffi.Char>)>> onMethodChannel;
 }
 
@@ -2971,4 +3042,3 @@ final class GoSlice extends ffi.Struct {
 
 typedef GoInt = GoInt64;
 typedef GoInt64 = ffi.LongLong;
-typedef GoString = _GoString_;

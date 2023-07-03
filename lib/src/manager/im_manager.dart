@@ -353,19 +353,19 @@ class IMManager {
   }
 
   /// 反初始化SDK
-  Future<void> unInitSDK() async {
-    ReceivePort receivePort = ReceivePort();
+  // Future<void> unInitSDK() async {
+  //   ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.unInitSDK,
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-    if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
-    }
-    receivePort.close();
-  }
+  //   OpenIMManager._openIMSendPort.send(_PortModel(
+  //     method: _PortMethod.unInitSDK,
+  //     sendPort: receivePort.sendPort,
+  //   ));
+  //   _PortResult result = await receivePort.first;
+  //   if (result.error != null) {
+  //     throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+  //   }
+  //   receivePort.close();
+  // }
 
   /// 登录
   /// [uid] 用户id

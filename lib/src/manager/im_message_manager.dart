@@ -136,8 +136,8 @@ class MessageManager {
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
         'message': message?.toJson(),
-        'receiverID': receiverID,
-        'senderID': senderID,
+        'receiverID': receiverID ?? '',
+        'senderID': senderID ?? '',
       },
       sendPort: receivePort.sendPort,
     ));

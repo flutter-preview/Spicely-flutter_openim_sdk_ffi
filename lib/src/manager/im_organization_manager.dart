@@ -15,7 +15,7 @@ class OrganizationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getSubDepartment,
-      data: {'operationID': IMUtils.checkOperationID(operationID), 'offset': offset, 'count': count},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID, 'offset': offset, 'count': count},
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
@@ -38,7 +38,7 @@ class OrganizationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getDepartmentMember,
-      data: {'operationID': IMUtils.checkOperationID(operationID), 'offset': offset, 'count': count},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID, 'offset': offset, 'count': count},
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
@@ -80,7 +80,7 @@ class OrganizationManager {
 
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getDepartmentMemberAndSubDepartment,
-      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID},
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;

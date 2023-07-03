@@ -174,7 +174,6 @@ class ConversationManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
     return result.value;
   }
 

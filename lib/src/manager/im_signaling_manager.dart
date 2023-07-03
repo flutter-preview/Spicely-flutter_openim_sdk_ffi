@@ -1,16 +1,5 @@
 part of flutter_openim_sdk_ffi;
 
-void _onReceiveNewInvitation(ffi.Pointer<ffi.Char> data) {}
-void _onInviteeAccepted(ffi.Pointer<ffi.Char> data) {}
-void _onInviteeAcceptedByOtherDevice(ffi.Pointer<ffi.Char> data) {}
-void _onInviteeRejected(ffi.Pointer<ffi.Char> data) {}
-void _onInviteeRejectedByOtherDevice(ffi.Pointer<ffi.Char> data) {}
-void _onInvitationCancelled(ffi.Pointer<ffi.Char> data) {}
-void _onInvitationTimeout(ffi.Pointer<ffi.Char> data) {}
-void _onHangUp(ffi.Pointer<ffi.Char> data) {}
-void _onRoomParticipantConnected(ffi.Pointer<ffi.Char> data) {}
-void _onRoomParticipantDisconnected(ffi.Pointer<ffi.Char> data) {}
-
 class SignalingManager {
   /// 邀请个人加入音视频
   /// [info] 信令对象[SignalingInfo]
