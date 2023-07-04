@@ -1,11 +1,6 @@
 part of flutter_openim_sdk_ffi;
 
 class MessageManager {
-  OnMsgSendProgressListener? msgSendProgressListener;
-  late OnAdvancedMsgListener msgListener;
-  OnCustomBusinessListener? customBusinessListener;
-  OnMessageKvInfoListener? messageKvInfoListener;
-
   MessageManager();
 
   /// 发送消息

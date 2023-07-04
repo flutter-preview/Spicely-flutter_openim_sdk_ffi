@@ -55,19 +55,6 @@ part './src/manager/im_signaling_manager.dart';
 part './src/manager/im_user_manager.dart';
 part './src/manager/im_workmoments_manager.dart';
 
-part './src/listener/advanced_msg_listener.dart';
-part './src/listener/connect_listener.dart';
-part './src/listener/conversation_listener.dart';
-part './src/listener/custom_business_listener.dart';
-part './src/listener/friendship_listener.dart';
-part './src/listener/group_listener.dart';
-part './src/listener/listener_for_service.dart';
-part './src/listener/message_kv_info_listener.dart';
-part './src/listener/msg_send_progress_listener.dart';
-part './src/listener/organization_listener.dart';
-part './src/listener/signaling_listener.dart';
-part './src/listener/user_listener.dart';
-part './src/listener/workmoments_listener.dart';
 part './src/openim_error.dart';
 
 part './src/struct/struct.dart';

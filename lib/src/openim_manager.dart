@@ -227,9 +227,13 @@ class OpenIMManager {
               break;
             case ListenerType.onConversationChanged:
             case ListenerType.onNewConversation:
-            case ListenerType.onRecvNewMessage:
               data.data = IMUtils.toList(data.data, (map) => ConversationInfo.fromJson(map));
               task.sendPort.send(data);
+              break;
+            case ListenerType.onRecvNewMessage:
+              data.data = IMUtils.toList(data.data, (map) => Message.fromJson(map));
+              task.sendPort.send(data);
+              break;
             case ListenerType.onSelfInfoUpdated:
               data.data = IMUtils.toList(data.data, (map) => UserInfo.fromJson(map));
               task.sendPort.send(data);
@@ -253,6 +257,66 @@ class OpenIMManager {
               data.data = IMUtils.toObj(data.data, (map) => GroupMembersInfo.fromJson(map));
               task.sendPort.send(data);
               break;
+
+            case ListenerType.onBlacklistAdded:
+            case ListenerType.onBlacklistDeleted:
+              data.data = IMUtils.toObj(data.data, (map) => BlacklistInfo.fromJson(map));
+              break;
+            case ListenerType.onFriendAdded:
+            case ListenerType.onFriendDeleted:
+            case ListenerType.onFriendInfoChanged:
+              data.data = IMUtils.toObj(data.data, (map) => FriendInfo.fromJson(map));
+              break;
+            case ListenerType.onFriendApplicationAccepted:
+            case ListenerType.onFriendApplicationAdded:
+            case ListenerType.onFriendApplicationDeleted:
+            case ListenerType.onFriendApplicationRejected:
+              data.data = IMUtils.toObj(data.data, (map) => FriendApplicationInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onRecvC2CMessageReadReceipt:
+            case ListenerType.onRecvGroupMessageReadReceipt:
+              data.data = IMUtils.toList(data.data, (map) => ReadReceiptInfo.fromJson(map));
+              break;
+            case ListenerType.onRecvMessageRevokedV2:
+              data.data = IMUtils.toObj(data.data, (map) => RevokedInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onRecvMessageExtensionsChanged:
+            case ListenerType.onRecvMessageExtensionsAdded:
+              data.data = IMUtils.toList(data.data, (map) => KeyValue.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onRecvMessageExtensionsDeleted:
+              data.data = IMUtils.toList(data.data, (map) => map);
+              task.sendPort.send(data);
+              break;
+
+            case ListenerType.onInvitationCancelled:
+            case ListenerType.onInvitationTimeout:
+            case ListenerType.onInviteeAccepted:
+            case ListenerType.onInviteeRejected:
+            case ListenerType.onReceiveNewInvitation:
+            case ListenerType.onInviteeAcceptedByOtherDevice:
+            case ListenerType.onInviteeRejectedByOtherDevice:
+            case ListenerType.onHangup:
+              data.data = IMUtils.toList(data.data, (map) => SignalingInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onRoomParticipantConnected:
+            case ListenerType.onRoomParticipantDisconnected:
+              data.data = IMUtils.toObj(data.data, (map) => RoomCallingInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onMeetingStreamChanged:
+              data.data = IMUtils.toObj(data.data, (map) => MeetingStreamEvent.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onReceiveCustomSignal:
+              data.data = IMUtils.toObj(data.data, (map) => CustomSignaling.fromJson(map));
+              task.sendPort.send(data);
+              break;
+
             default:
               task.sendPort.send(data);
           }
