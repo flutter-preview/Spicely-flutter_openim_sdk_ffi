@@ -317,6 +317,19 @@ class OpenIMManager {
               task.sendPort.send(data);
               break;
 
+            case ListenerType.onRecvC2CReadReceipt:
+            case ListenerType.onRecvGroupReadReceipt:
+              data.data = IMUtils.toList(data.data, (map) => ReadReceiptInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onNewRecvMessageRevoked:
+              data.data = IMUtils.toObj(data.data, (map) => ReadReceiptInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onMessageKvInfoChanged:
+              data.data = IMUtils.toList(data.data, (map) => MessageKv.fromJson(map));
+              task.sendPort.send(data);
+              break;
             default:
               task.sendPort.send(data);
           }

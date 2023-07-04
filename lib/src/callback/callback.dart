@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-04 18:12:26
+ * Last Modified: 2023-07-05 00:08:27
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -194,7 +194,7 @@ class _PortMethod {
   static const String wakeUp = 'WakeUp';
   static const String getLoginStatus = 'GetLoginStatus';
   static const String logout = 'Logout';
-  static const String unInitSDK = 'UnInitSDK';
+  // static const String unInitSDK = 'UnInitSDK';
 }
 
 void _printMessage(ffi.Pointer<ffi.Char> message) {

@@ -44,6 +44,9 @@ class ListenerType {
   static const String onRecvMessageExtensionsChanged = 'OnRecvMessageExtensionsChanged';
   static const String onRecvMessageExtensionsDeleted = 'OnRecvMessageExtensionsDeleted';
   static const String onRecvMessageExtensionsAdded = 'OnRecvMessageExtensionsAdded';
+  static const String onRecvC2CReadReceipt = 'OnRecvC2CReadReceipt';
+  static const String onRecvGroupReadReceipt = 'OnRecvGroupReadReceipt';
+  static const String onNewRecvMessageRevoked = 'OnNewRecvMessageRevoked';
 
   /// 会话相关回调
   static const String onConversationChanged = 'OnConversationChanged';

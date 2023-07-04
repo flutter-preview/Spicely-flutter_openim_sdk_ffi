@@ -107,223 +107,106 @@ class IMManager {
       case ListenerType.onJoinedGroupDeleted:
         OpenIMManager._onEvent((listener) => listener.onJoinedGroupDeleted(channel.data));
         break;
+
+      case ListenerType.onRecvMessageRevoked:
+        OpenIMManager._onEvent((listener) => listener.onRecvMessageRevoked(channel.data));
+        break;
+      case ListenerType.onRecvC2CReadReceipt:
+        OpenIMManager._onEvent((listener) => listener.onRecvC2CMessageReadReceipt(channel.data));
+        break;
+      case ListenerType.onRecvGroupReadReceipt:
+        OpenIMManager._onEvent((listener) => listener.onRecvGroupMessageReadReceipt(channel.data));
+        break;
+      case ListenerType.onNewRecvMessageRevoked:
+        OpenIMManager._onEvent((listener) => listener.onRecvMessageRevokedV2(channel.data));
+        break;
+      // case ListenerType.onRecvMessageExtensionsChanged:
+      //   OpenIMManager._onEvent((listener) => listener.onRecvMessageExtensionsChanged(channel., channel.data));
+      //   break;
+      // case ListenerType.onRecvMessageExtensionsDeleted:
+      //   OpenIMManager._onEvent((listener) => listener.onRecvMessageExtensionsDeleted(channel.data));
+      // case ListenerType.onRecvMessageExtensionsAdded:
+      //   OpenIMManager._onEvent((listener) => listener.onRecvMessageExtensionsAdded(channel.data));
+      //   break;
+
+      case ListenerType.onBlacklistAdded:
+        OpenIMManager._onEvent((listener) => listener.onBlacklistAdded(channel.data));
+        break;
+      case ListenerType.onBlacklistDeleted:
+        OpenIMManager._onEvent((listener) => listener.onBlacklistDeleted(channel.data));
+        break;
+      case ListenerType.onFriendApplicationAccepted:
+        OpenIMManager._onEvent((listener) => listener.onFriendApplicationAccepted(channel.data));
+        break;
+      case ListenerType.onFriendApplicationAdded:
+        OpenIMManager._onEvent((listener) => listener.onFriendApplicationAdded(channel.data));
+        break;
+      case ListenerType.onFriendApplicationDeleted:
+        OpenIMManager._onEvent((listener) => listener.onFriendApplicationDeleted(channel.data));
+        break;
+      case ListenerType.onFriendApplicationRejected:
+        OpenIMManager._onEvent((listener) => listener.onFriendApplicationRejected(channel.data));
+        break;
+      case ListenerType.onFriendInfoChanged:
+        OpenIMManager._onEvent((listener) => listener.onFriendInfoChanged(channel.data));
+        break;
+      case ListenerType.onFriendAdded:
+        OpenIMManager._onEvent((listener) => listener.onFriendAdded(channel.data));
+        break;
+      case ListenerType.onFriendDeleted:
+        OpenIMManager._onEvent((listener) => listener.onFriendDeleted(channel.data));
+        break;
+
+      case ListenerType.onInvitationCancelled:
+        OpenIMManager._onEvent((listener) => listener.onInvitationCancelled(channel.data));
+        break;
+      case ListenerType.onInvitationTimeout:
+        OpenIMManager._onEvent((listener) => listener.onInvitationTimeout(channel.data));
+        break;
+      case ListenerType.onInviteeAccepted:
+        OpenIMManager._onEvent((listener) => listener.onInviteeAccepted(channel.data));
+        break;
+      case ListenerType.onInviteeRejected:
+        OpenIMManager._onEvent((listener) => listener.onInviteeRejected(channel.data));
+        break;
+      case ListenerType.onReceiveNewInvitation:
+        OpenIMManager._onEvent((listener) => listener.onReceiveNewInvitation(channel.data));
+        break;
+      case ListenerType.onInviteeAcceptedByOtherDevice:
+        OpenIMManager._onEvent((listener) => listener.onInviteeAcceptedByOtherDevice(channel.data));
+        break;
+      case ListenerType.onInviteeRejectedByOtherDevice:
+        OpenIMManager._onEvent((listener) => listener.onInviteeRejectedByOtherDevice(channel.data));
+        break;
+      case ListenerType.onHangup:
+        OpenIMManager._onEvent((listener) => listener.onHangup(channel.data));
+        break;
+      case ListenerType.onRoomParticipantConnected:
+        OpenIMManager._onEvent((listener) => listener.onRoomParticipantConnected(channel.data));
+        break;
+      case ListenerType.onRoomParticipantDisconnected:
+        OpenIMManager._onEvent((listener) => listener.onRoomParticipantDisconnected(channel.data));
+        break;
+      // case ListenerType.onStreamChange:
+      //   OpenIMManager._onEvent((listener) => listener.onStreamChangedEvent(channel.data));
+      //   break;
+      case ListenerType.onReceiveCustomSignal:
+        OpenIMManager._onEvent((listener) => listener.onReceiveCustomSignal(channel.data));
+        break;
+
+      case ListenerType.onRecvNewNotification:
+        OpenIMManager._onEvent((listener) => listener.onRecvNewNotification());
+        break;
+      case ListenerType.onOrganizationUpdated:
+        OpenIMManager._onEvent((listener) => listener.onOrganizationUpdated());
+        break;
+      case ListenerType.onRecvCustomBusinessMessage:
+        OpenIMManager._onEvent((listener) => listener.onRecvCustomBusinessMessage(channel.data));
+        break;
+      case ListenerType.onMessageKvInfoChanged:
+        OpenIMManager._onEvent((listener) => listener.onMessageKvInfoChanged(channel.data));
+        break;
     }
-    //     String type = call.arguments['type'];
-    //     dynamic data = call.arguments['data'];
-    //     switch (type) {
-
-    //     }
-    //   } else if (call.method == ListenerType.advancedMsgListener) {
-    //     var type = call.arguments['type'];
-    //     // var id = call.arguments['data']['id'];
-    //     switch (type) {
-    //       case 'onRecvNewMessage':
-    //         var value = call.arguments['data']['newMessage'];
-    //         final msg = IMUtils.toObj(value, (map) => Message.fromJson(map));
-    //         messageManager.msgListener.recvNewMessage(msg);
-    //         break;
-    //       case 'onRecvMessageRevoked':
-    //         var msgID = call.arguments['data']['revokedMessage'];
-    //         messageManager.msgListener.recvMessageRevoked(msgID);
-    //         break;
-    //       case 'onRecvC2CReadReceipt':
-    //         var value = call.arguments['data']['c2cMessageReadReceipt'];
-    //         var list = IMUtils.toList(value, (map) => ReadReceiptInfo.fromJson(map));
-    //         messageManager.msgListener.recvC2CMessageReadReceipt(list);
-    //         break;
-    //       case 'onRecvGroupReadReceipt':
-    //         var value = call.arguments['data']['groupMessageReadReceipt'];
-    //         var list = IMUtils.toList(value, (map) => ReadReceiptInfo.fromJson(map));
-    //         messageManager.msgListener.recvGroupMessageReadReceipt(list);
-    //         break;
-    //       case 'onNewRecvMessageRevoked':
-    //         var value = call.arguments['data']['revokedMessageV2'];
-    //         var info = IMUtils.toObj(value, (map) => RevokedInfo.fromJson(map));
-    //         messageManager.msgListener.recvMessageRevokedV2(info);
-    //         break;
-    //       case 'onRecvMessageExtensionsChanged':
-    //         var msgID = call.arguments['data']['msgID'];
-    //         var value = call.arguments['data']['list'];
-    //         var list = IMUtils.toList(value, (map) => KeyValue.fromJson(map));
-    //         messageManager.msgListener.recvMessageExtensionsChanged(msgID, list);
-    //         break;
-    //       case 'onRecvMessageExtensionsDeleted':
-    //         var msgID = call.arguments['data']['msgID'];
-    //         var value = call.arguments['data']['list'];
-    //         var list = IMUtils.toList(value, (map) => '$map');
-    //         messageManager.msgListener.recvMessageExtensionsDeleted(msgID, list);
-    //         break;
-    //       case 'onRecvMessageExtensionsAdded':
-    //         var msgID = call.arguments['data']['msgID'];
-    //         var value = call.arguments['data']['list'];
-    //         var list = IMUtils.toList(value, (map) => KeyValue.fromJson(map));
-    //         messageManager.msgListener.recvMessageExtensionsAdded(msgID, list);
-    //         break;
-    //     }
-
-    //   } else if (call.method == ListenerType.conversationListener) {
-    //     String type = call.arguments['type'];
-    //     dynamic data = call.arguments['data'];
-    //     switch (type) {
-
-    //   } else if (call.method == ListenerType.friendListener) {
-    //     String type = call.arguments['type'];
-    //     dynamic data = call.arguments['data'];
-
-    //     switch (type) {
-    //       case 'onBlacklistAdded':
-    //         final u = IMUtils.toObj(data, (map) => BlacklistInfo.fromJson(map));
-    //         friendshipManager.listener.blacklistAdded(u);
-    //         break;
-    //       case 'onBlacklistDeleted':
-    //         final u = IMUtils.toObj(data, (map) => BlacklistInfo.fromJson(map));
-    //         friendshipManager.listener.blacklistDeleted(u);
-    //         break;
-    //       case 'onFriendApplicationAccepted':
-    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
-    //         friendshipManager.listener.friendApplicationAccepted(u);
-    //         break;
-    //       case 'onFriendApplicationAdded':
-    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
-    //         friendshipManager.listener.friendApplicationAdded(u);
-    //         break;
-    //       case 'onFriendApplicationDeleted':
-    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
-    //         friendshipManager.listener.friendApplicationDeleted(u);
-    //         break;
-    //       case 'onFriendApplicationRejected':
-    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
-    //         friendshipManager.listener.friendApplicationRejected(u);
-    //         break;
-    //       case 'onFriendInfoChanged':
-    //         final u = IMUtils.toObj(data, (map) => FriendInfo.fromJson(map));
-    //         friendshipManager.listener.friendInfoChanged(u);
-    //         break;
-    //       case 'onFriendAdded':
-    //         final u = IMUtils.toObj(data, (map) => FriendInfo.fromJson(map));
-    //         friendshipManager.listener.friendAdded(u);
-    //         break;
-    //       case 'onFriendDeleted':
-    //         final u = IMUtils.toObj(data, (map) => FriendInfo.fromJson(map));
-    //         friendshipManager.listener.friendDeleted(u);
-    //         break;
-    //     }
-    //   } else if (call.method == ListenerType.signalingListener) {
-    //     String type = call.arguments['type'];
-    //     dynamic data = call.arguments['data'];
-    //     dynamic info;
-    //     switch (type) {
-    //       case 'onRoomParticipantConnected':
-    //       case 'onRoomParticipantDisconnected':
-    //         info = IMUtils.toObj(data, (map) => RoomCallingInfo.fromJson(map));
-    //         break;
-    //       case 'onStreamChange':
-    //         info = IMUtils.toObj(data, (map) => MeetingStreamEvent.fromJson(map));
-    //         break;
-    //       case 'onReceiveCustomSignal':
-    //         info = IMUtils.toObj(data, (map) => CustomSignaling.fromJson(map));
-    //         break;
-    //       default:
-    //         info = IMUtils.toObj(data, (map) => SignalingInfo.fromJson(map));
-    //         break;
-    //     }
-    //     switch (type) {
-    //       case 'onInvitationCancelled':
-    //         signalingManager.listener.invitationCancelled(info);
-    //         break;
-    //       case 'onInvitationTimeout':
-    //         signalingManager.listener.invitationTimeout(info);
-    //         break;
-    //       case 'onInviteeAccepted':
-    //         signalingManager.listener.inviteeAccepted(info);
-    //         break;
-    //       case 'onInviteeRejected':
-    //         signalingManager.listener.inviteeRejected(info);
-    //         break;
-    //       case 'onReceiveNewInvitation':
-    //         signalingManager.listener.receiveNewInvitation(info);
-    //         break;
-    //       case 'onInviteeAcceptedByOtherDevice':
-    //         signalingManager.listener.inviteeAcceptedByOtherDevice(info);
-    //         break;
-    //       case 'onInviteeRejectedByOtherDevice':
-    //         signalingManager.listener.inviteeRejectedByOtherDevice(info);
-    //         break;
-    //       case 'onHangUp':
-    //         signalingManager.listener.hangup(info);
-    //         break;
-    //       case 'onRoomParticipantConnected':
-    //         signalingManager.listener.roomParticipantConnected(info);
-    //         break;
-    //       case 'onRoomParticipantDisconnected':
-    //         signalingManager.listener.roomParticipantDisconnected(info);
-    //         break;
-    //       case 'onStreamChange':
-    //         signalingManager.listener.streamChangedEvent(info);
-    //         break;
-    //       case 'onReceiveCustomSignal':
-    //         signalingManager.listener.receiveCustomSignal(info);
-    //         break;
-    //     }
-    //   } else if (call.method == ListenerType.workMomentsListener) {
-    //     String type = call.arguments['type'];
-    //     switch (type) {
-    //       case 'OnRecvNewNotification':
-    //         workMomentsManager.listener.recvNewNotification();
-    //         break;
-    //     }
-    //   } else if (call.method == ListenerType.organizationListener) {
-    //     String type = call.arguments['type'];
-    //     switch (type) {
-    //       case 'onOrganizationUpdated':
-    //         organizationManager.listener.organizationUpdated();
-    //         break;
-    //     }
-    //   } else if (call.method == ListenerType.customBusinessListener) {
-    //     String type = call.arguments['type'];
-    //     String data = call.arguments['data'];
-    //     switch (type) {
-    //       case 'onRecvCustomBusinessMessage':
-    //         messageManager.customBusinessListener?.recvCustomBusinessMessage(data);
-    //         break;
-    //     }
-    //   } else if (call.method == ListenerType.messageKvInfoListener) {
-    //     String type = call.arguments['type'];
-    //     String data = call.arguments['data'];
-    //     switch (type) {
-    //       case 'onMessageKvInfoChanged':
-    //         final list = IMUtils.toList(data, (map) => MessageKv.fromJson(map)).toList();
-    //         messageManager.messageKvInfoListener?.messageKvInfoChanged(list);
-    //         break;
-    //     }
-    //   } else if (call.method == ListenerType.listenerForService) {
-    //     String type = call.arguments['type'];
-    //     String data = call.arguments['data'];
-    //     switch (type) {
-    //       case 'onFriendApplicationAccepted':
-    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
-    //         _listenerForService?.friendApplicationAccepted(u);
-    //         break;
-    //       case 'onFriendApplicationAdded':
-    //         final u = IMUtils.toObj(data, (map) => FriendApplicationInfo.fromJson(map));
-    //         _listenerForService?.friendApplicationAdded(u);
-    //         break;
-    //       case 'onGroupApplicationAccepted':
-    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
-    //         _listenerForService?.groupApplicationAccepted(i);
-    //         break;
-    //       case 'onGroupApplicationAdded':
-    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
-    //         _listenerForService?.groupApplicationAdded(i);
-    //         break;
-    //
-    //     }
-    //   }
-    // } catch (error, stackTrace) {
-    //   Logger.print("回调失败了。${call.method} ${call.arguments['type']} ${call.arguments['data']} $error $stackTrace");
-    // }
-    // return Future.value(null);
-    // });
   }
 
   /// 反初始化SDK

@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-04 18:20:24
+ * Last Modified: 2023-07-05 00:31:59
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -164,4 +164,10 @@ mixin OpenIMListener {
 
   /// 组织架构有更新
   void onOrganizationUpdated() {}
+
+  void onStreamChangedEvent(MeetingStreamEvent event) {}
+
+  void onRecvCustomBusinessMessage(String s) {}
+
+  void onMessageKvInfoChanged(List<MessageKv> list) {}
 }
