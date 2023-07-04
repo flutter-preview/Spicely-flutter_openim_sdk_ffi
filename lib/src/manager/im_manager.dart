@@ -35,106 +35,83 @@ class IMManager {
   void _nativeCallback(_PortModel channel) {
     print(channel.toJson());
     switch (channel.method) {
-      case 'OnConnectFailed':
+      case ListenerType.onConnectFailed:
         OpenIMManager._onEvent((listener) => listener.onConnectFailed(1, ''));
         break;
-      case 'OnConnecting':
+      case ListenerType.onConnecting:
         OpenIMManager._onEvent((listener) => listener.onConnecting());
         break;
-      case 'OnConnectSuccess':
+      case ListenerType.onConnectSuccess:
         OpenIMManager._onEvent((listener) => listener.onConnectSuccess());
         break;
-      case 'OnKickedOffline':
+      case ListenerType.onKickedOffline:
         OpenIMManager._onEvent((listener) => listener.onKickedOffline());
         break;
-      case 'OnUserTokenExpired':
+      case ListenerType.onUserTokenExpired:
         OpenIMManager._onEvent((listener) => listener.onUserTokenExpired());
         break;
-      case 'OnSyncServerStart':
+      case ListenerType.onSyncServerStart:
         OpenIMManager._onEvent((listener) => listener.onSyncServerStart());
         break;
-      case 'OnSyncServerFinish':
+      case ListenerType.onSyncServerFinish:
         OpenIMManager._onEvent((listener) => listener.onSyncServerFinish());
         break;
-
-      case 'OnSyncServerFailed':
+      case ListenerType.onSyncServerFailed:
         OpenIMManager._onEvent((listener) => listener.onSyncServerFailed());
         break;
-      case 'OnNewConversation':
-        var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
-        OpenIMManager._onEvent((listener) => listener.onNewConversation(list));
+      case ListenerType.onNewConversation:
+        OpenIMManager._onEvent((listener) => listener.onNewConversation(channel.data));
         break;
-      case 'OnConversationChanged':
-        var list = IMUtils.toList(channel.data, (map) => ConversationInfo.fromJson(map));
-        OpenIMManager._onEvent((listener) => listener.onConversationChanged(list));
+      case ListenerType.onConversationChanged:
+        OpenIMManager._onEvent((listener) => listener.onConversationChanged(channel.data));
         break;
-      case 'OnTotalUnreadMessageCountChanged':
+      case ListenerType.onTotalUnreadMessageCountChanged:
         OpenIMManager._onEvent((listener) => listener.onTotalUnreadMessageCountChanged(channel.errCode ?? 0));
         break;
-      case 'OnProgress':
+      case ListenerType.onProgress:
         OpenIMManager._onEvent((listener) => listener.onProgress(channel.data ?? '', channel.errCode ?? 0));
+      case ListenerType.onRecvNewMessage:
+        OpenIMManager._onEvent((listener) => listener.onRecvNewMessage(channel.data));
+        break;
+      case ListenerType.onSelfInfoUpdated:
+        OpenIMManager._onEvent((listener) => listener.onSelfInfoUpdated(channel.data));
+        break;
 
+      case ListenerType.onGroupApplicationAccepted:
+        OpenIMManager._onEvent((listener) => listener.onGroupApplicationAccepted(channel.data));
+        break;
+      case ListenerType.onGroupApplicationAdded:
+        OpenIMManager._onEvent((listener) => listener.onGroupApplicationAdded(channel.data));
+        break;
+      case ListenerType.onGroupApplicationDeleted:
+        OpenIMManager._onEvent((listener) => listener.onGroupApplicationDeleted(channel.data));
+        break;
+      case ListenerType.onGroupApplicationRejected:
+        OpenIMManager._onEvent((listener) => listener.onGroupApplicationRejected(channel.data));
+        break;
+      case ListenerType.onGroupInfoChanged:
+        OpenIMManager._onEvent((listener) => listener.onGroupInfoChanged(channel.data));
+        break;
+      case ListenerType.onGroupMemberAdded:
+        OpenIMManager._onEvent((listener) => listener.onGroupMemberAdded(channel.data));
+        break;
+      case ListenerType.onGroupMemberDeleted:
+        OpenIMManager._onEvent((listener) => listener.onGroupMemberDeleted(channel.data));
+        break;
+      case ListenerType.onGroupMemberInfoChanged:
+        OpenIMManager._onEvent((listener) => listener.onGroupMemberInfoChanged(channel.data));
+        break;
+      case ListenerType.onJoinedGroupAdded:
+        OpenIMManager._onEvent((listener) => listener.onJoinedGroupAdded(channel.data));
+        break;
+      case ListenerType.onJoinedGroupDeleted:
+        OpenIMManager._onEvent((listener) => listener.onJoinedGroupDeleted(channel.data));
         break;
     }
-    // _channel.setMethodCallHandler((call) {
-    // try {
-    //   Logger.print('Flutter : $call');
-    //   if (call.method == ListenerType.connectListener) {
     //     String type = call.arguments['type'];
+    //     dynamic data = call.arguments['data'];
+    //     switch (type) {
 
-    //   } else if (call.method == ListenerType.userListener) {
-    //     String type = call.arguments['type'];
-    //     dynamic data = call.arguments['data'];
-    //     switch (type) {
-    //       case 'onSelfInfoUpdated':
-    //         uInfo = IMUtils.toObj(data, (map) => UserInfo.fromJson(map));
-    //         // userManager.listener.selfInfoUpdated(uInfo);
-    //         break;
-    //     }
-    //   } else if (call.method == ListenerType.groupListener) {
-    //     String type = call.arguments['type'];
-    //     dynamic data = call.arguments['data'];
-    //     switch (type) {
-    //       case 'onGroupApplicationAccepted':
-    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
-    //         groupManager.listener.groupApplicationAccepted(i);
-    //         break;
-    //       case 'onGroupApplicationAdded':
-    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
-    //         groupManager.listener.groupApplicationAdded(i);
-    //         break;
-    //       case 'onGroupApplicationDeleted':
-    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
-    //         groupManager.listener.groupApplicationDeleted(i);
-    //         break;
-    //       case 'onGroupApplicationRejected':
-    //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
-    //         groupManager.listener.groupApplicationRejected(i);
-    //         break;
-    //       case 'onGroupInfoChanged':
-    //         final i = IMUtils.toObj(data, (map) => GroupInfo.fromJson(map));
-    //         groupManager.listener.groupInfoChanged(i);
-    //         break;
-    //       case 'onGroupMemberAdded':
-    //         final i = IMUtils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
-    //         groupManager.listener.groupMemberAdded(i);
-    //         break;
-    //       case 'onGroupMemberDeleted':
-    //         final i = IMUtils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
-    //         groupManager.listener.groupMemberDeleted(i);
-    //         break;
-    //       case 'onGroupMemberInfoChanged':
-    //         final i = IMUtils.toObj(data, (map) => GroupMembersInfo.fromJson(map));
-    //         groupManager.listener.groupMemberInfoChanged(i);
-    //         break;
-    //       case 'onJoinedGroupAdded':
-    //         final i = IMUtils.toObj(data, (map) => GroupInfo.fromJson(map));
-    //         groupManager.listener.joinedGroupAdded(i);
-    //         break;
-    //       case 'onJoinedGroupDeleted':
-    //         final i = IMUtils.toObj(data, (map) => GroupInfo.fromJson(map));
-    //         groupManager.listener.joinedGroupDeleted(i);
-    //         break;
     //     }
     //   } else if (call.method == ListenerType.advancedMsgListener) {
     //     var type = call.arguments['type'];
@@ -339,10 +316,7 @@ class IMManager {
     //         final i = IMUtils.toObj(data, (map) => GroupApplicationInfo.fromJson(map));
     //         _listenerForService?.groupApplicationAdded(i);
     //         break;
-    //       case 'onRecvNewMessage':
-    //         final msg = IMUtils.toObj(data, (map) => Message.fromJson(map));
-    //         _listenerForService?.recvNewMessage(msg);
-    //         break;
+    //
     //     }
     //   }
     // } catch (error, stackTrace) {
@@ -463,7 +437,6 @@ class IMManager {
     String? operationID,
   }) async {
     ReceivePort receivePort = ReceivePort();
-
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.uploadImage,
       data: {

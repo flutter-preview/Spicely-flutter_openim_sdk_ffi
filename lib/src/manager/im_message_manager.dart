@@ -36,7 +36,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 获取聊天记录(以startMsg为节点，以前的聊天记录)
@@ -69,8 +69,7 @@ class MessageManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return IMUtils.toList(result.value, (map) => Message.fromJson(map));
+    return result.value;
   }
 
   /// 撤回消息[revokeMessageV2]
@@ -144,7 +143,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 插入群聊消息到本地
@@ -171,7 +170,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 标记c2c单条消息已读
@@ -265,7 +264,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建@消息
@@ -295,7 +294,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建图片消息
@@ -316,7 +315,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建图片消息
@@ -337,7 +336,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建语音消息
@@ -361,7 +360,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建语音消息
@@ -385,7 +384,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建视频消息
@@ -415,7 +414,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建视频消息
@@ -445,7 +444,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建文件消息
@@ -468,8 +467,7 @@ class MessageManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建文件消息
@@ -492,8 +490,7 @@ class MessageManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建合并消息
@@ -520,7 +517,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建转发消息
@@ -541,7 +538,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建位置消息
@@ -568,7 +565,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建自定义消息
@@ -595,7 +592,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建引用消息
@@ -619,7 +616,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建卡片消息
@@ -640,7 +637,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建自定义表情消息
@@ -664,7 +661,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 清空单聊消息记录
@@ -915,7 +912,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return IMUtils.toList(result.value, (map) => Message.fromJson(map));
+    return result.value;
   }
 
   /// 撤回消息
@@ -972,8 +969,7 @@ class MessageManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return AdvancedMessage.fromJson(result.value);
+    return result.value;
   }
 
   /// 查找消息详细
@@ -995,7 +991,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return SearchResult.fromJson(result.value);
+    return result.value;
   }
 
   /// 富文本消息
@@ -1019,7 +1015,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 富文本消息
@@ -1046,7 +1042,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 发送消息
@@ -1076,7 +1072,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建图片消息
@@ -1100,7 +1096,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建语音消息
@@ -1120,7 +1116,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建视频消息
@@ -1140,7 +1136,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   /// 创建视频消息
@@ -1160,7 +1156,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return Message.fromJson(result.value);
+    return result.value;
   }
 
   Future<List<TypeKeySetResult>> setMessageReactionExtensions({
@@ -1181,7 +1177,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return IMUtils.toList(result.value, (map) => TypeKeySetResult.fromJson(map));
+    return result.value;
   }
 
   Future<List<TypeKeySetResult>> deleteMessageReactionExtensions({
@@ -1202,7 +1198,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return IMUtils.toList(result.value, (map) => TypeKeySetResult.fromJson(map));
+    return result.value;
   }
 
   Future<List<MessageTypeKeyMapping>> getMessageListReactionExtensions({
@@ -1221,7 +1217,7 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return IMUtils.toList(result.value, (map) => MessageTypeKeyMapping.fromJson(map));
+    return result.value;
   }
 
   Future<List<TypeKeySetResult>> addMessageReactionExtensions({
@@ -1263,11 +1259,6 @@ class MessageManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return IMUtils.toList(result.value, (map) => MessageTypeKeyMapping.fromJson(map));
-  }
-
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "messageManager";
-    return param;
+    return result.value;
   }
 }

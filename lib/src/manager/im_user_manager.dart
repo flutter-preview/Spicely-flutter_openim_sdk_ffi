@@ -20,7 +20,7 @@ class UserManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return IMUtils.toList(result.value, (map) => UserInfo.fromJson(Map.from(map)));
+    return result.value;
   }
 
   /// 获取当前登录用户的信息
@@ -37,7 +37,7 @@ class UserManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
 
-    return UserInfo.fromJson(Map.from(result.value));
+    return result.value;
   }
 
   /// 修改当前登录用户资料

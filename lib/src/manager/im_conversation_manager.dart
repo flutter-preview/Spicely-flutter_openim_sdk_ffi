@@ -14,8 +14,7 @@ class ConversationManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return IMUtils.toList(result.value, (map) => ConversationInfo.fromJson(map));
+    return result.value;
   }
 
   /// 分页获取会话

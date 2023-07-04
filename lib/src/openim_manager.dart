@@ -139,18 +139,27 @@ class OpenIMManager {
   /// 请求成功  返回数据
   static _onSuccess(_PortModel msg) {
     switch (msg.callMethodName) {
-      case _PortMethod.getUsersInfo:
       case _PortMethod.getAllConversationList:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => ConversationInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
       case _PortMethod.getHistoryMessageList:
         if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toListMap(msg.data)));
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => Message.fromJson(v))));
           _sendPortMap.remove(msg.operationID!);
         }
         break;
+      case _PortMethod.getUsersInfo:
       case _PortMethod.getSelfUserInfo:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => UserInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
       case _PortMethod.sendMessage:
         if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data)));
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => Message.fromJson(v))));
           _sendPortMap.remove(msg.operationID!);
         }
         break;
@@ -166,65 +175,90 @@ class OpenIMManager {
     if (task.rootIsolateToken != null) {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
     }
+    try {
+      final receivePort = ReceivePort();
+      task.sendPort.send(receivePort.sendPort);
 
-    final receivePort = ReceivePort();
-    task.sendPort.send(receivePort.sendPort);
+      _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
 
-    _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
-
-    InitSdkParams data = task.data;
-    String? dataDir = data.dataDir;
-    if (dataDir == null) {
-      Directory document = await getApplicationDocumentsDirectory();
-      dataDir = document.path;
-    }
-
-    String config = jsonEncode({
-      'platform': getIMPlatform(),
-      'api_addr': data.apiAddr,
-      'ws_addr': data.wsAddr,
-      'data_dir': dataDir,
-      'log_level': data.logLevel,
-      'object_storage': data.objectStorage,
-      'encryption_key': data.encryptionKey,
-      'is_need_encryption': data.enabledEncryption,
-      'is_compression': data.enabledCompression,
-      'is_external_extensions': data.isExternalExtensions,
-    });
-
-    bool status = _imBindings.InitSDK(
-      IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
-      config.toNativeUtf8().cast<ffi.Char>(),
-    );
-
-    _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
-
-    task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
-
-    receivePort.listen((msg) {
-      if (msg is String) {
-        _PortModel data = _PortModel.fromJson(jsonDecode(msg));
-        // print(data.toJson());
-        switch (data.method) {
-          case 'OnError':
-            if (data.operationID != null) {
-              _sendPortMap[data.operationID!]
-                  ?.send(_PortResult(error: data.data, errCode: data.errCode, callMethodName: data.callMethodName));
-              _sendPortMap.remove(data.operationID!);
-            }
-            break;
-          case 'OnSuccess':
-            _onSuccess(data);
-            break;
-          default:
-            if (data.data is String) {
-              data.data = jsonDecode(data.data);
-            }
-            task.sendPort.send(data);
-        }
-        return;
+      InitSdkParams data = task.data;
+      String? dataDir = data.dataDir;
+      if (dataDir == null) {
+        Directory document = await getApplicationDocumentsDirectory();
+        dataDir = document.path;
       }
-      try {
+
+      String config = jsonEncode({
+        'platform': getIMPlatform(),
+        'api_addr': data.apiAddr,
+        'ws_addr': data.wsAddr,
+        'data_dir': dataDir,
+        'log_level': data.logLevel,
+        'object_storage': data.objectStorage,
+        'encryption_key': data.encryptionKey,
+        'is_need_encryption': data.enabledEncryption,
+        'is_compression': data.enabledCompression,
+        'is_external_extensions': data.isExternalExtensions,
+      });
+
+      bool status = _imBindings.InitSDK(
+        IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
+        config.toNativeUtf8().cast<ffi.Char>(),
+      );
+
+      _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
+
+      task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
+
+      receivePort.listen((msg) {
+        if (msg is String) {
+          _PortModel data = _PortModel.fromJson(jsonDecode(msg));
+          // print(data.toJson());
+          switch (data.method) {
+            case 'OnError':
+              if (data.operationID != null) {
+                _sendPortMap[data.operationID!]
+                    ?.send(_PortResult(error: data.data, errCode: data.errCode, callMethodName: data.callMethodName));
+                _sendPortMap.remove(data.operationID!);
+              }
+              break;
+            case 'OnSuccess':
+              _onSuccess(data);
+              break;
+            case ListenerType.onConversationChanged:
+            case ListenerType.onNewConversation:
+            case ListenerType.onRecvNewMessage:
+              data.data = IMUtils.toList(data.data, (map) => ConversationInfo.fromJson(map));
+              task.sendPort.send(data);
+            case ListenerType.onSelfInfoUpdated:
+              data.data = IMUtils.toList(data.data, (map) => UserInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onGroupApplicationAccepted:
+            case ListenerType.onGroupApplicationAdded:
+            case ListenerType.onGroupApplicationDeleted:
+            case ListenerType.onGroupApplicationRejected:
+              data.data = IMUtils.toObj(data.data, (map) => GroupApplicationInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onGroupInfoChanged:
+            case ListenerType.onJoinedGroupAdded:
+            case ListenerType.onJoinedGroupDeleted:
+              data.data = IMUtils.toObj(data.data, (map) => GroupInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            case ListenerType.onGroupMemberAdded:
+            case ListenerType.onGroupMemberDeleted:
+            case ListenerType.onGroupMemberInfoChanged:
+              data.data = IMUtils.toObj(data.data, (map) => GroupMembersInfo.fromJson(map));
+              task.sendPort.send(data);
+              break;
+            default:
+              task.sendPort.send(data);
+          }
+          return;
+        }
+
         switch ((msg as _PortModel).method) {
           case _PortMethod.login:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
@@ -374,7 +408,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final text = (msg.data['text'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = _imBindings.CreateTextMessage(operationID, text);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(message.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(message.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
             break;
@@ -385,7 +419,7 @@ class OpenIMManager {
             final atUsersInfo = jsonEncode(msg.data['atUsersInfo']).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateTextAtMessage(operationID, text, atUserList, atUsersInfo, message);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
             calloc.free(atUserList);
@@ -396,7 +430,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final imagePath = (msg.data['imagePath'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateImageMessage(operationID, imagePath);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(imagePath);
             break;
@@ -404,7 +438,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final imagePath = (msg.data['imagePath'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateImageMessageFromFullPath(operationID, imagePath);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(imagePath);
             break;
@@ -412,7 +446,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundPath = (msg.data['soundPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateSoundMessage(operationID, soundPath, msg.data['duration']);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(soundPath);
             break;
@@ -420,7 +454,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundPath = (msg.data['soundPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateSoundMessageFromFullPath(operationID, soundPath, msg.data['duration']);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(soundPath);
             break;
@@ -430,7 +464,7 @@ class OpenIMManager {
             final videoType = (msg.data['videoType'] as String).toNativeUtf8().cast<ffi.Char>();
             final snapshotPath = (msg.data['snapshotPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateVideoMessage(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(videoPath);
             calloc.free(videoType);
@@ -443,7 +477,7 @@ class OpenIMManager {
             final snapshotPath = (msg.data['snapshotPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg =
                 _imBindings.CreateVideoMessageFromFullPath(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(videoPath);
             calloc.free(videoType);
@@ -454,7 +488,7 @@ class OpenIMManager {
             final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
             final fileName = (msg.data['fileName'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateFileMessage(operationID, filePath, fileName);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(filePath);
             calloc.free(fileName);
@@ -464,7 +498,7 @@ class OpenIMManager {
             final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
             final fileName = (msg.data['fileName'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateFileMessageFromFullPath(operationID, filePath, fileName);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(filePath);
             calloc.free(fileName);
@@ -475,7 +509,7 @@ class OpenIMManager {
             final title = (msg.data['title'] as String).toNativeUtf8().cast<ffi.Char>();
             final summaryList = jsonEncode(msg.data['summaryList']).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateMergerMessage(operationID, messageList, title, summaryList);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(messageList);
             calloc.free(title);
@@ -485,7 +519,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateForwardMessage(operationID, message);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(message);
             break;
@@ -493,7 +527,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final description = (msg.data['description'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateLocationMessage(operationID, description, msg.data['longitude'], msg.data['latitude']);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(description);
             break;
@@ -503,7 +537,7 @@ class OpenIMManager {
             final extension = (msg.data['extension'] as String).toNativeUtf8().cast<ffi.Char>();
             final description = (msg.data['description'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateCustomMessage(operationID, data, extension, description);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(data);
             calloc.free(extension);
@@ -514,7 +548,7 @@ class OpenIMManager {
             final text = (msg.data['text'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateQuoteMessage(operationID, text, message);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
             calloc.free(message);
@@ -523,7 +557,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final data = jsonEncode(msg.data['data']).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateCardMessage(operationID, data);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(data);
             break;
@@ -531,7 +565,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final data = (msg.data['data'] as String).toNativeUtf8().cast<ffi.Char>();
             final newMsg = _imBindings.CreateFaceMessage(operationID, msg.data['index'], data);
-            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString())));
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(data);
             break;
@@ -1389,10 +1423,10 @@ class OpenIMManager {
           // calloc.free(operationID);
           // break;
         }
-      } catch (e) {
-        print(e);
-      }
-    });
+      });
+    } catch (e) {
+      Logger.print(e.toString());
+    }
   }
 
   /// 初始化

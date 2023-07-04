@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-06-12 12:03:15
+ * Last Modified: 2023-07-04 18:20:24
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -114,7 +114,7 @@ mixin OpenIMListener {
   void onGroupApplicationRejected(GroupApplicationInfo info) {}
 
   /// 群资料发生改变
-  void groupInfoChonGroupInfoChangedanged(GroupInfo info) {}
+  void onGroupInfoChanged(GroupInfo info) {}
 
   /// 群成员已添加
   void onGroupMemberAdded(GroupMembersInfo info) {}

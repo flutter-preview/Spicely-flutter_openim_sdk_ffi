@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 class IMUtils {
-  static List<T> toList<T>(List value, T Function(Map<String, dynamic> map) f) => value.map((e) => f(e)).toList();
+  static List<T> toList<T>(String value, T Function(Map<String, dynamic> map) f) => (formatJson(value) as List).map((e) => f(e)).toList();
 
-  static Map toObj<T>(String value) => formatJson(value);
+  static T toObj<T>(String value, T Function(Map<String, dynamic> map) f) => f(formatJson(value));
 
   static List<dynamic> toListMap(String value) => formatJson(value);
 
